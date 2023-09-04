@@ -11,7 +11,7 @@ import { ApiError } from "../../error/ApiError.js";
 
 
 class UserController {
-    static async userInfo(req, res,next) { // reformated
+    static async userInfo(req, res, next) { // reformated
         try {
             // Check if user exists
             const user = await mainDatabase.models.USER.findOne()
@@ -19,7 +19,7 @@ class UserController {
                 return next(ApiError.noneData("User not found"))
             }
             res.status(200).json({
-                "username" : user.name
+                "username": user.name
             })
         } catch (err) {
             return next(err)
@@ -36,14 +36,14 @@ class UserController {
             const user = await mainDatabase.models.USER.findOne()
             // Check login and password
             if (user.name != req.body.name || user.password != req.body.password) {
-                return res.status(200).json({success: false, msg: "Incorrect username or password.", data: req.body})
+                return res.status(200).json({ success: false, msg: "Incorrect username or password.", data: req.body })
             }
-            res.status(200).json({success: true, msg: "Logged in successfully.", data: req.body})
-            }
-            catch (err) {
-                return next(err)
+            res.status(200).json({ success: true, msg: "Logged in successfully.", data: req.body })
         }
-        
+        catch (err) {
+            return next(err)
+        }
+
     }
     static async editName(req, res, next) { // reformated + worked
         // Validate request body
@@ -55,7 +55,7 @@ class UserController {
         try {
             const user = await mainDatabase.models.USER.findOne()
             user.name = req.body.newName
-            user.save().then(() => { 
+            user.save().then(() => {
                 res.status(200).json()
             })
         } catch (err) {
@@ -77,7 +77,7 @@ class UserController {
             }
             // Set password to new
             user.password = req.body.newPassword
-            user.save().then(() => { 
+            user.save().then(() => {
                 res.status(200).json()
             })
         } catch (err) {
@@ -91,8 +91,20 @@ class UserController {
         if (!recoveryCodes) {
             return next(ApiError.noneData("Recovery codes not found!"))
         }
+        // Reformat response
+        const reformatedRecoveryCodes = []
+        recoveryCodes.forEach((recoveryCode) => {
+            recoveryCode = recoveryCode.dataValues
+            const reformatedRecoveryCode = {
+                id: recoveryCode.id,
+                code: recoveryCode.code,
+                used: recoveryCode.used
+            }
+            reformatedRecoveryCodes.push(reformatedRecoveryCode)
+        })
+        // Return
         try {
-            res.status(200).json({recoveryCodes})
+            res.status(200).json({ recoveryCodes: reformatedRecoveryCodes })
         }
         catch (error) {
             return next(err)
@@ -106,7 +118,7 @@ class UserController {
         }
         // Recovery user password
         try {
-            const recoveryCode = await mainDatabase.models.RECOVERY_CODEs.findOne({where: {code: req.body.code}})
+            const recoveryCode = await mainDatabase.models.RECOVERY_CODEs.findOne({ where: { code: req.body.code } })
             // Check if recovery code correct
             if (!recoveryCode) {
                 return next(ApiError.badRequest("Incorrect recovery code!"))
