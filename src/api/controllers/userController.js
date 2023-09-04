@@ -45,7 +45,7 @@ class UserController {
         }
         
     }
-    static async editName(req, res, next) { // reformated
+    static async editName(req, res, next) { // reformated + worked
         // Validate request body
         const { error } = editNameSchema.validate(req.body)
         if (error) {
@@ -54,7 +54,7 @@ class UserController {
         // Edit user name
         try {
             const user = await mainDatabase.models.USER.findOne()
-            user.name = req.body.new_name
+            user.name = req.body.newName
             user.save().then(() => { 
                 res.status(200).json()
             })
@@ -62,7 +62,7 @@ class UserController {
             return next(err)
         }
     }
-    static async editPassword(req, res, next) { // reformated
+    static async editPassword(req, res, next) { // reformated + worked
         // Validate request body
         const { error } = editPasswordSchema.validate(req.body)
         if (error) {
@@ -72,11 +72,11 @@ class UserController {
         try {
             const user = await mainDatabase.models.USER.findOne()
             // Check old password 
-            if (user.password!= req.body.old_password) {
+            if (user.password != req.body.oldPassword) {
                 return next(ApiError.badRequest("Incorrect old password"))
             }
             // Set password to new
-            user.password = req.body.new_password
+            user.password = req.body.newPassword
             user.save().then(() => { 
                 res.status(200).json()
             })
@@ -84,7 +84,7 @@ class UserController {
             return next(err)
         }
     }
-    static async getRecoveryCodes(req, res, next) { // reformated
+    static async getRecoveryCodes(req, res, next) { // reformated + worked
         // Find all recovery codes
         const recoveryCodes = await mainDatabase.models.RECOVERY_CODEs.findAll()
         // Check if recovery codes exist
@@ -98,7 +98,7 @@ class UserController {
             return next(err)
         }
     }
-    static async recoveryPassword(req, res, next) { // reformated
+    static async recoveryPassword(req, res, next) { // reformated + worked
         // Validate request body
         const { error } = recoveryPasswordSchema.validate(req.body)
         if (error) {
@@ -117,7 +117,7 @@ class UserController {
             }
             // Change user password and set recovery code to used
             const user = await mainDatabase.models.USER.findOne()
-            user.password = req.body.new_password
+            user.password = req.body.newPassword
             user.save().then(() => {
                 recoveryCode.used = true
                 recoveryCode.save().then(() => {
