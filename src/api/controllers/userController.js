@@ -13,6 +13,7 @@ import { ApiError } from "../../error/ApiError.js";
 class UserController {
     static async userInfo(req, res,next) { // reformated
         try {
+            // Check if user exists
             const user = await mainDatabase.models.USER.findOne()
             if (!user) {
                 return next(ApiError.noneData("User not found"))
@@ -30,9 +31,10 @@ class UserController {
         if (error) {
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // check if user exist
+        // Check if user exist
         try {
             const user = await mainDatabase.models.USER.findOne()
+            // Check login and password
             if (user.name != req.body.name || user.password != req.body.password) {
                 return res.status(200).json({success: false, msg: "Incorrect username or password.", data: req.body})
             }
@@ -49,7 +51,7 @@ class UserController {
         if (error) {
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // edit user name
+        // Edit user name
         try {
             const user = await mainDatabase.models.USER.findOne()
             user.name = req.body.new_name
@@ -66,12 +68,14 @@ class UserController {
         if (error) {
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // edit user password
+        // Edit user password
         try {
             const user = await mainDatabase.models.USER.findOne()
+            // Check old password 
             if (user.password!= req.body.old_password) {
                 return next(ApiError.badRequest("Incorrect old password"))
             }
+            // Set password to new
             user.password = req.body.new_password
             user.save().then(() => { 
                 res.status(200).json()
@@ -81,7 +85,9 @@ class UserController {
         }
     }
     static async getRecoveryCodes(req, res, next) { // reformated
+        // Find all recovery codes
         const recoveryCodes = await mainDatabase.models.RECOVERY_CODEs.findAll()
+        // Check if recovery codes exist
         if (!recoveryCodes) {
             return next(ApiError.noneData("Recovery codes not found!"))
         }
@@ -98,15 +104,18 @@ class UserController {
         if (error) {
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // recovery user password
+        // Recovery user password
         try {
             const recoveryCode = await mainDatabase.models.RECOVERY_CODEs.findOne({where: {code: req.body.code}})
+            // Check if recovery code correct
             if (!recoveryCode) {
                 return next(ApiError.badRequest("Incorrect recovery code!"))
             }
+            // Check if recovery code used
             if (recoveryCode.used === true) {
                 return next(ApiError.badRequest("Recovery code already used!"))
             }
+            // Change user password and set recovery code to used
             const user = await mainDatabase.models.USER.findOne()
             user.password = req.body.new_password
             user.save().then(() => {
