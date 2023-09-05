@@ -4,7 +4,7 @@ class GPUs extends Model {}
 class GPU_PRESETs extends Model {}
 class GPU_EVENTs extends Model {}
 class GPU_GRAPHs extends Model {}
-class GPU_SETUP extends Model {}
+class GPU_SETUPs extends Model {}
 
 class FLIGHT_SHEETs extends Model {}
 
@@ -111,7 +111,7 @@ export default function initGPUModels(db) {
         sequelize: db,
         modelName: 'GPU_GRAPHs'
     }),
-    GPU_SETUP.init({
+    GPU_SETUPs.init({
         id: {
             type: DataTypes.SMALLINT,
             primaryKey: true,
@@ -150,7 +150,7 @@ export default function initGPUModels(db) {
         }
     }, {
         sequelize: db,
-        modelName: 'GPU_SETUP',
+        modelName: 'GPU_SETUPs',
         freezeTableName: true,
     }),
     FLIGHT_SHEETs.init({
@@ -201,6 +201,6 @@ export default function initGPUModels(db) {
         GPU_PRESETs, 
         GPU_EVENTs, 
         GPU_GRAPHs, 
-        GPU_SETUP
+        GPU_SETUPs
     }
 }
