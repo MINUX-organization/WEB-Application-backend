@@ -11,9 +11,9 @@ editRouter.post("/wallet", EditController.editWallet);
 editRouter.post("/pool", EditController.editPool);
 // http://localhost:8200/api/edit/miner
 editRouter.post("/miner", EditController.editMiner);
-// http://localhost:8200/api/edit/gpuPreset
-editRouter.post("/gpuPreset", EditController.editGPUPreset);
-// http://localhost:8200/api/edit/flightSheet
-editRouter.post("/flightSheet", EditController.editFlightSheet);
+// http://localhost:8200/api/edit/gpu-preset
+editRouter.post("/gpu-preset", EditController.editGPUPreset);
+// http://localhost:8200/api/edit/flight-sheet
+editRouter.post("/flight-sheet", EditController.editFlightSheet);
 
 export { editRouter }

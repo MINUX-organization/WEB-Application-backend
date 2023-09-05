@@ -13,29 +13,38 @@ import { ApiError } from "../../error/ApiError.js";
 
 
 class EditController {
-    static async editCryptocurrency(req, res, next) {
+    static async editCryptocurrency(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = editCryptocurrencySchema.validate(req.body)
         if (error) { 
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // editing cryptocurrency
+        // Editing cryptocurrency
         try {
-            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: req.body })
+            // Check if cryptocurrency exists
+            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: {id: req.body.id} })
             if (cryptocurrency) {
-                if (req.body.new_name || req.body.new_full_name || req.body.new_algorithm) {
-                    if (req.body.new_name) {
-                        cryptocurrency.name = req.body.new_name
+                if (req.body.newName || req.body.newFullName || req.body.newAlgorithmId) {
+                    // If new name
+                    if (req.body.newName) {
+                        cryptocurrency.name = req.body.newName
                     }
-                    if (req.body_new_full_name) {
-                        cryptocurrency.full_name = req.body.new_full_name
+                    // If new full name
+                    if (req.body.newFullName) {
+                        cryptocurrency.full_name = req.body.newFullName
                     }
-                    if (req.body_new_algorithm) {
-                        cryptocurrency.algorithm = req.body.new_algorithm
+                    // If new algorithm
+                    if (req.body.newAlgorithmId) {
+                        // Check FK
+                        const algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: {id: req.body.newAlgorithmId}})
+                        if (!algorithm) {
+                            return next(ApiError.badRequest(`Couldn't find algorithm with id ${req.body.newAlgorithmId}`))
+                        }
+                        cryptocurrency.algorithm_id = req.body.newAlgorithmId
                     }
-                    cryptocurrency.save().then(() => res.status(200).json({ success : true, msg: "Changes was made", new_data: cryptocurrency }))
+                    cryptocurrency.save().then(() => res.status(200).json())
                 } else {
-                    res.status(200).json({ success : false, msg: "No changes was made", data: req.body })
+                    return next(ApiError.badRequest("There are no new parameters"))
                 }
             } else {
                 return next(ApiError.noneData("Cryptocurrency not found"))
@@ -44,32 +53,42 @@ class EditController {
             return next(err)
         }
     }
-    static async editWallet(req, res, next) {
+    static async editWallet(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = editWalletSchema.validate(req.body)
         if (error) { 
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // editing wallet
+        // Editing wallet
         try {
-            const wallet = await mainDatabase.models.WALLETs.findOne({ where: req.body })
+            // Check if wallet exists
+            const wallet = await mainDatabase.models.WALLETs.findOne({ where: {id: req.body.id} })
             if (wallet) {
-                if (req.body.new_name || req.body.new_source || req.body.new_address || req.body.new_cryptocurrency_id) {
-                    if (req.body.new_name) {
-                        wallet.name = req.body.new_name
+                if (req.body.newName || req.body.newSource || req.body.newAddress || req.body.newCryptocurrencyId) {
+                    // If new name
+                    if (req.body.newName) {
+                        wallet.name = req.body.newName
                     }
-                    if (req.body.new_source) {
-                        wallet.source = req.body.new_source
+                    // If new source
+                    if (req.body.newSource) {
+                        wallet.source = req.body.newSource
                     }
-                    if (req.body.new_address) {
-                        wallet.address = req.body.new_address
+                    // If new address
+                    if (req.body.newAddress) {
+                        wallet.address = req.body.newAddress
                     }
-                    if (req.body.new_cryptocurrency_id) {
-                        wallet.cryptocurrency_id = req.body.new_cryptocurrency_id
+                    // If new cryptocurrency id
+                    if (req.body.newCryptocurrencyId) {
+                        // Check FK
+                        const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({where: {id: req.body.newCryptocurrencyId}})
+                        if (!cryptocurrency) {
+                            return next(ApiError.badRequest(`Couldn't find cryptocurrency with id ${req.body.newCryptocurrencyId}`))
+                        }
+                        wallet.cryptocurrency_id = req.body.newCryptocurrencyId
                     }
-                    wallet.save().then(() => res.status(200).json({ success : true, msg: "Changes was made", data: req.body }))
+                    wallet.save().then(() => res.status(200).json())
                 } else {
-                    res.status(200).json({ success : false, msg: "No changes was made", new_data: wallet })
+                    return next(ApiError.badRequest("There are no new parameters"))
                 }
                 
             } else {
@@ -79,30 +98,39 @@ class EditController {
             return next(err)
         }
     }
-    static async editPool(req, res, next) {
+    static async editPool(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = editPoolSchema.validate(req.body)
         if (error) { 
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // editing pool
+        // Editing pool
         try {
-            const pool = await mainDatabase.models.POOLs.findOne({ where: req.body})
+            // Check if pool exists
+            const pool = await mainDatabase.models.POOLs.findOne({ where: {id: req.body.id}})
             if (pool) {
-                if (req.body.new_host || req.body.new_port || req.body.new_cryptocurrency_id) {
-                    if (req.body.new_host) {
-                        pool.host = req.body.new_host
+                if (req.body.newHost || req.body.newPort || req.body.newCryptocurrencyId) {
+                    // If new host
+                    if (req.body.newHost) {
+                        pool.host = req.body.newHost
                     }
-                    if (req.body.new_port) {
-                        pool.port = req.body.new_port
+                    // If new port
+                    if (req.body.newPort) {
+                        pool.port = req.body.newPort
                     }
-                    if (req.body.new_cryptocurrency_id) {
-                        pool.cryptocurrency_id = req.body.new_cryptocurrency_id
+                    // If new cryptocurrency id
+                    if (req.body.newCryptocurrencyId) {
+                        // Check FK
+                        const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({where: {id: req.body.newCryptocurrencyId}})
+                        if (!cryptocurrency) {
+                            return next(ApiError.badRequest(`Couldn't find cryptocurrency with id ${req.body.newCryptocurrencyId}`))
+                        }
+                        pool.cryptocurrency_id = req.body.newCryptocurrencyId
                     }
-                    pool.save().then(() => res.status(200).json({ success : true, msg: "Changes was made", data: req.body }))
+                    pool.save().then(() => res.status(200).json())
                 }
                 else {
-                    res.status(200).json({ success : false, msg: "No changes was made", new_data: pool })
+                    return next(ApiError.badRequest("There are no new parameters"))
                 }
             } else {
                 return next(ApiError.noneData("Pool not found"))
@@ -111,53 +139,69 @@ class EditController {
             return next(err)
         }
     }
-    static async editMiner(req, res, next) {
+    static async editMiner(req, res, next) { // Reformated  + worked
         // Validate request body
         const { error } = editMinerSchema.validate(req.body)
         if (error) { 
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // editing miner
+        // Editing miner
         try {
-            if (req.body.new_name || req.body.new_full_name) {
-
+            const miner = await mainDatabase.models.MINERs.findOne({where: {id: req.body.id}})
+            if (miner) {
+                if (req.body.newName || req.body.newFullName) {
+                    if (req.body.newName) {
+                        miner.name = req.body.newName
+                    }
+                    if (req.body.newFullName) {
+                        miner.full_name = req.body.newFullName
+                    }
+                    miner.save().then(() => res.status(200).json())
+                } else {
+                    return next(ApiError.badRequest("There are no new parameters"))
+                }
             } else {
-                res.status(200).json({ success : false, msg: "No changes was made", data: req.body })
+                return next(ApiError.noneData("Miner not found"))
             }
-
         } catch (err) {
             return next(err)
         }
     }
-    static async editGPUPreset(req, res, next) {
+    static async editGPUPreset(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = editGPUPresetSchema.validate(req.body)
         if (error) { 
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // editing GPU preset
+        // Editing GPU preset
         try {
-            const gpu_preset = await mainDatabase.models.GPU_PRESETs.findOne({ where: req.body})
+            // Check if gpu preset exists
+            const gpu_preset = await mainDatabase.models.GPU_PRESETs.findOne({ where: {id: req.body.id}})
             if (gpu_preset) {
-                if (req.body.new_memory_clock || req.body.new_core_clock || req.body.new_power_limit || req.body.new_crit_temp || req.body.new_fan_speed ) {
-                    if (req.body.new_memory_clock) {
-                        gpu_preset.memory_clock = req.body.new_memory_clock
+                if (req.body.newMemoryClock || req.body.newCoreClock || req.body.newPowerLimit || req.body.newCritTemp || req.body.newFanSpeed ) {
+                    // If new memory clock
+                    if (req.body.newMemoryClock) {
+                        gpu_preset.memory_clock = req.body.newMemoryClock
                     }
-                    if (req.body.new_core_clock) {
-                        gpu_preset.core_clock = req.body.new_core_clock
+                    // If new core clock
+                    if (req.body.newCoreClock) {
+                        gpu_preset.core_clock = req.body.newCoreClock
                     }
-                    if (req.body.new_power_limit) {
-                        gpu_preset.power_limit = req.body.new_power_limit
+                    // If new power limit
+                    if (req.body.newPowerLimit) {
+                        gpu_preset.power_limit = req.body.newPowerLimit
                     }
-                    if (req.body.new_crit_temp) {
-                        gpu_preset.crit_temp = req.body.new_crit_temp
+                    // If new crit temp
+                    if (req.body.newCritTemp) {
+                        gpu_preset.crit_temp = req.body.newCritTemp
                     }
-                    if (req.body.new_fan_speed) {
-                        gpu_preset.fan_speed = req.body.new_fan_speed
+                    // If new fan speed
+                    if (req.body.newFanSpeed) {
+                        gpu_preset.fan_speed = req.body.newFanSpeed
                     }
-                    gpu_preset.save().then(() => res.status(200).json({ success : true, msg: "Changes was made", new_data: gpu_preset }))
+                    gpu_preset.save().then(() => res.status(200).json())
                 } else {
-                    res.status(200).json({ success : false, msg: "No changes was made", data: req.body })
+                    return next(ApiError.badRequest("There are no new parameters"))
                 }
             } else {
                 return next(ApiError.noneData("GPU preset not found"))
@@ -166,36 +210,61 @@ class EditController {
             return next(err)
         }
     }
-    static async editFlightSheet(req, res, next) {
+    static async editFlightSheet(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = editFlightSheetSchema.validate(req.body)
         if (error) { 
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // editing flight sheet
+        // Editing flight sheet
         try {
-            const flight_sheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: req.body })
+            // Check if flight sheet exists
+            const flight_sheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: {id: req.body.id} })
             if (flight_sheet) {
-                if (req.body.new_name || req.body.new_cryptocurrency_id ||req.body.new_miner_id || req.body.new_wallet_id || req.body.new_pool_id) {
-                    if (req.body.new_name) {
-                        flight_sheet.name = req.body.new_name
+                if (req.body.newName || req.body.newCryptocurrencyId ||req.body.newMinerId || req.body.newWalletId || req.body.newPoolId) {
+                    // If new name
+                    if (req.body.newName) {
+                        flight_sheet.name = req.body.newName
                     }
-                    if (req.body.new_cryptocurrency_id) {
-                        flight_sheet.cryptocurrency_id = req.body.new_cryptocurrency_id
+                    // If new cryptocurrency id
+                    if (req.body.newCryptocurrencyId) {
+                        // Check FK
+                        const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: {id: req.body.newCryptocurrencyId}})
+                        if (!cryptocurrency) {
+                            return next(ApiError.badRequest(`Couldn't find cryptocurrency with id ${req.body.newCryptocurrencyId}`))
+                        }
+                        flight_sheet.cryptocurrency_id = req.body.newCryptocurrencyId
                     }
-                    if (req.body.new_miner_id) {
-                        flight_sheet.miner_id = req.body.new_miner_id
+                    // If new miner id
+                    if (req.body.newMinerId) {
+                        // Check FK
+                        const miner = await mainDatabase.models.MINERs.findOne({ where : {id: req.body.newMinerId}})
+                        if (!miner) {
+                            return next(ApiError.badRequest(`Couldn't find miner with id ${req.body.newMinerId}`))
+                        }
+                        flight_sheet.miner_id = req.body.newMinerId
                     }
-                    if (req.body.new_wallet_id) {
-                        flight_sheet.wallet_id = req.body.new_wallet_id
+                    // If new wallet id
+                    if (req.body.newWalletId) {
+                        // Check FK
+                        const wallet = await mainDatabase.models.WALLETs.findOne({where: {id: req.body.newWalletId}})
+                        if (!wallet) {
+                            return next(ApiError.badRequest(`Couldn't find wallet with id ${req.body.newWalletId}`))
+                        }
+                        flight_sheet.wallet_id = req.body.newWalletId
                     }
-                    if (req.body.new_pool_id) {
-                        flight_sheet.pool_id = req.body.new_pool_id
+                    // If new pool id
+                    if (req.body.newPoolId) {
+                        const pool = await mainDatabase.models.POOLs.findOne({where: {id: req.body.newPoolId}})
+                        if (!pool) {
+                            return next(ApiError.badRequest(`Couldn't find pool with id ${req.body.newPoolId}`))
+                        }
+                        flight_sheet.pool_id = req.body.newPoolId
                     }
-                    flight_sheet.save().then(() => res.status(200).json({ success : true, msg: "Changes was made",new_data: flight_sheet }))
+                    flight_sheet.save().then(() => res.status(200).json())
                 }
                 else {
-                    res.status(200).json({ success : false, msg: "No changes was made", data: req.body })
+                    return next(ApiError.badRequest("There are no new parameters"))
                 }
             }
             else {
