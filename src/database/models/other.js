@@ -12,7 +12,7 @@ class ALGORITHMs extends Model {}
 class ALGORITHM_MINER extends Model {}
 class MINERs extends Model {}
 
-
+class FARM_STATE extends Model {}
 
 
 export default function initOtherModels(db) {
@@ -199,6 +199,22 @@ export default function initOtherModels(db) {
     }, {
         sequelize: db,
         modelName: 'MINERs'
+    })
+    FARM_STATE.init({
+        id: { 
+            type: DataTypes.SMALLINT,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        mining: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        }
+    }, {
+        sequelize: db,
+        modelName: 'FARM_STATE',
+        freezeTableName: true,
+        timestamps: false
     })
 
     return {
