@@ -13,7 +13,7 @@ import { ApiError } from "../../error/ApiError.js";
 
 
 class CreateController {
-    static async createCryptocurrency(req, res, next) {
+    static async createCryptocurrency(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = createCryptocurrencySchema.validate(req.body);
         if (error) {
@@ -34,12 +34,12 @@ class CreateController {
                 full_name: req.body.fullName,
                 algorithm_id: req.body.algorithmId,
             });
-            res.status(201).json({ data: req.body });
+            res.status(201).json();
         } catch (error) {
             return next(error);
         }
     }
-    static async createWallet(req, res, next) {
+    static async createWallet(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = createWalletSchema.validate(req.body)
         if (error) {
@@ -47,23 +47,28 @@ class CreateController {
         }
         // Validate foreign keys
         try {
-            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrency_id }})
+            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrencyId }})
             if (!cryptocurrency) {
                 return next(ApiError.noneData('Cryptocurrency with this id not found'))
         }
-        } catch (err) {
+        } catch (err) { 
             return next(err);
         }
         
         // Create wallet
         try {
-            await mainDatabase.models.WALLETs.create(req.body);
-            res.status(201).json({ success: true, msg: 'Wallet created', data: req.body });
+            await mainDatabase.models.WALLETs.create({
+                name: req.body.name,
+                source: req.body.source,
+                address: req.body.address,
+                cryptocurrency_id: req.body.cryptocurrencyId
+            });
+            res.status(201).json();
         } catch (err) {
             return next(err);
         }
     }
-    static async createPool(req, res, next) {
+    static async createPool(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = createPoolSchema.validate(req.body)
         if (error) {
@@ -71,7 +76,7 @@ class CreateController {
         }
         // Validate foreign keys
         try {
-            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrency_id }})
+            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrencyId }})
             if (!cryptocurrency) {
                 return next(ApiError.noneData('Cryptocurrency with this id not found'))
         }
@@ -81,13 +86,17 @@ class CreateController {
         
         // Create pool
         try {
-            await mainDatabase.models.POOLs.create(req.body);
-            res.status(200).json({ success: true, msg: 'Pool created', data: req.body });
+            await mainDatabase.models.POOLs.create({
+                host: req.body.host,
+                port: req.body.port,
+                cryptocurrency_id: req.body.cryptocurrencyId
+            });
+            res.status(201).json();
         } catch (err) {
             return next(err);
         }
     }
-    static async createMiner(req, res, next) {
+    static async createMiner(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = createMinerSchema.validate(req.body)
         if (error) {
@@ -95,36 +104,42 @@ class CreateController {
         }
         // Create miner
         try {
-            await mainDatabase.models.MINERs.create(req.body);
-            res.status(201).json({ success: true, msg: 'Miner created', data: req.body });
+            await mainDatabase.models.MINERs.create({
+                name: req.body.name,
+                full_name: req.body.fullName
+            });
+            res.status(201).json();
         } catch (err) {
             return next(err);
         }
     }
-    static async createGPUPreset(req, res, next) {
+    static async createGPUPreset(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = createGPUPresetSchema.validate(req.body)
         if (error) {
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // Validate foreign keys
+        // Create GPUPreset
         try {
-            const gpu = await mainDatabase.models.GPUs.findOne({ where: { id: req.body.gpu_id }})
+            // Validate foreign keys
+            const gpu = await mainDatabase.models.GPUs.findOne({ where: { id: req.body.gpuId }})
             if (!gpu) {
                 return next(ApiError.noneData('GPU with this id not found'))
             }
-        } catch (err) {
-            return next(err);
-        }
-        // Create GPUPreset
-        try {
-            await mainDatabase.models.GPU_PRESETs.create(req.body);
-            res.status(201).json({ success: true, msg: 'GPUPreset created', data: req.body });
+            await mainDatabase.models.GPU_PRESETs.create({
+                memory_clock: req.body.memoryClock,
+                core_clock: req.body.coreClock,
+                power_limit: req.body.powerLimit,
+                crit_temp: req.body.critTemp,
+                fan_speed: req.body.fanSpeed,
+                gpu_uuid: gpu.uuid
+            });
+            res.status(201).json();
         } catch (err) {
             return next(err);
         }
     }
-    static async createFlightSheet(req, res, next) {
+    static async createFlightSheet(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = createFlightSheetSchema.validate(req.body)
         if (error) {
@@ -132,30 +147,36 @@ class CreateController {
         }
         // Validate foreign keys
         try {
-        const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrency_id }})
-        if (!cryptocurrency) {
-            return next(ApiError.noneData('Cryptocurrency with this id not found'))
-        }
-        const miner = await mainDatabase.models.MINERs.findOne({ where: { id: req.body.miner_id }})
-        if (!miner) {
-            return next(ApiError.noneData('Miner with this id not found'))
-        }
-        const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: req.body.wallet_id }})
-        if (!wallet) {
-            return next(ApiError.noneData('Wallet with this id not found'))
-        }
-        const pool = await mainDatabase.models.POOLs.findOne({ where: { id: req.body.pool_id }})
-        if (!pool) {
-            return next(ApiError.noneData('Pool with this id not found'))
-        }    
+            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrencyId }})
+            if (!cryptocurrency) {
+                return next(ApiError.noneData('Cryptocurrency with this id not found'))
+            }
+            const miner = await mainDatabase.models.MINERs.findOne({ where: { id: req.body.minerId }})
+            if (!miner) {
+                return next(ApiError.noneData('Miner with this id not found'))
+            }
+            const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: req.body.walletId }})
+            if (!wallet) {
+                return next(ApiError.noneData('Wallet with this id not found'))
+            }
+            const pool = await mainDatabase.models.POOLs.findOne({ where: { id: req.body.poolId }})
+            if (!pool) {
+                return next(ApiError.noneData('Pool with this id not found'))
+            }    
         } catch (err) {
             return next(err);
         }
         
         // Create GPUPreset
         try {
-            await mainDatabase.models.FLIGHT_SHEETs.create(req.body);
-            res.status(201).json({ success: true, msg: 'FlightSheet created', data: req.body });
+            await mainDatabase.models.FLIGHT_SHEETs.create({
+                name: req.body.name,
+                cryptocurrency_id: req.body.cryptocurrencyId,
+                miner_id: req.body.minerId,
+                wallet_id: req.body.walletId,
+                pool_id: req.body.poolId    
+            });
+            res.status(201).json();
         } catch (err) {
             return next(err);
         }

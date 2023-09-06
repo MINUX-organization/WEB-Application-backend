@@ -12,7 +12,7 @@ createRouter.post("/pool", CreateController.createPool);
 // http://localhost:8200/api/create/miner
 createRouter.post("/miner", CreateController.createMiner);
 // http://localhost:8200/api/create/gpuPreset
-createRouter.post("/gpuPreset", CreateController.createGPUPreset);
+createRouter.post("/gpu-preset", CreateController.createGPUPreset);
 // http://localhost:8200/api/create/flightSheet
-createRouter.post("/flightSheet", CreateController.createFlightSheet);
+createRouter.post("/flight-sheet", CreateController.createFlightSheet);
 export { createRouter }

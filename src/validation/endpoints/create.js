@@ -3,7 +3,7 @@ import Joi from "joi";
 const createCryptocurrencySchema = Joi.object({
     name: Joi.string().alphanum().min(3).max(15).required(),
     fullName: Joi.string().alphanum().min(3).max(30).required(),
-    algorithmId: Joi.number().required(),
+    algorithmId: Joi.number().integer().required(),
 });
 const createWalletSchema = Joi.object({
     name: Joi.string().alphanum().min(3).max(30).required(),
@@ -26,7 +26,7 @@ const createGPUPresetSchema = Joi.object({
     powerLimit: Joi.number().integer().required(),
     critTemp: Joi.number().integer().required(),
     fanSpeed: Joi.number().integer().required().min(0).max(100),
-    gpuId: Joi.string().alphanum().min(64).max(64).required(),
+    gpuId: Joi.number().integer().required(),
 });
 const createFlightSheetSchema = Joi.object({
     name: Joi.string().alphanum().min(3).max(30).required(),
