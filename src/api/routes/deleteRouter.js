@@ -12,8 +12,8 @@ deleteRouter.delete("/pool", DeleteController.deletePool);
 // http://localhost:8200/api/delete/miner
 deleteRouter.delete("/miner", DeleteController.deleteMiner);
 // http://localhost:8200/api/delete/gpuPreset
-deleteRouter.delete("/gpuPreset", DeleteController.deleteGPUPreset);
+deleteRouter.delete("/gpu-preset", DeleteController.deleteGPUPreset);
 // http://localhost:8200/api/delete/flightSheet
-deleteRouter.delete("/flightSheet", DeleteController.deleteFlightSheet);
+deleteRouter.delete("/flight-sheet", DeleteController.deleteFlightSheet);
 
 export { deleteRouter }
