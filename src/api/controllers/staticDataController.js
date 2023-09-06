@@ -1,6 +1,7 @@
 import { staticData } from "../../temp/static.js";
 import { ApiError } from "../../error/ApiError.js";
 
+import { mainDatabase } from "../../database/mainDatabase.js"
 
 class StaticDataController {
     static getFullData(req, res, next) { // reformated + worked
@@ -10,11 +11,25 @@ class StaticDataController {
         res.status(200).json(staticData)
 
     }
-    static getGPUData(req, res, next) { // reformated + worked
+    static async getGPUData(req, res, next) { // reformated + worked
         if (!staticData.gpus) {
             return next(ApiError.noneData("GPU data was not received from the server!"))
         }
-        res.status(200).json({ gpus: staticData.gpus })
+        const updatedGpusData = await Promise.all(staticData.gpus.map(async gpu => {
+            const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
+            if (gpuSetup) {
+                switch (gpuSetup.fan_speed) {
+                    case -1:
+                        return {...gpu, autoFan: true }
+                    default:
+                        return {...gpu, autoFan: false }
+                }
+            }
+            else {
+                return {...gpu, autoFan: null }
+            }
+        }))
+        res.status(200).json({ gpus: updatedGpusData })
     }
     static getCPUData(req, res, next) { // reformated + worked
         if (!staticData.cpu) {
