@@ -26,8 +26,8 @@ class CommandController {
         // Check if response to the command exists
         const interval = setInterval(() => {
             if (commandsData.getSystemInfo != null) {
+                res.status(200).json(commandsData.getSystemInfo)
                 commandsData.getSystemInfo = null
-                res.status(200).json()
                 clearInterval(interval)
             }
         }, 10);
@@ -47,8 +47,8 @@ class CommandController {
         // Check if response to the command exists
         const interval = setInterval(() => {
             if (commandsData.getGpusSettings != null) {
+                res.status(200).json(commandsData.getGpusSettings)
                 commandsData.getGpusSettings = null
-                res.status(200).json()
                 clearInterval(interval)
             }
         }, 10);
@@ -68,8 +68,8 @@ class CommandController {
         // Check if response to the command exists
         const interval = setInterval(() => {
             if (commandsData.getGpusWorking != null) {
+                res.status(200).json(getGpusWorking)
                 commandsData.getGpusWorking = null
-                res.status(200).json()
                 clearInterval(interval)
             }
         }, 10);
