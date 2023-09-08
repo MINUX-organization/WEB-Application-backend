@@ -227,6 +227,7 @@ export default function initOtherModels(db) {
         MINERs, 
         ALGORITHMs,
         ALGORITHM_MINER,
-        MINERs
+        MINERs,
+        FARM_STATE
     }
 }

@@ -68,94 +68,115 @@ class Database {
                     await this.db.models.RECOVERY_CODEs.create({code: generateRecoveryCode(), used: false});
                 }
             }
+            // Farm state
+            const farmState = await this.db.models.FARM_STATE.findOne()
+            if (!farmState) {
+                await this.db.models.FARM_STATE.create()
+            }
             loggerConsole.database('Creating starting data is successful!')
         }
         catch (error) {
             loggerConsole.error(e)
         }
     }
-    async close() {
+    async shutdown() {
         await this.db.close()
     }
     async createStaticData() { 
         for (let key in staticData) {
             switch (key) {
-                case 'gpu':
+                case 'gpus':
                     try {
-                        const checkUUID = /^[a-f0-9]{64}$/i
-                        staticData.gpu.forEach(async element => {
-                            if (element.uuid) {
-                                loggerConsole.basicInfo(`Received GPU UUID on DB: ${element.uuid}, checkForUUID: ${checkUUID.test(element.uuid)}`)
-                                this.db.models.GPUs.findOne({where: {uuid: element.uuid}})
-                                .then(async isFoundUUID => {
-                                    if (checkUUID.test(element.uuid) && !isFoundUUID) {
-                                        const gpu = await this.db.models.GPUs.create({
-                                            uuid: element.uuid
-                                        })
-                                        .catch(error => loggerConsole.error(`Catched error in creating GPU: ${error}`))
-                                        const gpuSetup = await this.db.models.GPU_SETUP.create({
-                                            gpu_uuid: element.uuid
-                                        })
-                                        .catch(error => loggerConsole.error(`Catched error in creating GPU_SETUP: ${error}`))
-                                        
-                                    }
-                                })
+                        staticData.gpus.forEach(async gpu => {
+                            loggerConsole.data(`Received GPU ${gpu.uuid}`)
+                            // Check if gpu is already exists
+                            const gpuCheck = await this.db.models.GPUs.findOne({where: {uuid: gpu.uuid}})
+                            if (!gpuCheck) {
+                                const gpuDB = await this.db.models.GPUs.create({uuid: gpu.uuid})
+                                .catch(error => loggerConsole.error(`Catched error in creating GPU: ${error}`))
+                            }
+                            // Check if gpu setup is already exists
+                            const gpuSetupCheck = await this.db.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
+                            if (!gpuSetupCheck) {
+                                const gpuSetupDB = await this.db.models.GPU_SETUPs.create({gpu_uuid: gpu.uuid})
+                                .catch(error => loggerConsole.error(`Catched error in creating GPU Setup: ${error}`))
                             }
                         })
                     }
+                    // try {
+                    //     const checkUUID = /^[a-f0-9]{64}$/i
+                    //     staticData.gpus.forEach(async element => {
+                    //         if (element.uuid) {
+                    //             loggerConsole.basicInfo(`Received GPU UUID on DB: ${element.uuid}, checkForUUID: ${checkUUID.test(element.uuid)}`)
+                    //             this.db.models.GPUs.findOne({where: {uuid: element.uuid}})
+                    //             .then(async isFoundUUID => {
+                    //                 if (checkUUID.test(element.uuid) && !isFoundUUID) {
+                    //                     const gpu = await this.db.models.GPUs.create({
+                    //                         uuid: element.uuid
+                    //                     }).catch(error => loggerConsole.error(`Catched error in creating GPU: ${error}`))
+                    //                     const gpuSetup = await this.db.models.GPU_SETUPs.create({
+                    //                         gpu_uuid: element.uuid
+                    //                     }).catch(error => loggerConsole.error(`Catched error in creating GPU_SETUP: ${error}`))
+                    //                     console.log(gpuSetup)
+                                        
+                    //                 }
+                    //             })
+                    //         }
+                    //     })
+                    // }
                     catch (e) {
                         loggerConsole.error(e)
                     }
                     
                     break 
-                case 'cpu': 
-                    try {
-                        const checkUUID = /^[a-f0-9]{64}$/i
-                        const cpuUUID = staticData.cpu.uuid
-                        if (cpuUUID) {
-                            loggerConsole.basicInfo(`Received CPU UUID on DB: ${cpuUUID}, checkForUUID: ${checkUUID.test(cpuUUID)}`)
-                            this.db.models.CPUs.findOne({where: {uuid: cpuUUID}})
-                            .then(async isFoundUUID => {
-                                if (checkUUID.test(cpuUUID) && !isFoundUUID) {
-                                    await this.db.models.CPUs.create({
-                                        uuid: cpuUUID
-                                    })
-                                    .catch(error => loggerConsole.error(`Catched error in creating CPU: ${error}`))
-                                    await this.db.models.CPU_SETUP.create(
-                                        {
-                                            cpu_uuid: cpuUUID
-                                        }
-                                    )
-                                    .catch(error => loggerConsole.error(`Catched error in creating CPU_SETUP: ${error}`))
-                                }
-                            })
-                        }
-                    }
-                    catch (e) {
-                        loggerConsole.error(e)
-                    }
-                    break
-                case 'harddrive':
-                    try {
-                        staticData.harddrive.forEach(async element => {
-                            const checkUUID = /^[a-f0-9]{64}$/i
-                            loggerConsole.basicInfo(`Received HardDrive UUID on DB: ${element.uuid}, checkForUUID: ${checkUUID.test(element.uuid)}`)
-                            this.db.models.HARDDRIVEs.findOne({where: {uuid: element.uuid}})
-                            .then(async isFoundUUID => {
-                                if (checkUUID.test(element.uuid) && !isFoundUUID) {
-                                    await this.db.models.HARDDRIVEs.create({
-                                        uuid: element.uuid
-                                    })
-                                    .catch(error => loggerConsole.error(`Catched error in creating HardDrive: ${error}`))
-                                }
-                            })
-                        })
-                    }
-                    catch (e) {
-                        loggerConsole.error(e)
-                    }
-                    break
-                case 'miners' :
+                // case 'cpu': 
+                //     try {
+                //         const checkUUID = /^[a-f0-9]{64}$/i
+                //         const cpuUUID = staticData.cpu.uuid
+                //         if (cpuUUID) {
+                //             loggerConsole.basicInfo(`Received CPU UUID on DB: ${cpuUUID}, checkForUUID: ${checkUUID.test(cpuUUID)}`)
+                //             this.db.models.CPUs.findOne({where: {uuid: cpuUUID}})
+                //             .then(async isFoundUUID => {
+                //                 if (checkUUID.test(cpuUUID) && !isFoundUUID) {
+                //                     await this.db.models.CPUs.create({
+                //                         uuid: cpuUUID
+                //                     })
+                //                     .catch(error => loggerConsole.error(`Catched error in creating CPU: ${error}`))
+                //                     await this.db.models.CPU_SETUP.create(
+                //                         {
+                //                             cpu_uuid: cpuUUID
+                //                         }
+                //                     )
+                //                     .catch(error => loggerConsole.error(`Catched error in creating CPU_SETUP: ${error}`))
+                //                 }
+                //             })
+                //         }
+                //     }
+                //     catch (e) {
+                //         loggerConsole.error(e)
+                //     }
+                //     break
+                // case 'harddrive':
+                //     try {
+                //         staticData.harddrive.forEach(async element => {
+                //             const checkUUID = /^[a-f0-9]{64}$/i
+                //             loggerConsole.basicInfo(`Received HardDrive UUID on DB: ${element.uuid}, checkForUUID: ${checkUUID.test(element.uuid)}`)
+                //             this.db.models.HARDDRIVEs.findOne({where: {uuid: element.uuid}})
+                //             .then(async isFoundUUID => {
+                //                 if (checkUUID.test(element.uuid) && !isFoundUUID) {
+                //                     await this.db.models.HARDDRIVEs.create({
+                //                         uuid: element.uuid
+                //                     })
+                //                     .catch(error => loggerConsole.error(`Catched error in creating HardDrive: ${error}`))
+                //                 }
+                //             })
+                //         })
+                //     }
+                //     catch (e) {
+                //         loggerConsole.error(e)
+                //     }
+                //     break
+                // case 'miners' :
                     try {
                         staticData.miners.forEach(async miner => {
                             const checkMiner = await this.db.models.MINERs.findOne({where: {name: miner.name, full_name: miner.fullName}})
