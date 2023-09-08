@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client2(App)</title>
+	<link rel = "stylesheet" type = "text/css" href = "style.css">
 </head>
 <body>
     Client App
@@ -15,6 +16,7 @@
     <button onclick="sendStaticData()">Send Data</button>
     <button onclick="sendRequest()">API</button>
     <button onclick="sendStableDynamicData()">Dynamic</button>
+	<button onclick="sendCommand()">static-data</button>
 </body>
 <script>
     function uuidv4() {
@@ -35,7 +37,6 @@
         ws.send(JSON.stringify("App"))
     }
     ws.onclose = () => console.log('OFFLINE')
-
     ws.onmessage = response => console.log(response.data)
 
 
@@ -289,7 +290,6 @@
         }
         ws.send(JSON.stringify(jsonMessage))
     }
-    
     const sendRequest = (req, res) => {
         fetch("http://localhost:8200/api/staticData/getFullData")
         .then (response => console.log(response.json()))
@@ -450,5 +450,10 @@
             sendDynamicData()
         }, 1000)
     }
+	const sendCommand = () => {
+		ws.send(JSON.stringify({
+			"command": "static-data"
+		}))
+	}
 </script>
 </html>

@@ -17,7 +17,7 @@ function randomUuid() {
     return uuid;
 }
 
-export default function generateData() {
+export default function generateStaticData() {
     return {
         gpus: [
             {
