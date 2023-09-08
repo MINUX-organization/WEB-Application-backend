@@ -1,19 +1,5 @@
 import Joi from "joi";
 
-const getGpusSettingsSchema = Joi.object({
-    gpus: Joi.array().items(
-        Joi.object({
-            uuid: Joi.string().alphanum().min(64).max(64).required(),
-        })
-    ).required()
-});
-const getGpusWorkingsSchema = Joi.object({
-    gpus: Joi.array().items(
-        Joi.object({
-            uuid: Joi.string().alphanum().min(64).max(64).required(),
-        })
-    ).required()
-});
 const setGpusSettingsSchema = Joi.object({
     gpus: Joi.array().items(
         Joi.object({
@@ -43,8 +29,6 @@ const rebootSchema = Joi.object({
 });
 
 export {
-    getGpusSettingsSchema,
-    getGpusWorkingsSchema,
     setGpusSettingsSchema,
     rebootSchema
 }
