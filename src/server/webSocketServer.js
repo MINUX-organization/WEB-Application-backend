@@ -1,18 +1,22 @@
+// Libs
 import WebSocket from '../../node_modules/ws/index.js'
-
+// Temp 
 import { staticData } from "../temp/static.js"
 import { dynamicData } from "../temp/dynamic.js"
 import { clientsData } from "../temp/clients.js"
+// Services
+import { mainDatabase } from "../database/mainDatabase.js"
+// Utils
+import { loggerConsole } from "../utils/logger.js";
+// Classes
+import { staticDataCM } from '../validation/ws/staticData.js'
 import { commandInterface } from "../classes/commands.js";
 
-import { mainDatabase } from "../database/mainDatabase.js"
-
-import { loggerConsole } from "../utils/logger.js";
-
-
+import { commandsData } from '../temp/commands.js'
 
 class WebSocketServer {
-    constructor (PORT, httpServer){  
+    constructor(PORT, httpServer) {
+        // Start ws server
         try {
             this.webSocketServer = new WebSocket.Server({
                 noServer: true 
@@ -27,11 +31,14 @@ class WebSocketServer {
         catch (error) {
             console.log(error)
         }
+        // Start receiving signals
+        this.startReceivingMessages()
+        this.startReceivingCommands()
+        this.startReceivingCloseSignal()
     }
-    // func to start server receiving messages
     startReceivingMessages() {
-        this.webSocketServer.on('connection', (webSocket) => {
-            webSocket.on('message', (msg) => {
+        this.webSocketServer.on('connection', webSocket => {
+            webSocket.on('message', async msg => {
                 try {
                     const msgJSON = JSON.parse(msg)
                     const flagData = msgJSON.hasOwnProperty("type")
@@ -53,10 +60,15 @@ class WebSocketServer {
                                         clientsData.app.send(JSON.stringify({
                                             message: "Type of connection App received!"
                                         }))
-
+                                        // TODO 5 times command 
                                         const command = new commandInterface('static',{}, "getStaticInfo")  
                                         clientsData.app.send(JSON.stringify(command))
                                         loggerConsole.basicInfo('Type of connection "App" received!')
+                                        
+                                        const farmState = await mainDatabase.models.FARM_STATE.findOne()
+                                        if (farmState.mining == true) {
+                                            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "startMining")))
+                                        }
                                     }
                                     break
                                 default:
@@ -84,24 +96,32 @@ class WebSocketServer {
                         case true:
                             switch(msgJSON.type) {
                                 case 'static':
-                                    try {
-                                        for (let key in msgJSON.payload) {
-                                            staticData[key] = JSON.parse(JSON.stringify(msgJSON.payload[key]))
+                                    const { error } = staticDataCM.validate(msgJSON.payload)
+                                    if (error) {
+                                        if (clientsData.app) {
+                                            console.log(error)
+                                            clientsData.app.send(JSON.stringify(error.details[0].message))
                                         }
-                                        //
-                                        loggerConsole.data(`Static data received on WebSocketServer!: ${JSON.stringify(staticData)}`)
-                                        webSocket.send(JSON.stringify({
-                                            message: 'WebSocketServer received your static data!'
-                                        }))
-                                    }
-                                    catch(e) {
-                                        loggerConsole.error(`Error in creating static data!`)
-                                    }
-                                    try {
-                                        mainDatabase.createStaticData()
-                                    }
-                                    catch (e) {
-                                        loggerConsole.error(`Unable to DB static data!: ${e}`)
+                                    } else {
+                                        try {
+                                            for (let key in msgJSON.payload) {
+                                                staticData[key] = JSON.parse(JSON.stringify(msgJSON.payload[key]))
+                                            }
+                                            //
+                                            loggerConsole.data(`Static data received on WebSocketServer!: ${JSON.stringify(staticData)}`)
+                                            webSocket.send(JSON.stringify({
+                                                message: 'WebSocketServer received your static data!'
+                                            }))
+                                        }
+                                        catch(e) {
+                                            loggerConsole.error(`Error in creating static data!`)
+                                        }
+                                        try {
+                                            mainDatabase.createStaticData()
+                                        }
+                                        catch (e) {
+                                            loggerConsole.error(`Unable to DB static data!: ${e}`)
+                                        }
                                     }
                                     break
                                 case 'dynamic':
@@ -209,83 +229,33 @@ class WebSocketServer {
         })
     }
     startReceivingCommands() {
-        this.webSocketServer.on('connection', (webSocket) => {
-            webSocket.on('message', (msg) => {
+        this.webSocketServer.on('connection', webSocket => {
+            webSocket.on('message', msg => {
                 try {
                     const msgJSON = JSON.parse(msg)
-                    switch(msgJSON) {
-                        case 'TEST_REDIRECTION' :
-                            if (clientsData.app && clientsData.front) {
-                                if (webSocket === clientsData.app) {
-                                    clientsData.front.send(JSON.stringify({
-                                        command: 'TEST'
-                                    }))
-                                }
-                                if (webSocket === clientsData.front) {
-                                    clientsData.app.send(JSON.stringify({
-                                        command: 'TEST'
-                                    }))
-                                }
-                            }
-                            else {
-                                webSocket.send(JSON.stringify({
-                                    message: 'Unable to use TEST command!'
-                                }))
-                            }
+                    switch(msgJSON.command) {
+                        case "getSystemInfo":
+                            commandsData.getSystemInfo = msgJSON.payload
                             break
-                        case 'FULL_EXIT' :
-                            const shutdownWebsocket = async () => {
-                                for (const key of Object.keys(clientsData)) {
-                                    if (clientsData[key]){
-                                        loggerConsole.basicInfo(`Connection with type ${key} is shutting down!`)
-                                        clientsData[key].close()
-                                    }
-                                }
-                            }
-                            shutdownWebsocket()
-                            .then(() => {
-                                staredMainServer.shutdownServer()
-                            })
+                        case "getGpusSettings":
+                            commandsData.getGpusSettings = msgJSON.payload
                             break
-                        case 'EXIT_APP' :
-                            if (clientsData.app) {
-                                clientsData.app.close()
-                            }
-                            else {
-                                webSocket.send(JSON.stringify({
-                                    error_msg: 'Unable to use command EXIT_APP, app is not available'
-                                }))
-                            }
+                        case "getGpusWorking":
+                            commandsData.getGpusWorking = msgJSON.payload
                             break
-                        case 'EXIT_FRONT' :
-                            if (clientsData.front) {
-                                clientsData.front.close()
-                            }
-                            else {
-                                webSocket.send(JSON.stringify({
-                                    error_msg: 'Unable to use command EXIT_FRONT, front is not available'
-                                }))
-                            }
+                        case "setGpusSettings":
+                            commandsData.setGpusSettings = msgJSON.payload
                             break
-                        case 'TEST_STATIC_DATA':
-                            webSocket.send(JSON.stringify({
-                                cpu: staticData.cpu,
-                                gpu: staticData.gpu,
-                                harddrive: staticData.harddrive,
-                                ram : staticData.ram,
-                                motherboard : staticData.motherboard
-                            }))
+                        case "startMining": 
+                            commandsData.startMining = msgJSON.payload
                             break
-                        case 'TEST_DYNAMIC_DATA':
-                            webSocket.send(JSON.stringify({
-                                cpu: dynamicData.cpu,
-                                gpu: dynamicData.gpus,
-                                harddrive: dynamicData.harddrive,
-                                ram: dynamicData.ram,
-                                motherboard : dynamicData.motherboard
-                            }))
+                        case "stopMining":
+                            commandsData.stopMining = msgJSON.payload
                             break
-                    }       
+                        case "reboot": 
+                            commandsData.reboot = msgJSON.payload
+                            break
+                    }   
                 }
                 catch (e) {
                     loggerConsole.error(`Received error: ${e.message}`)
@@ -294,7 +264,7 @@ class WebSocketServer {
         })
     }
     startReceivingCloseSignal() {
-        this.webSocketServer.on('connection', (webSocket) => {
+        this.webSocketServer.on('connection', webSocket => {
             webSocket.on('close', () => {
                 if (webSocket === clientsData.app){
                     clientsData.app = null
@@ -310,18 +280,6 @@ class WebSocketServer {
             })
         })
     }
-    async catchClientCommand(command) {
-        this.webSocketServer.on('connection', async (webSocket) => {
-            await clientsData.app.send(command)
-            .then(
-                webSocket.on('message',  (msg) => {
-                    const msgJSON = JSON.parse(msg)
-                    return msgJSON
-                })
-            ) 
-        })
-    }
 } 
-
 
 export { WebSocketServer } 
