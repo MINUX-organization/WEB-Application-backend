@@ -3,8 +3,8 @@ import { CommandController } from "../controllers/commandController.js";
 
 const commandsRouter = express.Router()
 
-// http://localhost:8200/api/commands/get-static-info
-commandsRouter.get('/get-static-info', CommandController.getStaticInfo)
+// http://localhost:8200/api/commands/get-system-info
+commandsRouter.get('/get-system-info', CommandController.getSystemInfo)
 // http://localhost:8200/api/commands/get-gpus-settings
 commandsRouter.get('/get-gpus-settings', CommandController.getGpusSettings)
 // http://localhost:8200/api/commands/get-gpus-working
