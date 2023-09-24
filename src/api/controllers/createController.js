@@ -14,6 +14,7 @@ import { ApiError } from "../../error/ApiError.js";
 
 class CreateController {
     static async createCryptocurrency(req, res, next) { // Reformated + worked
+        
         // Validate request body
         const { error } = createCryptocurrencySchema.validate(req.body);
         if (error) {

@@ -1,16 +1,21 @@
-// Libs
-import { MainServer } from "./server/mainServer.js"
+// Services
+import { HttpServer } from "./server/httpServer.js"
 import { mainDatabase } from "./database/mainDatabase.js"
-// dotenv
+import { WebSocketServer } from "./server/webSocketServer.js"
+// Dotenv
 import dotenv from 'dotenv'
 dotenv.config()
 
-const compile =  (async () => {
-    console.clear()
-    // Start database
-    await mainDatabase.start()
-    // Start http server
-    const mainServer = new MainServer(process.env.PORT)
-    // Start websocket server
-    mainServer.startWebsocketServer()
-})()
+class MainServer {
+    async start() {
+        mainDatabase.start()
+        .then(() => {
+            this.startedHttpServer = new HttpServer(process.env.PORT)
+            this.startedWebSocketServer = new WebSocketServer(process.env.PORT, this.startedHttpServer.httpServer)
+        })
+    }
+}
+
+const mainServer = new MainServer()
+mainServer.start()
+

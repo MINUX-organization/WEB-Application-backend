@@ -3,6 +3,7 @@ import { CreateController } from "../controllers/createController.js";
 
 const createRouter = express.Router()
 
+
 // http://localhost:8200/api/create/cryptocurrency
 createRouter.post("/cryptocurrency", CreateController.createCryptocurrency);
 // http://localhost:8200/api/create/wallet
@@ -16,3 +17,4 @@ createRouter.post("/gpu-preset", CreateController.createGPUPreset);
 // http://localhost:8200/api/create/flightSheet
 createRouter.post("/flight-sheet", CreateController.createFlightSheet);
 export { createRouter }
+
