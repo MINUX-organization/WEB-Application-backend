@@ -10,6 +10,7 @@ import { mainDatabase } from "../database/mainDatabase.js"
 import { loggerConsole } from "../utils/logger.js";
 // Classes
 import { staticDataCM } from '../validation/ws/staticData.js'
+import { dynamicDataCM } from '../validation/ws/dynamicData.js'
 import { commandInterface } from "../classes/commands.js";
 
 import { commandsData } from '../temp/commands.js'
@@ -96,126 +97,80 @@ class WebSocketServer {
                         case true:
                             switch(msgJSON.type) {
                                 case 'static':
-                                    const { error } = staticDataCM.validate(msgJSON.payload)
-                                    if (error) {
+                                    // Validate static data
+                                    const validationStatic = staticDataCM.validate(msgJSON.payload)
+                                    if (validationStatic.error) {
                                         if (clientsData.app) {
-                                            console.log(error)
                                             clientsData.app.send(JSON.stringify(error.details[0].message))
                                         }
                                     } else {
                                         try {
+                                            // Creating static data on server
                                             for (let key in msgJSON.payload) {
                                                 staticData[key] = JSON.parse(JSON.stringify(msgJSON.payload[key]))
                                             }
-                                            //
+                                            // Log static data
                                             loggerConsole.data(`Static data received on WebSocketServer!: ${JSON.stringify(staticData)}`)
-                                            webSocket.send(JSON.stringify({
-                                                message: 'WebSocketServer received your static data!'
-                                            }))
-                                        }
-                                        catch(e) {
-                                            loggerConsole.error(`Error in creating static data!`)
+                                            // Sending msg
+                                            if (clientsData.app) {
+                                                clientsData.app.send(JSON.stringify({
+                                                    message: 'WebSocketServer received your static data!'
+                                                }))
+                                            }
+                                        } catch(e) {
+                                            loggerConsole.error(`Error in creating static data: ${e.message}`)
                                         }
                                         try {
+                                            // Creating static data in database
                                             mainDatabase.createStaticData()
-                                        }
-                                        catch (e) {
+                                        } catch (e) {
                                             loggerConsole.error(`Unable to DB static data!: ${e}`)
                                         }
                                     }
                                     break
                                 case 'dynamic':
-                                    try {
-                                        // console.log(dynamicData.checkGPUData())
-                                        // mainDatabase.createDynamicData()
-                                    }
-                                    catch(e) {
-                                        loggerConsole.error(`Unable to DB dynamic data!: ${e}`)
-                                    }
-                                    try {
-                                        for (let key in msgJSON.payload){
-                                            dynamicData[key] = JSON.parse(JSON.stringify(msgJSON.payload[key]))
+                                    // Validate dynamic data
+                                    const validationDynamic = dynamicDataCM.validate(msgJSON.payload)
+                                    if (validationDynamic.error) {
+                                        if (clientsData.app) {
+                                            clientsData.app.send(JSON.stringify(validationDynamic.error.details[0].message))
                                         }
-                                        loggerConsole.data(`Dynamic data received on WebSocketServer!`)
-                                        //
-                                        if (clientsData.front) {
-                                            // calculation
-                                            const calculate = () => {
-                                                // variables
-                                                const result = {
-                                                    coinsValue: null,
-                                                    totalSharesAccepted: 0,
-                                                    totalSharesRejected: 0,
-                                                    workingAlgorithms: 0,
-                                                    workingMiner: 0,
-                                                    totalPower: 0,
-                                                    totalRam: 0
-                                                }
-                                                const miners = []
-                                                const algorithms = []
-                                                const coins = []
-                                                // GPU 
-                                                dynamicData.gpus.forEach(element => {
-                                                    result.totalSharesAccepted += element.shares.accepted
-                                                    result.totalSharesRejected += element.shares.rejected
-                                                    result.totalPower += element.powerUsage
-                                                    miners.push(element.miner.uuid)
-                                                    algorithms.push(element.algorithm)
-                                                    coins.push({coin: element.cryptocurrency, algorithm: element.algorithm})
-                                                });
-                                                // CPU
-                                                result.totalSharesAccepted += dynamicData.cpu.shares.accepted
-                                                result.totalSharesRejected += dynamicData.cpu.shares.rejected
-                                                result.totalPower += dynamicData.cpu.powerUsage 
-                                                miners.push(dynamicData.cpu.miner.uuid)
-                                                algorithms.push(dynamicData.cpu.algorithm)
-                                                coins.push({coin: dynamicData.cpu.cryptocurrency, algorithm: dynamicData.cpu.algorithm})
-                                                // RAM  
-                                                result.totalRam += dynamicData.ram.free.value
-                                                //sort arrays with miners/algorithms
-                                                result.workingAlgorithms = [...new Set(algorithms)].length
-                                                result.workingMiner = [...new Set(miners)].length
-                                                // coins
-                                                const coinCount = coins.reduce((acc, item) => {
-                                                    if (!acc[item.coin]) {
-                                                        acc[item.coin] = { coin: item.coin, algorithm: item.algorithm, value: 1 };
-                                                    } else {
-                                                        acc[item.coin].value++
-                                                    }
-                                                    return acc;
-                                                }, {});
-                                                result.coinsValue = Object.values(coinCount).map((item) => {
-                                                    return { coin: item.coin, algorithm: item.algorithm, value: item.value }
-                                                });
-                                                //
-                                                return result
+                                    } else {
+                                        try {
+                                            
+                                            // Creating dynamic data on server
+                                            for (let key in msgJSON.payload){
+                                                dynamicData[key] = JSON.parse(JSON.stringify(msgJSON.payload[key]))
                                             }
-                                            const resultCalculations = calculate()
-                                            //
-                                            clientsData.front.send(JSON.stringify(
-                                                {
-                                                    state: dynamicData.state,
-                                                    gpus: dynamicData.gpus,
-                                                    cpu: dynamicData.cpu,
-                                                    harddrive: dynamicData.harddrive,
-                                                    ram: dynamicData.ram,
-                                                    calculations: {
-                                                        ...resultCalculations
+                                            // Log dynamic data
+                                            loggerConsole.data(`Dynamic data received on WebSocketServer!: ${JSON.stringify(dynamicData)}`)
+                                            // Sending dynamic data to client
+                                            if (clientsData.front) {
+                                                // Sending msg
+                                                clientsData.front.send(JSON.stringify(
+                                                    {
+                                                        state: dynamicData.state,
+                                                        gpus: dynamicData.gpus,
+                                                        cpu: dynamicData.cpu,
+                                                        harddrive: dynamicData.harddrives,
+                                                        ram: dynamicData.rams,
+                                                        calculations: dynamicData.calculations
                                                     }
-                                                }
-                                            ))
+                                                ))
+                                            }
+                                            else {
+                                                loggerConsole.error("Unable to send dynamic data to client! Client is not connected")
+                                            }
+                                        } catch (e) {
+                                            loggerConsole.error(`Error in creating dynamic data: ${e.message}`)
                                         }
-                                        else {
-                                            throw new Error("Front is not available")
+                                        try {
+                                            // Creating dynamic data in database
+                                            mainDatabase.createDynamicData()
+                                        } catch (e) {
+                                            loggerConsole.error(`Unable to DB dynamic data!: ${e.message}`)
                                         }
                                     }
-                                    catch(e) {
-                                        loggerConsole.error(`Unable to send dynamic data!: ${e}`)
-                                        webSocket.send(JSON.stringify({
-                                            error: `${e.message}`
-                                        }))
-                                    }
-                                    
                                     break
                             }
                             break
