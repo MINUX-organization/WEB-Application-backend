@@ -42,6 +42,7 @@ const staticDataCM = Joi.object({
         }).required()
     ).required(),
     cpu: Joi.object({
+        uuid: Joi.string().alphanum().min(64).max(64).required(),
         information: Joi.object({
             manufacturer: Joi.string().required(),
             modelName: Joi.string().required(),

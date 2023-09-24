@@ -69,7 +69,7 @@ const dynamicDataCM = Joi.object({
     ).required(),
     rams: Joi.array().items(
         Joi.object({
-            uuid: Joi.string.alphanum().min(64).max(64).required(),
+            uuid: Joi.string().alphanum().min(64).max(64).required(),
             free: Joi.object({
                 value: Joi.number().required(),
                 measurement: Joi.string().required()
@@ -77,6 +77,7 @@ const dynamicDataCM = Joi.object({
         }).required()
     ).required()
 })
+
 
 export {
     dynamicDataCM

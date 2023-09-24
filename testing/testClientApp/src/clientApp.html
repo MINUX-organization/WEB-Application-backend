@@ -201,6 +201,7 @@
 		}
 	}],
 	"cpu": {
+		"uuid" : "4b8ea6a1124e9dc23d666c4ae9f8a9797ae3a9ce97bf1a8861a4ae494c95fb47",
 		"information": {
 			"manufacturer": "Intel",
 			"modelName": "Core i7-7700K",
@@ -400,6 +401,7 @@
         }
         ],
         cpu: {
+			uuid: uuidv4(),
             temperature: Math.floor(Math.random() * (100 - 30) + 30),
             clockSpeed: Math.floor(Math.random() * (3000 - 2000) + 2000),
             fanSpeed: Math.floor(Math.random() * (100 - 1) + 1),
@@ -419,22 +421,22 @@
                 rejected: Math.floor(Math.random() * (100 - 1) + 1)
             }
         },
-        harddrive: {
-            uuid: uuidv4(),
+        harddrives: [{
+			uuid: uuidv4(),
             temperature: Math.floor(Math.random() * (100 - 30) + 30),
             capacity: Math.floor(Math.random() * (10240 - 2048) + 2048),
             free: {
                 value: Math.floor(Math.random() * (10240 - 2048) + 2048),
                 measurement: "gb"
             }
-        },
-        ram: {
-            uuid: uuidv4(),
+		}],
+        rams: [{
+			uuid: uuidv4(),
             free: {
                 value: Math.floor(Math.random() * (16 - 1) + 1), 
                 "measurement": "gb"
             }
-        }
+		}]
     }
 })
         ws.send(jsonMessage)
