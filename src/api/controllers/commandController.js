@@ -15,6 +15,21 @@ import { mainDatabase } from "../../database/mainDatabase.js";
 
 
 class CommandController {
+    static async waitForResponse(command) {
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                clearInterval(timeout)
+                reject(ApiError.noneData("No response to the command was received"))
+            }, 3000)
+            const interval = setInterval(() => {
+                if (commandsData[command] != null) {
+                    clearInterval(interval)
+                    clearTimeout(timeout)
+                    resolve(commandsData[command])
+                }
+            }, 10)
+        })
+    }
     static getSystemInfo(req, res, next) { // Reformated + not tested yet
         // Check if app is running
         if (!clientsData.app) {
@@ -57,26 +72,21 @@ class CommandController {
             return next(ApiError.noneData("No response to the command was received"))
         }, 3000)
     }
-    static getGpusWorking(req, res, next) { // Reformated + not tested yet
+    static async getGpusWorking(req, res, next) { // Reformated + not tested yet
         // Check if app is running
         if (!clientsData.app) {
             return next(ApiError.noneData("App is not connected!"))
         }
-        // Sending the command
-        const command = new commandInterface("static", {}, "getGpusWorking")
-        clientsData.app.send(JSON.stringify(command))
-        // Check if response to the command exists
-        const interval = setInterval(() => {
-            if (commandsData.getGpusWorking != null) {
-                res.status(200).json(getGpusWorking)
-                commandsData.getGpusWorking = null
-                clearInterval(interval)
-            }
-        }, 10);
-        setTimeout(() => {
-            clearInterval(interval)
-            return next(ApiError.noneData("No response to the command was received"))
-        }, 3000)
+        try {
+            // Sending command
+            const command = new commandInterface("static", {}, "getGpusWorking",)
+            clientsData.app.send(JSON.stringify(command))
+            // Wait response
+            const response = await CommandController.waitForResponse(command.command)
+            res.status(200).json(response)
+        } catch (err) {
+            return next(err)
+        }
     }
     static setGpusSettings(req, res, next) { // Reformated + not tested yet
         // Validate request body
