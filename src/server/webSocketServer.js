@@ -65,7 +65,51 @@ class WebSocketServer {
                                         const command = new commandInterface('static',{}, "getStaticInfo")  
                                         clientsData.app.send(JSON.stringify(command))
                                         loggerConsole.basicInfo('Type of connection "App" received!')
-                                        
+                                        // Sending gpu setups
+                                        const gpuSetups = await mainDatabase.models.GPU_SETUPs.findAll()
+                                        const gpuSetupsDB = []
+                                        for (const gpuSetup of gpuSetups) {
+                                            let cryptocurrency, miner, wallet, pool, algorithm;
+                                            
+                                            const flightSheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: { id: gpuSetup.dataValues.flight_sheet_id } });
+                                            if (flightSheet) {
+                                                cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheet.cryptocurrency_id } });
+                                                miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheet.miner_id } });
+                                                wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheet.wallet_id } });
+                                                pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheet.pool_id } });
+                                                if (cryptocurrency) {
+                                                    algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
+                                                }
+                                            }
+                                            gpuSetupsDB.push({
+                                                uuid: gpuSetup.dataValues.gpu_uuid,
+                                                overclock: {
+                                                    clockType: "custom",
+                                                    autofan: false,
+                                                    coreClock: gpuSetup.dataValues.core_clock,
+                                                    memoryClock: gpuSetup.dataValues.memory_clock,
+                                                    fanSpeed: gpuSetup.dataValues.fan_speed,
+                                                    powerLimit: gpuSetup.dataValues.power_limit,
+                                                    criticalTemp: gpuSetup.dataValues.crit_temp,
+                                                },
+                                                crypto: {
+                                                    cryptoType: "custom",
+                                                    coin: cryptocurrency ? cryptocurrency.name : null,
+                                                    algorithm: algorithm ? algorithm.name : null,
+                                                    wallet: wallet ? wallet.address : null,
+                                                    pool: pool ? `${pool.host}:${pool.port}` : null,
+                                                    miner: miner ? miner.name : null,
+                                                },
+                                            })
+                                        }
+                                        if (gpuSetupsDB.length > 0) {
+                                            clientsData.app.send(JSON.stringify(new commandInterface('static',
+                                            {
+                                            gpus: gpuSetupsDB,
+                                            }, 
+                                            "setGpusSettings")))
+                                        }
+                                        // Sending start mining 
                                         const farmState = await mainDatabase.models.FARM_STATE.findOne()
                                         if (farmState.mining == true) {
                                             clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "startMining")))
