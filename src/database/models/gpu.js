@@ -133,6 +133,10 @@ export default function initGPUModels(db) {
             type: DataTypes.SMALLINT,
             defaultValue: 30
         },
+        crit_temp: {
+            type: DataTypes.SMALLINT,
+            defaultValue: -1,
+        },
         gpu_uuid: {
             type:  DataTypes.STRING(64),
             references: {

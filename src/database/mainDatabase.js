@@ -149,7 +149,7 @@ class Database {
                             // Log harddrive UUID
                             loggerConsole.data(`Received harddrive: ${harddrive.uuid}`)
                             // Check if harddrive is already exists
-                            const harddriveCheck = await this.db.models.HARDDRIVEs.findOne({where: {uuid: element.uuid}})
+                            const harddriveCheck = await this.db.models.HARDDRIVEs.findOne({where: {uuid: harddrive.uuid}})
                             if (!harddriveCheck) {
                                 await this.db.models.HARDDRIVEs.create({uuid: harddrive.uuid})
                                 .catch(error => loggerConsole.error(`Catched error in creating harddrive: ${error}`))
@@ -170,7 +170,7 @@ class Database {
                             // Log ram UUID
                             loggerConsole.data(`Received ram: ${ram.uuid}`)
                             // Check if harddrive is already exists
-                            const ramCheck = await this.db.models.RAMs.findOne({where: {uuid: element.uuid}})
+                            const ramCheck = await this.db.models.RAMs.findOne({where: {uuid: ram.uuid}})
                             if (!ramCheck) {
                                 await this.db.models.RAMs.create({uuid: ram.uuid})
                                 .catch(error => loggerConsole.error(`Catched error in creating ram: ${error}`))
