@@ -137,7 +137,7 @@ export default function generateStaticData() {
                 uuid: randomUuid(),
                 information: {
                     manufacturer: 'AMD',
-                    periphery: 'Radeon RX 580',
+                    periphery: 'Rad     eon RX 580',
                     driverVersion: `${getRandomInt(1, 10)}.0.0`,
                     technology: {
                         version: 'Polaris',

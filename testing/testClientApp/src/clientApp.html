@@ -286,7 +286,25 @@
 		"name": "sgminer",
 		"fullName": "Sgminer for AMD",
 		"algorithms": ["ethash", "cryptonight", "equihash", "lyra2v2", "blake2s", "neoscrypt"]
-	}]
+	}],
+	"systemInfo" : {
+		linux: "Linux 6.2.14",
+		technologies: {
+			versions: {
+				opencl: "3.0",
+				cuda: "8.6"
+			}
+		},
+		drivers: {
+			versions: {
+				amd: "510.60.02",
+				nvidia: "510.60.02"
+			}
+		},
+		minuxVersion: "0.1",
+		localIp: "192.168.1.2",
+		macAddress: "8F:23:91:0C:0A:2F"
+	}
 }
         }
         ws.send(JSON.stringify(jsonMessage))

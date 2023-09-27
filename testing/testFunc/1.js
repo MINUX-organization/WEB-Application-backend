@@ -1,11 +1,7 @@
 const obj = {
-    foo: 1,
-    bar: 2,
-    get calculate() { 
-        return this.foo+ this.bar
+    x: 20,
+    get y() {
+        return this.x;
     }
 }
-
-console.log(obj.calculate);
-obj.bar = 3;
-console.log(obj.calculate);
+console.log(obj.y)
