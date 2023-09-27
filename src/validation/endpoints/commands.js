@@ -25,7 +25,7 @@ const setGpusSettingsSchema = Joi.object({
     ).required()
 });
 const rebootSchema = Joi.object({
-    startupDelay: Joi.number().allow(null).optional(),
+    startupDelay: Joi.number().required(),
 });
 
 export {

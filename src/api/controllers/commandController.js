@@ -124,6 +124,7 @@ class CommandController {
             CommandController.waitForResponse(command.command)
             .then(async response => {
                 commandsData[command] = null
+                const farmState = await mainDatabase.models.FARM_STATE.findOne()
                 // Update farmstate
                 if (farmState) {
                     farmState.mining = true
@@ -151,6 +152,7 @@ class CommandController {
             CommandController.waitForResponse(command.command)
             .then(async response => {
                 commandsData[command] = null
+                const farmState = await mainDatabase.models.FARM_STATE.findOne()
                 // Update farmstate
                 if (farmState) {
                     farmState.mining = false
