@@ -62,7 +62,7 @@ class WebSocketServer {
                                             message: "Type of connection App received!"
                                         }))
                                         // TODO 5 times command 
-                                        const command = new commandInterface('static',{}, "getStaticInfo")  
+                                        const command = new commandInterface('static',{}, "getSystemInfo")  
                                         clientsData.app.send(JSON.stringify(command))
                                         loggerConsole.basicInfo('Type of connection "App" received!')
                                         // Sending gpu setups
@@ -145,7 +145,7 @@ class WebSocketServer {
                                     const validationStatic = staticDataCM.validate(msgJSON.payload)
                                     if (validationStatic.error) {
                                         if (clientsData.app) {
-                                            clientsData.app.send(JSON.stringify(error.details[0].message))
+                                            clientsData.app.send(JSON.stringify(validationStatic.error.details[0].message))
                                         }
                                     } else {
                                         try {
