@@ -104,9 +104,27 @@ const staticDataCM = Joi.object({
             fullName: Joi.string().required(),
             algorithms: Joi.array().items(Joi.string()).required()
         }).required()
-    ).required()
+    ).required(),
+    systemInfo: Joi.object({
+        linux: Joi.string().required(),
+        technologies: Joi.object({
+            versions: Joi.object({
+                opencl: Joi.string().required(),
+                cuda: Joi.string().required(),
+            }).required(),
+        }).required(),
+        drivers: Joi.object({
+            versions: Joi.object({
+                amd: Joi.string().required(),
+                nvidia: Joi.string().required()
+            }).required(),
+        }).required(),
+        minuxVersion: Joi.string().required(),
+        localIp: Joi.string().required(),
+        macAddress: Joi.string().required()
+    }).required(),
 });
-
+    
 export {
     staticDataCM
 }

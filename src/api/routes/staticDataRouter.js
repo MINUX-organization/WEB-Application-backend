@@ -17,6 +17,10 @@ staticDataRouter.get('/get-harddrives-data', StaticDataController.getHarddriveDa
 staticDataRouter.get('/get-rams-data', StaticDataController.getRAMData)
 // http://localhost:8200/api/static-data/get-miners-data
 staticDataRouter.get('/get-miners-data', StaticDataController.getMinersData)
+// http://localhost:8200/api/static-data/get-system-info-data
+staticDataRouter.get('/get-system-info-data', StaticDataController.getSystemInfoData)
+// http://localhost:8200/api/static-data/get-calculations-data
+staticDataRouter.get('/get-calculations-data', StaticDataController.getCalculationsData)
 
 
 export { staticDataRouter }

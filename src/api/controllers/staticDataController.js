@@ -41,12 +41,29 @@ class StaticDataController {
             return next(ApiError.noneData("Harddrive data was not received from the server!"))
         }
         res.status(200).json({ harddrives: staticData.harddrives })
-    }
+    }       
     static getMinersData(req, res, next) { // added + worked
         if (!staticData.miners) {
             return next(ApiError.noneData("Miners data was not received from the server!"))
         }
         res.status(200).json({ miners: staticData.miners })
+    }
+    static getSystemInfoData(req, res, next) {
+        if (!staticData.systemInfo || !staticData.motherboard || !staticData.cpu || !staticData.harddrives) {
+            return next(ApiError.noneData("System info was not received from the server!"))
+        }
+        res.status(200).json({ systemInfo: {
+            motherboard: `${staticData.motherboard.information.manufacturer} ${staticData.motherboard.information.productName}`,
+            cpu: `${staticData.cpu.information.cores.cpus} x ${staticData.cpu.information.manufacturer} ${staticData.cpu.information.modelName} @ ${staticData.cpu.clocks.maximum}GHz`,
+            harddrive: `${staticData.harddrives[0].information.deviceModel} ${staticData.harddrives[0].information.capacity}GB`,
+            ...staticData.systemInfo
+        }})
+    }
+    static getCalculationsData(req, res, next) {
+        if (!staticData.gpus) {
+            return next(ApiError.noneData("GPU data was not received from the server!"))
+        }
+        res.status(200).json({ calculations: staticData.calculations})
     }
 }
 
