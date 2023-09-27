@@ -98,6 +98,7 @@ class WebSocketServer {
                                         default:
                                             loggerConsole.error(`Received unknown command: ${msgJSON.command}`)
                                     }
+                                    break
                                 case 'dynamic':
                                     switch (msgJSON.command) {
                                         case 'getDynamicData':
@@ -141,9 +142,11 @@ class WebSocketServer {
                                                     loggerConsole.error(`Unable to DB dynamic data!: ${e.message}`)
                                                 }
                                             }
+                                        break
                                         default:
                                             loggerConsole.error(`Received unknown command: ${msgJSON.command}`)
                                     }
+                                    break
                                 default:
                                     loggerConsole.error(`Received unknown type of command: ${msgJSON.type}`)
                             }

@@ -9,6 +9,7 @@ const dynamicDataCM = Joi.object({
             uuid: Joi.string().alphanum().min(64).max(64).required(),
             temperature: Joi.number().required(),
             fanSpeed: Joi.number().required(),
+            isMining: Joi.boolean().required(),
             hashrate: Joi.object({
                 value: Joi.number().allow(null).required(),
                 measurement: Joi.string().allow(null).required(),
@@ -40,6 +41,7 @@ const dynamicDataCM = Joi.object({
         temperature: Joi.number().required(),
         clockSpeed: Joi.number().required(),
         fanSpeed: Joi.number().required(),
+        isMining: Joi.boolean().required(),
         hashrate: Joi.object({
             value: Joi.number().allow(null).required(),
             measurement: Joi.string().allow(null).required(),
