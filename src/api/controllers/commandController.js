@@ -15,62 +15,58 @@ import { mainDatabase } from "../../database/mainDatabase.js";
 
 
 class CommandController {
-    static async waitForResponse(command) {
-        return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => {
-                clearInterval(timeout)
-                reject(ApiError.noneData("No response to the command was received"))
-            }, 3000)
-            const interval = setInterval(() => {
-                if (commandsData[command] != null) {
-                    clearInterval(interval)
-                    clearTimeout(timeout)
-                    resolve(commandsData[command])
-                }
-            }, 10)
-        })
-    }
-    static getSystemInfo(req, res, next) { // Reformated + not tested yet
+        static async waitForResponse(command) {
+            return new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    clearInterval(timeout)
+                    reject(ApiError.noneData("No response to the command was received"))
+                }, 3000)
+                const interval = setInterval(() => {
+                    if (commandsData[command] != null) {
+                        clearInterval(interval)
+                        clearTimeout(timeout)
+                        resolve(commandsData[command])
+                    }
+                }, 10)
+            })
+        }
+        static async getSystemInfo(req, res, next) { // Reformated + not tested yet
+            // Check if app is running
+            if (!clientsData.app) {
+                return next(ApiError.noneData("App is not connected!"))
+            }
+            try {
+                // Sending command
+                const command = new commandInterface("static", {}, "getSystemInfo",)
+                clientsData.app.send(JSON.stringify(command))
+                // Wait response
+                CommandController.waitForResponse(command.command)
+                .then(response => {
+                    commandsData[command] = null
+                    res.status(200).json(response)
+                })
+            } catch (err) {
+                return next(err)
+            }
+        }
+    static async getGpusSettings(req, res, next) { // Reformated + not tested yet
         // Check if app is running
         if (!clientsData.app) {
             return next(ApiError.noneData("App is not connected!"))
         }
-        // Sending the command
-        const command = new commandInterface("static", {}, "getSystemInfo")
-        clientsData.app.send(JSON.stringify(command))
-        // Check if response to the command exists
-        const interval = setInterval(() => {
-            if (commandsData.getSystemInfo != null) {
-                res.status(200).json(commandsData.getSystemInfo)
-                commandsData.getSystemInfo = null
-                clearInterval(interval)
-            }
-        }, 10);
-        setTimeout(() => {
-            clearInterval(interval)
-            return next(ApiError.noneData("No response to the command was received"))
-        }, 3000)
-    }
-    static getGpusSettings(req, res, next) { // Reformated + not tested yet
-        // Check if app is running
-        if (!clientsData.app) {
-            return next(ApiError.noneData("App is not connected!"))
+        try {
+            // Sending command
+            const command = new commandInterface("static", {}, "getGpusSettings",)
+            clientsData.app.send(JSON.stringify(command))
+            // Wait response
+            await CommandController.waitForResponse(command.command)
+            .then(response => {
+                commandsData[command] = null
+                res.status(200).json(response)
+            })
+        } catch (err) {
+            return next(err)
         }
-        // Sending the command
-        const command = new commandInterface("static", {}, "getGpusSettings")
-        clientsData.app.send(JSON.stringify(command))
-        // Check if response to the command exists
-        const interval = setInterval(() => {
-            if (commandsData.getGpusSettings != null) {
-                res.status(200).json(commandsData.getGpusSettings)
-                commandsData.getGpusSettings = null
-                clearInterval(interval)
-            }
-        }, 10);
-        setTimeout(() => {
-            clearInterval(interval)
-            return next(ApiError.noneData("No response to the command was received"))
-        }, 3000)
     }
     static async getGpusWorking(req, res, next) { // Reformated + not tested yet
         // Check if app is running
@@ -82,13 +78,16 @@ class CommandController {
             const command = new commandInterface("static", {}, "getGpusWorking",)
             clientsData.app.send(JSON.stringify(command))
             // Wait response
-            const response = await CommandController.waitForResponse(command.command)
-            res.status(200).json(response)
+            await CommandController.waitForResponse(command.command)
+            .then(response => {
+                commandsData[command] = null
+                res.status(200).json(response)
+            })
         } catch (err) {
             return next(err)
         }
     }
-    static setGpusSettings(req, res, next) { // Reformated + not tested yet
+    static async setGpusSettings(req, res, next) { // Reformated + not tested yet
         // Validate request body
         const { error } = setGpusSettingsSchema.validate(req.body)
         if (error) {
@@ -98,36 +97,34 @@ class CommandController {
         if (!clientsData.app) {
             return next(ApiError.noneData("App is not connected!"))
         }
-        // Sending the command
-        const command = new commandInterface("static", req.body, "setGpusSettings")
-        clientsData.app.send(JSON.stringify(command))
-        // Check if response to the command exists
-        const interval = setInterval(() => {
-            if (commandsData.setGpusSettings != null) {
-                commandsData.setGpusSettings = null
-                res.status(200).json()
-                clearInterval(interval)
-            }
-        }, 10);
-        setTimeout(() => {
-            clearInterval(interval)
-            return next(ApiError.noneData("No response to the command was received"))
-        }, 3000)
+        try {
+            // Sending command
+            const command = new commandInterface("static", req.body, "setGpusSettings",)
+            clientsData.app.send(JSON.stringify(command))
+            // Wait response
+            CommandController.waitForResponse(command.command)
+            .then(response => {
+                commandsData[command] = null
+                res.status(200).json(response)
+            })
+        } catch (err) {
+            return next(err)
+        }
     }
-    static startMining(req, res, next) { // Reformated + not tested yet 
+    static async startMining(req, res, next) { // Reformated + not tested yet 
         // Check if app is running
         if (!clientsData.app) {
             return next(ApiError.noneData("App is not connected!"))
         }
-        // Sending the command
-        const command = new commandInterface("static", {}, "startMining")
-        clientsData.app.send(JSON.stringify(command))
-        // Check if response to the command exists
-        const interval = setInterval(async () => {
-            if (commandsData.startMining != null) {
-                commandsData.startMining = null
-                // Update farm state in db
-                const farmState = await mainDatabase.models.FARM_STATE.findOne()
+        try {
+            // Sending the command
+            const command = new commandInterface("static", {}, "startMining")
+            clientsData.app.send(JSON.stringify(command))
+            // Wait response
+            CommandController.waitForResponse(command.command)
+            .then(async response => {
+                commandsData[command] = null
+                // Update farmstate
                 if (farmState) {
                     farmState.mining = true
                     await farmState.save()
@@ -135,31 +132,26 @@ class CommandController {
                 else {
                     return next(ApiError.noneData("Unavailable to update farm state!"))
                 }
-                //
-                res.status(200).json()
-                clearInterval(interval)
-                
-            }
-        }, 10);
-        setTimeout(() => {
-            clearInterval(interval)
-            return next(ApiError.noneData("No response to the command was received"))
-        }, 3000)
+                res.status(200).json(response)
+            })
+        } catch (err) {
+            return next(err)
+        }
     }
     static stopMining(req, res, next) { // Reformated + not tested yet
         // Check if app is running
         if (!clientsData.app) {
             return next(ApiError.noneData("App is not connected!"))
         }
-        // Sending the command
-        const command = new commandInterface("static", {}, "stopMining")
-        clientsData.app.send(JSON.stringify(command))
-        // Check if response to the command exists
-        const interval = setInterval(async () => {
-            if (commandsData.stopMining != null) {
-                commandsData.stopMining = null
-                // Update farm state in db
-                const farmState = await mainDatabase.models.FARM_STATE.findOne()
+        try {
+            // Sending the command
+            const command = new commandInterface("static", {}, "stopMining")
+            clientsData.app.send(JSON.stringify(command))
+            // Wait response
+            CommandController.waitForResponse(command.command)
+            .then(async response => {
+                commandsData[command] = null
+                // Update farmstate
                 if (farmState) {
                     farmState.mining = false
                     await farmState.save()
@@ -167,18 +159,13 @@ class CommandController {
                 else {
                     return next(ApiError.noneData("Unavailable to update farm state!"))
                 }
-                //
-                res.status(200).json()
-                clearInterval(interval)
-                
-            }
-        }, 10);
-        setTimeout(() => {
-            clearInterval(interval)
-            return next(ApiError.noneData("No response to the command was received"))
-        }, 3000)
+                res.status(200).json(response)
+            })
+        } catch (err) {
+            return next(err)
+        }
     }
-    static reboot(req, res, next) { // Reformated + not tested yet
+    static async reboot(req, res, next) { // Reformated + not tested yet
         // Validation request body
         const { error } = rebootSchema.validate(req.body)
         if (error) {
@@ -188,21 +175,16 @@ class CommandController {
         if (!clientsData.app) {
             return next(ApiError.noneData("App is not connected!"))
         }
-        // Sending the command
-        const command = new commandInterface("static", req.body, "reboot")
-        clientsData.app.send(JSON.stringify(command))
-        // Check if response to the command exists
-        const interval = setInterval(() => {
-            if (commandsData.reboot != null) {
-                commandsData.reboot = null
-                res.status(200).json()
-                clearInterval(interval)
-            }
-        }, 10);
-        setTimeout(() => {
-            clearInterval(interval)
-            return next(ApiError.noneData("No response to the command was received"))
-        }, 3000)
+        try {
+            // Sending command
+            const command = new commandInterface("static", req.body, "reboot",)
+            clientsData.app.send(JSON.stringify(command))
+            // Wait response
+            const response = await CommandController.waitForResponse(command.command)
+            res.status(200).json(response)
+        } catch (err) {
+            return next(err)
+        }
     }
 }
 
