@@ -70,7 +70,7 @@ class WebSocketServer {
                                         const gpuSetupsDB = []
                                         for (const gpuSetup of gpuSetups) {
                                             let cryptocurrency, miner, wallet, pool, algorithm;
-                                            
+
                                             const flightSheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: { id: gpuSetup.dataValues.flight_sheet_id } });
                                             if (flightSheet) {
                                                 cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheet.cryptocurrency_id } });
