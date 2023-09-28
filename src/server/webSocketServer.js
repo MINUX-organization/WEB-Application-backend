@@ -141,8 +141,10 @@ class WebSocketServer {
                                                     loggerConsole.error(`Unable to DB dynamic data!: ${e.message}`)
                                                 }
                                             }
+                                            break
                                         default:
                                             loggerConsole.error(`Received unknown command: ${msgJSON.command}`)
+                                            break
                                     }
                                 default:
                                     loggerConsole.error(`Received unknown type of command: ${msgJSON.type}`)
@@ -170,7 +172,8 @@ class WebSocketServer {
                                     // Init 
                                     if (clientsData.app) {
                                         // Sending request for system info TODO: sending 5 times
-                                        clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo"))) 
+                                        clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+                                        loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
                                         // Sending saved gpu setups
                                         const gpuSetups = await mainDatabase.models.GPU_SETUPs.findAll()
                                         const gpuSetupsDB = []
@@ -219,6 +222,7 @@ class WebSocketServer {
                                         const farmState = await mainDatabase.models.FARM_STATE.findOne()
                                         if (farmState.mining == true) {
                                             clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "startMining")))
+                                            loggerConsole.basicInfo("Command startMining sended to app!")
                                         }
                                     }
                                     break
