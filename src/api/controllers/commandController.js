@@ -10,6 +10,7 @@ import { commandsData } from "../../temp/commands.js"
 import { commandInterface } from "../../classes/commands.js";
 import { ApiError } from "../../error/ApiError.js";
 import { mainDatabase } from "../../database/mainDatabase.js";
+import { loggerConsole } from "../../utils/logger.js";
 // Classes
 
 
@@ -45,6 +46,9 @@ class CommandController {
                     commandsData[command] = null
                     res.status(200).json(response)
                 })
+                .catch(err => {
+                    return next(err)
+                })
             } catch (err) {
                 return next(err)
             }
@@ -64,6 +68,9 @@ class CommandController {
                 commandsData[command] = null
                 res.status(200).json(response)
             })
+            .catch(err => {
+                return next(err)
+            })
         } catch (err) {
             return next(err)
         }
@@ -82,6 +89,9 @@ class CommandController {
             .then(response => {
                 commandsData[command] = null
                 res.status(200).json(response)
+            })
+            .catch(err => {
+                return next(err)
             })
         } catch (err) {
             return next(err)
@@ -107,6 +117,9 @@ class CommandController {
                 commandsData[command] = null
                 res.status(200).json(response)
             })
+            .catch(err => {
+                return next(err)
+            })
         } catch (err) {
             return next(err)
         }
@@ -123,6 +136,7 @@ class CommandController {
             // Wait response
             CommandController.waitForResponse(command.command)
             .then(async response => {
+                console.log(response)
                 commandsData[command] = null
                 const farmState = await mainDatabase.models.FARM_STATE.findOne()
                 // Update farmstate
@@ -134,6 +148,9 @@ class CommandController {
                     return next(ApiError.noneData("Unavailable to update farm state!"))
                 }
                 res.status(200).json(response)
+            })
+            .catch(err => {
+                return next(err)
             })
         } catch (err) {
             return next(err)
@@ -163,6 +180,9 @@ class CommandController {
                 }
                 res.status(200).json(response)
             })
+            .catch(err => {
+                return next(err)
+            })
         } catch (err) {
             return next(err)
         }
@@ -182,8 +202,14 @@ class CommandController {
             const command = new commandInterface("static", req.body, "reboot",)
             clientsData.app.send(JSON.stringify(command))
             // Wait response
-            const response = await CommandController.waitForResponse(command.command)
-            res.status(200).json(response)
+            await CommandController.waitForResponse(command.command)
+            .then(response => {
+                commandsData[command] = null
+                res.status(200).json(response)
+            })
+            .catch(err => {
+                return next(err)
+            })
         } catch (err) {
             return next(err)
         }

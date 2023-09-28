@@ -13,6 +13,8 @@ commandsRouter.get('/get-gpus-working', CommandController.getGpusWorking)
 commandsRouter.post("/set-gpus-settings", CommandController.setGpusSettings)
 // http://localhost:8200/api/commands/start-mining
 commandsRouter.post("/start-mining", CommandController.startMining)
+// http://localhost:8200/api/commands/stop-mining
+commandsRouter.post("/stop-mining", CommandController.stopMining)
 // http://localhost:8200/api/commands/reboot
 commandsRouter.post("/reboot", CommandController.reboot)
 
