@@ -23,20 +23,32 @@ const dynamicData = {
             result.totalSharesAccepted += gpu.shares.accepted
             result.totalSharesRejected += gpu.shares.rejected
             result.totalPower += gpu.powerUsage
-            miners.push(gpu.miner.uuid)
-            algorithms.push(gpu.algorithm)
-            coins.push({coin: gpu.cryptocurrency, algorithm: gpu.algorithm})
+            if (gpu.miner) {
+                miners.push(gpu.miner.uuid)
+            }
+            if (gpu.algorithms) {
+                algorithms.push(gpu.algorithm)
+            }
+            if (gpu.cryptocurrency && gpu.algorithm) {
+                coins.push({coin: gpu.cryptocurrency, algorithm: gpu.algorithm})
+            }
         });
         // CPU
         result.totalSharesAccepted += this.cpu.shares.accepted
         result.totalSharesRejected += this.cpu.shares.rejected
         result.totalPower += this.cpu.powerUsage
-        miners.push(this.cpu.miner.uuid)
-        algorithms.push(this.cpu.algorithm)
-        coins.push({coin: this.cpu.cryptocurrency, algorithm: this.cpu.algorithm})
+        if (this.cpu.miner) {
+            miners.push(this.cpu.miner.uuid)
+        }
+        if (this.cpu.algorithm) {
+            algorithms.push(this.cpu.algorithm)
+        }
+        if (this.cpu.cryptocurrency && this.cpu.cryptocurrency) {
+            coins.push({coin: this.cpu.cryptocurrency, algorithm: this.cpu.algorithm})
+        }
         // RAM
         this.rams.forEach(element => {
-            result.totalRam += element.free.value
+            result.totalRam += element.usage.value
         })
         // Sort arrays with miners/algorithms
         result.workingAlgorithms = [...new Set(algorithms)].length
@@ -53,6 +65,9 @@ const dynamicData = {
         result.coinsValue = Object.values(coinCount).map((item) => {
             return { coin: item.coin, algorithm: item.algorithm, value: item.value }
         });
+        console.timeLog(coins)
+        console.log(coinCount)
+        console.log(result.coinsValue)
         // Return result
         return result
     }
