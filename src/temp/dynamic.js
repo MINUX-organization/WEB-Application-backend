@@ -1,3 +1,5 @@
+import { staticData } from "./static.js"
+
 const dynamicData = {
     state: null,
     gpus : null,
@@ -20,6 +22,11 @@ const dynamicData = {
         const coins = []
         // GPU 
         this.gpus.forEach(gpu => {
+            staticData.gpus.forEach(gpuStatic => {
+                if (gpuStatic.uuid = gpu.uuid) {
+                    gpu.fullName = `${gpuStatic.information.manufacturer} ${gpuStatic.information.periphery}`
+                }
+            })
             result.totalSharesAccepted += gpu.shares.accepted
             result.totalSharesRejected += gpu.shares.rejected
             result.totalPower += gpu.powerUsage
