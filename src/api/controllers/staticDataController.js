@@ -1,11 +1,13 @@
 import { staticData } from "../../temp/static.js";
 import { ApiError } from "../../error/ApiError.js";
-
-import { mainDatabase } from "../../database/mainDatabase.js"
+import { clientsData } from "../../temp/clients.js";
+import { commandInterface } from "../../classes/commands.js";
 
 class StaticDataController {
     static getFullData(req, res, next) { // Reformated + worked
         if (!staticData.gpus || !staticData.cpu || !staticData.motherboard || !staticData.harddrives || !staticData.rams || !staticData.miners) {
+            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("Full data was not received from the server!"))
         }
         res.status(200).json(staticData)
@@ -13,6 +15,8 @@ class StaticDataController {
     }
     static async getGPUData(req, res, next) { // Reformated + worked 
         if (!staticData.gpus) {
+            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("GPU data was not received from the server!"))
         }
         
@@ -20,36 +24,48 @@ class StaticDataController {
     }
     static getCPUData(req, res, next) { // Reformated + worked
         if (!staticData.cpu) {
+            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("CPU data was not received from the server!"))
         }
         res.status(200).json({ cpu: staticData.cpu })
     }
     static getRAMData(req, res, next) { // Reformated + worked
         if (!staticData.rams) {
+            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("RAM data was not received from the server!"))
         }
         res.status(200).json({ rams: staticData.rams })
     }
     static getMotherboardData(req, res, next) { // Reformated + worked
         if (!staticData.motherboard) {
+            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("Motherboard data was not received from the server!"))
         }
         res.status(200).json({ motherboard: staticData.motherboard })
     }
     static getHarddriveData(req, res, next) { // Reformated + worked
         if (!staticData.harddrives) {
+            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("Harddrive data was not received from the server!"))
         }
         res.status(200).json({ harddrives: staticData.harddrives })
     }       
     static getMinersData(req, res, next) { // added + worked
         if (!staticData.miners) {
+            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("Miners data was not received from the server!"))
         }
         res.status(200).json({ miners: staticData.miners })
     }
     static getSystemInfoData(req, res, next) {
         if (!staticData.systemInfo || !staticData.motherboard || !staticData.cpu || !staticData.harddrives) {
+            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("System info was not received from the server!"))
         }
         res.status(200).json({ systemInfo: {
