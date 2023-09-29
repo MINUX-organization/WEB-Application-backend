@@ -78,7 +78,7 @@ const dynamicDataCM = Joi.object({
             }).required(),
             usage: Joi.object({
                 value: Joi.number().required(),
-                measurement: Joi.number().required()
+                measurement: Joi.string().required()
             }).required()
         }).required()
     ).required()

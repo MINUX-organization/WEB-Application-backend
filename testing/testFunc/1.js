@@ -1,7 +1,3 @@
-const obj = {
-    x: 20,
-    get y() {
-        return this.x;
-    }
-}
-console.log(obj.y)
+const ram = {foo:"bar"} + "ya eblan"
+
+console.log(ram)

@@ -82,18 +82,23 @@ class WebSocketServer {
                                             break
                                         case "getGpusSettings":
                                             commandsData.getGpusSettings = msgJSON.payload
+                                            loggerConsole.data('Command "GpusSettings" received on WebSocketServer!')
                                             break
                                         case "getGpusWorking":
                                             commandsData.getGpusWorking = msgJSON.payload
+                                            loggerConsole.data('Command "GpusWorking" received on WebSocketServer!')
                                             break
                                         case "setGpusSettings":
                                             commandsData.setGpusSettings = msgJSON.payload
+                                            loggerConsole.data('Command "setGpusSettings" received on WebSocketServer!')
                                             break
                                         case "startMining":
                                             commandsData.startMining = msgJSON.payload
+                                            loggerConsole.data('Command "startMining" received on WebSocketServer!')
                                             break
                                         case "stopMining":
                                             commandsData.stopMining = msgJSON.payload
+                                            loggerConsole.data('Command "stopMining "received on WebSocketServer!')
                                             break
                                         default:
                                             loggerConsole.error(`Received unknown command: ${msgJSON.command}`)
@@ -104,7 +109,7 @@ class WebSocketServer {
                                         case 'getDynamicData':
                                             // Validate dynamic data
                                             const validationDynamic = dynamicDataCM.validate(msgJSON.payload)
-                                            if (validationDynamic.error) {
+                                            if (validationDynamic.error) { 
                                                 if (clientsData.app) {
                                                     clientsData.app.send(JSON.stringify(validationDynamic.error.details[0].message))
                                                 }
@@ -124,8 +129,8 @@ class WebSocketServer {
                                                                 state: dynamicData.state,
                                                                 gpus: dynamicData.gpus,
                                                                 cpu: dynamicData.cpu,
-                                                                harddrive: dynamicData.harddrives,
-                                                                ram: dynamicData.rams,
+                                                                harddrives: dynamicData.harddrives,
+                                                                rams: dynamicData.rams,
                                                                 calculations: dynamicData.calculations
                                                             }
                                                         ))
@@ -133,15 +138,16 @@ class WebSocketServer {
                                                         loggerConsole.error("Unable to send dynamic data to client! Client is not connected")
                                                     }
                                                 } catch (error) {
-                                                    loggerConsole.error(`Error in creating dynamic data: ${e.message}`)
+                                                    loggerConsole.error(`Error in creating dynamic data: ${error.message}`)
                                                 }
                                                 try {
                                                     // Creating dynamic data in database
                                                     mainDatabase.createDynamicData()
                                                 } catch (error) {
-                                                    loggerConsole.error(`Unable to DB dynamic data!: ${e.message}`)
+                                                    loggerConsole.error(`Unable to DB dynamic data!: ${error.message}`)
                                                 }
                                             }
+                                            break
                                         default:
                                             loggerConsole.error(`Received unknown command: ${msgJSON.command}`)
                                             break

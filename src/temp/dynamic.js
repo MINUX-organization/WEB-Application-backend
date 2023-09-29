@@ -23,7 +23,7 @@ const dynamicData = {
         // GPU 
         this.gpus.forEach(gpu => {
             staticData.gpus.forEach(gpuStatic => {
-                if (gpuStatic.uuid = gpu.uuid) {
+                if (gpuStatic.uuid === gpu.uuid) {
                     gpu.fullName = `${gpuStatic.information.manufacturer} ${gpuStatic.information.periphery}`
                 }
             })
