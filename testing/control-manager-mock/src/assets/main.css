@@ -1,0 +1,16 @@
+@import './base.css';
+
+button {
+  height: 40px;
+}
+
+#app {
+  width: inherit;
+  height: inherit;
+  margin: 0 auto;
+  padding: 20px;
+  font-weight: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
