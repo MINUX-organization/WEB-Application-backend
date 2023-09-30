@@ -2,8 +2,13 @@
 import { useWebSocket } from '@vueuse/core'
 import { testStaticData } from "@/lib/testStaticData"
 import { testDynamicData } from "@/lib/testDynamicData"
+import { testCommandGetGpusWorking } from './lib/testCommandGetGpusWorking';
+import { testCommandGetGpusSettings } from './lib/testCommandGetGpusSettings'
 import { Button, Input, Switch, Space, Typography } from 'ant-design-vue'
 import { ref, watch } from 'vue';
+import { v4 as uuidv4 } from "uuid";
+import { testCommandReboot } from './lib/testCommandReboot';
+import { testCommandStartMining } from './lib/testCommandStartMining';
 
 const message = ref('')
 const outputRef = ref<HTMLDivElement | null>(null)
@@ -33,9 +38,46 @@ const wss = useWebSocket(import.meta.env.VITE_WS_BACKEND_URL, {
     log('ONLINE')
     ws.send(JSON.stringify("App"))
     ws.onclose = () => log('OFFLINE')
-    ws.onmessage = response => log(JSON.parse(response.data))
+    ws.onmessage = response => {
+      try {
+        const data = JSON.parse(response.data)
+        log(data)
+        staticCommandHandler(data)
+      } catch (e: any) {
+        log(response.data)
+      }
+    }
   }
 })
+
+const staticCommandHandler = (request: any) => {
+  if (typeof request !== 'object') return
+  if ('command' in request) {
+    request.responseId = uuidv4()
+    switch(request.command) {
+      case 'getGpusWorking':
+        wss.send(JSON.stringify({
+          ...request,
+          payload: testCommandGetGpusWorking
+        }))
+      case 'getGpusSettings':
+        wss.send(JSON.stringify({
+          ...request,
+          payload: testCommandGetGpusSettings
+        }))
+      case 'reboot':
+        wss.send(JSON.stringify({
+          ...request,
+          payload: testCommandReboot
+        }))
+      case 'startMining':
+        wss.send(JSON.stringify({
+          ...request,
+          payload: testCommandStartMining
+        }))
+    }
+  }
+}
 
 const sendCommand = () => {
   wss.send(JSON.stringify({
@@ -81,6 +123,7 @@ watch(timerDynamicDataEnabled, (value, oldValue, onCleanup) => {
     log('stoped sending dynamic data in loop')
     clearInterval(intervalId.value)
   }
+  onCleanup(() => clearInterval(intervalId.value))
 })
 
 </script>
