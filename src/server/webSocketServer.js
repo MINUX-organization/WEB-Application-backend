@@ -100,6 +100,13 @@ class WebSocketServer {
                                             commandsData.stopMining = msgJSON.payload
                                             loggerConsole.data('Command "stopMining "received on WebSocketServer!')
                                             break
+                                        case "reboot": 
+                                            commandsData.reboot = msgJSON.payload
+                                            loggerConsole.data('Command "reboot" received on WebSocketServer!')
+                                            break
+                                        case "powerOff":
+                                            commandsData.powerOff = msgJSON.payload
+                                            loggerConsole.data('Command "powerOff" received on WebSocketServer!')
                                         default:
                                             loggerConsole.error(`Received unknown command: ${msgJSON.command}`)
                                     }
