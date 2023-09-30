@@ -5,7 +5,8 @@ const commandsData = {
     'setGpusSettings': null,
     'startMining': null,
     'stopMining': null,
-    'reboot' : null
+    'reboot' : null,
+    'powerOff': null
 };
 
 export {

@@ -11,6 +11,7 @@ import { commandInterface } from "../../classes/commands.js";
 import { ApiError } from "../../error/ApiError.js";
 import { mainDatabase } from "../../database/mainDatabase.js";
 import { loggerConsole } from "../../utils/logger.js";
+import { cli } from "winston/lib/winston/config/index.js";
 // Classes
 
 
@@ -199,12 +200,34 @@ class CommandController {
         }
         try {
             // Sending command
-            const command = new commandInterface("static", req.body, "reboot",)
+            const command = new commandInterface("static", {}, "reboot")
             clientsData.app.send(JSON.stringify(command))
             // Wait response
             await CommandController.waitForResponse(command.command)
             .then(response => {
                 commandsData[command] = null
+                res.status(200).json(response)
+            })
+            .catch(err => {
+                return next(err)
+            })
+        } catch (err) {
+            return next(err)
+        }
+    }
+    static async powerOff(req, res, next) {
+        // Check if app is running
+        if (!clientsData.app) {
+            return next(ApiError.noneData("App is not connected"))
+        }
+        try {
+            // Sending command
+            const command = new commandInterface("static", req.body, "powerOff")
+            clientsData.app.send(JSON.stringify(command))
+            // Wait response
+            await CommandController.waitForResponse(command.command)
+            .then(response => {
+                commandData[command] = null
                 res.status(200).json(response)
             })
             .catch(err => {

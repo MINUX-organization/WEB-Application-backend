@@ -17,5 +17,7 @@ commandsRouter.post("/start-mining", CommandController.startMining)
 commandsRouter.post("/stop-mining", CommandController.stopMining)
 // http://localhost:8200/api/commands/reboot
 commandsRouter.post("/reboot", CommandController.reboot)
+// http://localhost:8200/api/commands/powerOff
+commandsRouter.post("/power-off", CommandController.powerOff)
 
 export { commandsRouter } 
