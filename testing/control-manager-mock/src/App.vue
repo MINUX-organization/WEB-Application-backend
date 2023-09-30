@@ -60,9 +60,9 @@ const sendTestStaticData = () => {
 const sendTestDynamicData = () => {
   wss.send(JSON.stringify({
     type: "dynamic", 
-    requestId: "string",
-    responseId: "string",
-    command: "dynamicData",
+    requestId: "TVWeaE4bP3bfGyccT0hSu7f1rgtkqCDJIfSzPswkE4AYL7IJMf42wRGF5gOqDCIY",
+    responseId: "YoLgYdRH2nuBAwtFv8ABeg8TOkvJG7Fw55CK93BeMmT6PHPyZzjgQjxQnZfgBKac",
+    command: "getDynamicData",
     payload: testDynamicData
   }))
 }
