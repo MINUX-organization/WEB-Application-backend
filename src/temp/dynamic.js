@@ -69,6 +69,7 @@ const dynamicData = {
             if (this.cpu && this.cpu.powerUsage) {
                 total += this.cpu.powerUsage;
             }
+            return total;
         }
         const calculateTotalRam = () => {
             let total = 0;
@@ -79,9 +80,45 @@ const dynamicData = {
                     }
                 }
             }
+            return total;
+        }
+        const calculateCoinsValue = () => {
+            const coins = {};
+            
+            if (this.gpus) {
+                for (const gpu of this.gpus) {
+                    if (gpu.cryptocurrency) {
+                        if (coins[gpu.cryptocurrency]) {
+                            coins[gpu.cryptocurrency].gpus.push(gpu.uuid)
+                            coins[gpu.cryptocurrency].algorithm = gpu.algorithm
+                        } else {
+                            coins[gpu.cryptocurrency] = {gpus: []}
+                            coins[gpu.cryptocurrency].gpus.push(gpu.uuid)
+                            coins[gpu.cryptocurrency].algorithm = gpu.algorithm
+                        }
+                    }
+                }
+            }
+            const coinsResult = [];
+            for (const coin in coins) {
+                let totalHashrate = 0;
+                coins[coin].gpus.forEach(gpuCoin => {
+                    this.gpus.forEach(gpuData => {
+                        if (gpuCoin == gpuData.uuid) {
+                            totalHashrate += gpuData.hashrate.value
+                        }
+                    })
+                })
+                coinsResult.push({
+                    coin: coin,
+                    algorithm: coins[coin].algorithm,
+                    value: totalHashrate
+                })
+            }
+            return coinsResult;
         }
         return {
-            coinsValue: null,
+            coinsValue: calculateCoinsValue(),
             totalSharesAccepted: calculateTotalSharesAccepted(),
             totalSharesRejected: calculateTotalSharesRejected(),
             workingAlgorithms: calculateWorkingAlgorithms(),
