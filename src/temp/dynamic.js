@@ -6,8 +6,7 @@ const dynamicData = {
     cpu : null,
     harddrives : null,
     rams : null,
-    get calculations() {
-        // Variables
+    get calculations() {    
         const calculateTotalSharesAccepted = () => {
             let total = 0;
             if (this.gpus) {
