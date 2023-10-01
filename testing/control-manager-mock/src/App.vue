@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { useWebSocket } from '@vueuse/core'
+import { useDark, useWebSocket } from '@vueuse/core'
 import { testStaticData } from "@/lib/testStaticData"
 import { testDynamicData } from "@/lib/testDynamicData"
 import { testCommandGetGpusWorking } from './lib/testCommandGetGpusWorking';
 import { testCommandGetGpusSettings } from './lib/testCommandGetGpusSettings'
-import { Button, Input, Switch, Space, Typography } from 'ant-design-vue'
+import { Button, Input, Switch, Space, Typography, ConfigProvider, theme } from 'ant-design-vue'
 import { ref, watch } from 'vue';
 import { v4 as uuidv4 } from "uuid";
 import { testCommandReboot } from './lib/testCommandReboot';
 import { testCommandStartMining } from './lib/testCommandStartMining';
+
+const isDark = useDark()
 
 const message = ref('')
 const outputRef = ref<HTMLDivElement | null>(null)
@@ -129,23 +131,25 @@ watch(timerDynamicDataEnabled, (value, oldValue, onCleanup) => {
 </script>
 
 <template>
-  <div class="form">
-    <Space.Compact compact>
-      <Input v-model:value="message" />
-      <Button @click="sendEnteredMessage" type="primary">Send message</Button>
-    </Space.Compact>
-    <div class="buttons">
-      <Button @click="sendTestStaticData" >send static data</Button>
-      <Button @click="sendTestDynamicData" >send dynamic data</Button>
-      <Button @click="testRequestGetFullData" >test request get full data (http)</Button>
-      <Button @click="sendCommand">test send command</Button>
-      <Space>
-        <Typography>send dynamic data periodically</Typography>
-        <Switch v-model:checked="timerDynamicDataEnabled" style="max-width: 20px; align-self: center;" />
-      </Space>
+  <ConfigProvider :theme="{ algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm }">
+    <div class="form">
+      <Space.Compact compact>
+        <Input v-model:value="message" />
+        <Button @click="sendEnteredMessage" type="primary">Send message</Button>
+      </Space.Compact>
+      <div class="buttons">
+        <Button @click="sendTestStaticData" >send static data</Button>
+        <Button @click="sendTestDynamicData" >send dynamic data</Button>
+        <Button @click="testRequestGetFullData" >test request get full data (http)</Button>
+        <Button @click="sendCommand">test send command</Button>
+        <Space>
+          <Typography>send dynamic data periodically</Typography>
+          <Switch v-model:checked="timerDynamicDataEnabled" style="max-width: 20px; align-self: center;" />
+        </Space>
+      </div>
     </div>
-  </div>
-  <div ref="outputRef" class="output" feedbackMessage rows="10"></div>
+    <div ref="outputRef" class="output" feedbackMessage rows="10"></div>
+  </ConfigProvider>
 </template>
 
 <style>
@@ -155,7 +159,7 @@ watch(timerDynamicDataEnabled, (value, oldValue, onCleanup) => {
     max-height: 200px;
   }
   .form {
-    background: #f3f3f3;
+    background: var(--color-background-soft);
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -185,7 +189,7 @@ watch(timerDynamicDataEnabled, (value, oldValue, onCleanup) => {
   }
 
   .output-item {
-    background: #eeeeee;
+    background: var(--color-background-soft);
     padding: 10px;
   }
 

@@ -66,10 +66,8 @@ html {
 body {
   width: inherit;
   height: inherit;
-  /* color: var(--color-text);
-  background: var(--color-background); */
-  background: white;
-  color: black;
+  color: var(--color-text);
+  background: var(--color-background);
   line-height: 1.6;
   font-family:
     Inter,
