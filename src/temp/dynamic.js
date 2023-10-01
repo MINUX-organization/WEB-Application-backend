@@ -39,7 +39,7 @@ const dynamicData = {
                 }
             }
             if (this.cpu && this.cpu.algorithm) {
-                algorithms.add(this.cpu.algorithm)
+                algorithms.push(this.cpu.algorithm)
             }
             return algorithms.length
         }
@@ -53,7 +53,7 @@ const dynamicData = {
                 }
             }
             if (this.cpu && this.cpu.miner) {
-                miners.add(this.cpu.miner)
+                miners.push(this.cpu.miner)
             }
             return miners.length
         }
