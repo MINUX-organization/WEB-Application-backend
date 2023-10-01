@@ -64,6 +64,8 @@ html {
 }
 
 body {
+  background: white;
+  color: black;
   width: inherit;
   height: inherit;
   color: var(--color-text);
