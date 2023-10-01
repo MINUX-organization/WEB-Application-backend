@@ -64,12 +64,12 @@ html {
 }
 
 body {
-  background: white;
-  color: black;
   width: inherit;
   height: inherit;
-  color: var(--color-text);
-  background: var(--color-background);
+  /* color: var(--color-text);
+  background: var(--color-background); */
+  background: white;
+  color: black;
   line-height: 1.6;
   font-family:
     Inter,
