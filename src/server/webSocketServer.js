@@ -41,7 +41,6 @@ class WebSocketServer {
         this.webSocketServer.on('connection', webSocket => {
             webSocket.on('message', async msg => {
                 try {
-                    
                     const msgJSON = JSON.parse(msg)
                     switch (msgJSON.hasOwnProperty("type") && msgJSON.hasOwnProperty("command")) {
                         case true:
@@ -135,7 +134,7 @@ class WebSocketServer {
                                                         clientsData.front.send(JSON.stringify(
                                                             {
                                                                 state: dynamicData.state,
-                                                                gpus: dynamicData.gpus,
+                                                                gpus: dynamicData._gpus,
                                                                 cpu: dynamicData.cpu,
                                                                 harddrives: dynamicData.harddrives,
                                                                 rams: dynamicData.rams,
