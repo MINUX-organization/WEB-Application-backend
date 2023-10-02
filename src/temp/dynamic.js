@@ -8,17 +8,21 @@ const dynamicData = {
     rams : null,
     set gpus(inputGpus) {
         if (inputGpus) {
-            for (const gpu of inputGpus) {
-                if (staticData.gpus) {
-                    const staticGpu = staticData.gpus.find(staticGpu => staticGpu.uuid === gpu.uuid);
-                    if (staticGpu) {
-                        gpu.fullName = staticGpu.information.manufacturer;
-                    } else {
-                        gpu.fullName = 'undefined';
-                    }
-                } else (
-                    gpu.fullName = 'undefined'
-                )
+            if (staticData.gpus) {
+                for (const gpu of inputGpus) {
+                    if (staticData.gpus) {
+                        const staticGpu = staticData.gpus.find(staticGpu => staticGpu.uuid === gpu.uuid);
+                        if (staticGpu) {
+                            gpu.fullName = staticGpu.information.manufacturer;
+                        } else {
+                            gpu.fullName = 'undefined';
+                        }
+                    } else (
+                        gpu.fullName = 'undefined'
+                    )
+                }
+            } else {
+                gpu.fullName = 'undefined';
             }
         }
         this._gpus = inputGpus;
