@@ -11,10 +11,15 @@ const dynamicData = {
             if (staticData.gpus) {
                 const staticGpu = staticData.gpus.find(staticGpu => staticGpu.uuid === inputGpu.uuid);
                 if (staticGpu) {
-                    console.log(true)
+                    inputGpu.fullName = `${staticGpu.information.manufacturer} ${staticGpu.information.periphery}`
+                } else {
+                    inputGpu.fullName = 'undefined'
                 }
+            } else {
+                gpu.fullName = 'undefined'
             }
         }
+        console.log(inputGpus)
     },
     get calculations() {    
         const calculateTotalSharesAccepted = () => {
