@@ -134,7 +134,7 @@ class WebSocketServer {
                                                         clientsData.front.send(JSON.stringify(
                                                             {
                                                                 state: dynamicData.state,
-                                                                gpus: dynamicData._gpus,
+                                                                gpus: dynamicData.gpus,
                                                                 cpu: dynamicData.cpu,
                                                                 harddrives: dynamicData.harddrives,
                                                                 rams: dynamicData.rams,

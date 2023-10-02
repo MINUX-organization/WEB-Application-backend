@@ -2,30 +2,19 @@ import { staticData } from "./static.js"
 
 const dynamicData = {
     state: null,
-    _gpus : null,
+    gpus : null,
     cpu : null,
     harddrives : null,
     rams : null,
     set gpus(inputGpus) {
-        if (inputGpus) {
+        for (const inputGpu of inputGpus) {
             if (staticData.gpus) {
-                for (const gpu of inputGpus) {
-                    if (staticData.gpus) {
-                        const staticGpu = staticData.gpus.find(staticGpu => staticGpu.uuid === gpu.uuid);
-                        if (staticGpu) {
-                            gpu.fullName = staticGpu.information.manufacturer;
-                        } else {
-                            gpu.fullName = 'undefined';
-                        }
-                    } else (
-                        gpu.fullName = 'undefined'
-                    )
+                const staticGpu = staticData.gpus.find(staticGpu => staticGpu.uuid === inputGpu.uuid);
+                if (staticGpu) {
+                    console.log(true)
                 }
-            } else {
-                gpu.fullName = 'undefined';
             }
         }
-        this._gpus = inputGpus;
     },
     get calculations() {    
         const calculateTotalSharesAccepted = () => {
