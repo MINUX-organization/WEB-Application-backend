@@ -41,6 +41,7 @@ class WebSocketServer {
         this.webSocketServer.on('connection', webSocket => {
             webSocket.on('message', async msg => {
                 try {
+                    
                     const msgJSON = JSON.parse(msg)
                     switch (msgJSON.hasOwnProperty("type") && msgJSON.hasOwnProperty("command")) {
                         case true:

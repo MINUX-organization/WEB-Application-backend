@@ -25,9 +25,11 @@ class CommandController {
                 }, 3000)
                 const interval = setInterval(() => {
                     if (commandsData[command] != null) {
+                        const response = commandsData[command]
+                        commandsData[command] = null
                         clearInterval(interval)
                         clearTimeout(timeout)
-                        resolve(commandsData[command])
+                        resolve(response)
                     }
                 }, 10)
             })

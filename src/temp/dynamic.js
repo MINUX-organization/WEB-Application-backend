@@ -6,6 +6,25 @@ const dynamicData = {
     cpu : null,
     harddrives : null,
     rams : null,
+    set gpus(gpus) {
+        if (gpus) {
+            gpus.forEach(gpu => {
+                if (staticData.gpus) {
+                    for (const gpuStatic of staticData.gpus) {
+                        if (gpuStatic.uuid = gpu.uuid) {
+                            gpu.fullName = `${gpuStatic.information.manufacturer}`
+                        }
+                        else {
+                            gpu.fullName = 'undefined'
+                        }
+                    }
+                } else {
+                    gpu.fullName = 'undefined'
+                }
+            })
+        }
+        this.gpus = gpus;
+    },
     get calculations() {    
         const calculateTotalSharesAccepted = () => {
             let total = 0;
