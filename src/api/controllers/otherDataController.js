@@ -4,7 +4,6 @@ import {
     getGPUPresetsSchema,
     getGPUSetupSchema,
 } from "../../validation/endpoints/otherData.js";
-
 import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
 
@@ -252,6 +251,79 @@ class OtherDataController {
             }
             // Return
             res.status(200).json({ "cpuSetup" : reformatedCpuSetup });
+        } catch (err) {
+            return next(err)
+        }
+    }
+    static async getCreateFlightSheetOptions(req, res, next) {
+        try {
+            const cryptocurrencies = await mainDatabase.models.CRYPTOCURRENCIEs.findAll()
+            const wallets = await mainDatabase.models.WALLETs.findAll()
+            const pools = await mainDatabase.models.POOLs.findAll()
+            const algorithms = await mainDatabase.models.ALGORITHMs.findAll()
+            const miners = await mainDatabase.models.MINERs.findAll()
+            const algorithmsMiners = await mainDatabase.models.ALGORITHM_MINER.findAll()
+            // Reformat
+            const reformatedCryptocurrencies = []; 
+            const reformatedWallets = []; 
+            const reformatedPools = []; 
+            const reformatedAlgorithms = [];
+            const reformatedMiners = []; 
+            const reformatedAlgorithmMiner = []; 
+            cryptocurrencies.forEach(cryptocurrency => {
+                reformatedCryptocurrencies.push({
+                    id: cryptocurrency.id,
+                    name: cryptocurrency.name,
+                    fullName: cryptocurrency.full_name,
+                    algorithmId: cryptocurrency.algorithm_id
+                })
+            })
+            wallets.forEach(wallet => {
+                reformatedWallets.push({
+                    id: wallet.id,
+                    name: wallet.name,
+                    source: wallet.source,
+                    address: wallet.address,
+                    cryptocurrencyId: wallet.cryptocurrency_id
+                })
+            })
+            pools.forEach(pool => {
+                reformatedPools.push({
+                    id: pool.id,
+                    host: pool.host,
+                    port: pool.port,
+                    cryptocurrencyId: pool.cryptocurrency_id
+                })
+            })
+            algorithms.forEach(algorithm => {
+                reformatedAlgorithms.push({
+                    id: algorithm.id,
+                    name: algorithm.name,
+                })
+            })
+            miners.forEach(miner => {
+                reformatedMiners.push({
+                    id: miner.id,
+                    name: miner.name,
+                    fullName: miner.full_name,
+                })
+            })
+            algorithmsMiners.forEach(algorithmMiner => {
+                reformatedAlgorithmMiner.push({
+                    id: algorithmMiner.id,
+                    algorithmId: algorithmMiner.algorithm_id,
+                    minerId: algorithmMiner.miner_id
+                })
+            })
+            // Return
+            res.status(200).json({
+                cryptocurrencies: reformatedCryptocurrencies,
+                wallets: reformatedWallets,
+                pools: reformatedPools,
+                algorithms: reformatedAlgorithms,
+                miners: reformatedMiners,
+                algorithmMiner: reformatedAlgorithmMiner
+            })
         } catch (err) {
             return next(err)
         }

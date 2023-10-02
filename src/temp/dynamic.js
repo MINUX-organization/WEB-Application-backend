@@ -2,7 +2,7 @@ import { staticData } from "./static.js"
 
 const dynamicData = {
     state: null,
-    gpus : null,
+    _gpus : null,
     cpu : null,
     harddrives : null,
     rams : null,
@@ -16,10 +16,13 @@ const dynamicData = {
                     inputGpu.fullName = 'undefined'
                 }
             } else {
-                gpu.fullName = 'undefined'
+                inputGpu.fullName = 'undefined'
             }
         }
-        console.log(inputGpus)
+        this._gpus = inputGpus;
+    },
+    get gpus() {
+        return this._gpus;
     },
     get calculations() {    
         const calculateTotalSharesAccepted = () => {
