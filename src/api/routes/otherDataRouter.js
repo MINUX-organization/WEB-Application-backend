@@ -21,5 +21,7 @@ otherDataRouter.get("/get-gpu-setup", OtherDataController.getGPUSetup);
 otherDataRouter.get("/get-gpu-presets", OtherDataController.getGPUPresets);
 // http://localhost:8200/api/other_data/get-cpu-setup
 otherDataRouter.get("/get-cpu-setup", OtherDataController.getCPUSetup);
+// http://localhost:8200/api/other_data/get-create-flight-sheet-options
+otherDataRouter.get("/get-create-flight-sheet-options", OtherDataController.getCreateFlightSheetOptions)
 
 export { otherDataRouter }
