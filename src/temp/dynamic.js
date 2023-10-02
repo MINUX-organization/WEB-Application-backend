@@ -6,24 +6,18 @@ const dynamicData = {
     cpu : null,
     harddrives : null,
     rams : null,
-    set gpus(gpus) {
-        if (gpus) {
-            gpus.forEach(gpu => {
-                if (staticData.gpus) {
-                    for (const gpuStatic of staticData.gpus) {
-                        if (gpuStatic.uuid = gpu.uuid) {
-                            gpu.fullName = `${gpuStatic.information.manufacturer}`
-                        }
-                        else {
-                            gpu.fullName = 'undefined'
-                        }
-                    }
+    set gpus(inputGpus) {
+        if (inputGpus) {
+            for (const gpu of inputGpus) {
+                const staticGpu = staticData.gpus.find(staticGpu => staticGpu.uuid === gpu.uuid);
+                if (staticGpu) {
+                    gpu.fullName = staticGpu.information.manufacturer;
                 } else {
-                    gpu.fullName = 'undefined'
+                    gpu.fullName = 'undefined';
                 }
-            })
+            }
         }
-        this.gpus = gpus;
+        this._gpus = inputGpus;
     },
     get calculations() {    
         const calculateTotalSharesAccepted = () => {
