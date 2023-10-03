@@ -337,6 +337,7 @@ class OtherDataController {
                 const miner = await mainDatabase.models.MINERs.findOne({where: {id: flightSheet.miner_id}});
                 const wallet = await mainDatabase.models.WALLETs.findOne({where: {id: flightSheet.wallet_id}});
                 const pool = await mainDatabase.models.POOLs.findOne({where: {id: flightSheet.pool_id}});
+                const algorithm = await mainDatabase.models.ALGORITHMs.findOne({where: {id: cryptocurrency.algorithm_id}})
                 reformatedFlightSheets.push({
                     id: flightSheet.id,
                     name: flightSheet.name,
@@ -344,7 +345,10 @@ class OtherDataController {
                         id: cryptocurrency.id,
                         name: cryptocurrency.name,
                         fullName: cryptocurrency.full_name,
-                        algorithmId: cryptocurrency.algorithm_id
+                        algorithm: {
+                            id: algorithm.id,
+                            name: algorithm.name,
+                        }
                     },
                     miner: {
                         id: miner.id,
