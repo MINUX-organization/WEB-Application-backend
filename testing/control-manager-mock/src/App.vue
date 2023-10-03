@@ -9,6 +9,7 @@ import { ref, watch } from 'vue';
 import { v4 as uuidv4 } from "uuid";
 import { testCommandReboot } from './lib/testCommandReboot';
 import { testCommandStartMining } from './lib/testCommandStartMining';
+import { backendUrl, backendUrlWs } from './lib/constants';
 
 const isDark = useDark()
 
@@ -35,7 +36,7 @@ const log = <T extends Object | string>(message: T) => {
   }
 }
 
-const wss = useWebSocket(import.meta.env.VITE_WS_BACKEND_URL, {
+const wss = useWebSocket(backendUrlWs, {
   onConnected: (ws) => {
     log('ONLINE')
     ws.send(JSON.stringify("App"))
@@ -112,7 +113,7 @@ const sendTestDynamicData = () => {
 }
 
 const testRequestGetFullData = () => {
-  fetch(`${import.meta.env.VITE_BACKEND_URL}/staticData/getFullData`)
+  fetch(`${backendUrl}/staticData/getFullData`)
     .then(response => log(response.json()))
 }
 
