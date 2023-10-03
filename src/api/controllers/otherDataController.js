@@ -15,7 +15,7 @@ class OtherDataController {
             // Check if miners exists
             const miners = await mainDatabase.models.MINERs.findAll();
             if (miners.length == 0) {
-                return next(ApiError.noneData("Miners not found"));
+                return res.status(200).json({ "miners": [] });
             }
             // Reformat response
             const reformatedMiners = []
@@ -40,7 +40,7 @@ class OtherDataController {
             // Check if algorithms exists
             const algorithms = await mainDatabase.models.ALGORITHMs.findAll()
             if (algorithms.length == 0) {
-                return next(ApiError.noneData("Algorithms not found"))
+                return res.status(200).json({ "algorithms": [reformatedAlgorithms] })
             }
             // Reformat response
             const reformatedAlgorithms = []
@@ -64,7 +64,7 @@ class OtherDataController {
             // Check if cryptocurrencies exists
             const cryptocurrencies = await mainDatabase.models.CRYPTOCURRENCIEs.findAll();
             if (cryptocurrencies.length == 0) {
-                return next(ApiError.noneData("Cryptocurrencies not found"));
+                return res.status(200).json({ "cryptocurrencies": [] })
             }
             // Reformat response
             const reformatedCryptocurrencies = []
@@ -90,7 +90,7 @@ class OtherDataController {
             // Check if wallets exist
             const wallets = await mainDatabase.models.WALLETs.findAll();
             if (wallets.length == 0) {
-                return next(ApiError.noneData("Wallets not found"));
+                return res.status(200).json({ "wallets": [] });
             }
             // Reformat response
             const reformatedWallets = []
@@ -117,7 +117,7 @@ class OtherDataController {
             // Check if pools exists
             const pools = await mainDatabase.models.POOLs.findAll();
             if (pools.length == 0) {
-                return next(ApiError.noneData("Pools not found"));
+                return res.status(200).json({ "pools": [] });
             }
             // Reformat response
             const reformatedPools = []
@@ -143,7 +143,7 @@ class OtherDataController {
             // Check if flight sheets exist
             const flightSheets = await mainDatabase.models.FLIGHT_SHEETs.findAll();
             if (flightSheets.length == 0) {
-                return next(ApiError.noneData("Flight Sheets not found"));
+                return res.status(200).json({ "flightSheets": [] });
             }
             // Reformat response
             const reformatedFlightSheets = []
@@ -174,9 +174,9 @@ class OtherDataController {
         // Get GPU setup
         try {
             // Check if GPU setup exists
-            const gpuSetup = await mainDatabase.models.GPU_SETUP.findOne({ where: { id: req.body.gpuId } });
+            const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { id: req.body.gpuId } });
             if (!gpuSetup) {
-                return next(ApiError.noneData("GPU Setup not found"));
+                return res.status(200).json({ "gpuSetup":  null});
             }
             // Reformat response
             const reformatedGpuSetup = {
@@ -239,7 +239,7 @@ class OtherDataController {
             // Check if cpu setup exists
             const cpuSetup = await mainDatabase.models.CPU_SETUP.findOne({ where: { id: req.body.cpuId } });
             if (!cpuSetup) {
-                return next(ApiError.noneData("CPU Setup not found"));
+                return res.status(200).json({ "cpuSetup": null})
             }
             // Reformat response
             const reformatedCpuSetup = {
@@ -327,6 +327,44 @@ class OtherDataController {
         } catch (err) {
             return next(err)
         }
+    }
+    static async getFullFilledFlightSheets(req, res, next) {
+        try {
+            const flightSheets = await mainDatabase.models.FLIGHT_SHEETs.findAll()
+            const reformatedFlightSheets = []
+            for (const flightSheet of flightSheets) {
+                const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({where: {id: flightSheet.cryptocurrency_id}})
+                const miner = await mainDatabase.models.MINERs.findOne({where: {id: flightSheet.miner_id}});
+                const wallet = await mainDatabase.models.WALLETs.findOne({where: {id: flightSheet.wallet_id}});
+                const pool = await mainDatabase.models.POOLs.findOne({where: {id: flightSheet.pool_id}});
+                reformatedFlightSheets.push({
+                    id: flightSheet.id,
+                    name: flightSheet.name,
+                    cryptocurrency: cryptocurrency,
+                    miner: miner,
+                    wallet: wallet,
+                    pool: pool
+                })
+            }
+            res.status(200).json({"flightSheets": reformatedFlightSheets})
+        } catch (err) {
+            return next(err)
+        }
+    }
+    static async getFullFilledWallets(req, res, next) {
+        const wallets = await mainDatabase.models.WALLETs.findAll()
+        const reformatedWallets = []
+        for (const wallet of wallets) {
+            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({where: {id: wallet.cryptocurrency_id}})
+            reformatedWallets.push({
+                id: wallet.id,
+                name: wallet.name,
+                source: wallet.source,
+                address: wallet.address,
+                cryptocurrency: cryptocurrency
+            })
+        }
+        res.status(200).json({"wallets": reformatedWallets})
     }
 }
 

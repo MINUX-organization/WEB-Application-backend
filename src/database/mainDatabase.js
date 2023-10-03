@@ -185,33 +185,33 @@ class Database {
                         loggerConsole.error(e)
                     }
                     break
-                // case 'miners' :
-                //     try {
-                //         staticData.miners.forEach(async miner => {
-                //             const checkMiner = await this.db.models.MINERs.findOne({where: {name: miner.name, full_name: miner.fullName}})
-                //             if (!checkMiner) {
-                //                 const minerDB = await this.db.models.MINERs.create({
-                //                     name: miner.name,
-                //                     full_name: miner.fullName
-                //                 })
-                //                 loggerConsole.data(`Received miner: ${miner.name}`)
-                //             }
-                //             miner.algorithms.forEach(async algorithm => {
-                //                 console.log(algorithm)
-                //                 const checkAlgorithm = await this.db.models.ALGORITHMs.findOne({where: {name: algorithm}})
-                //                 if (!checkAlgorithm) {
-                //                     loggerConsole.data(`Received algorithm: ${algorithm}`)
-                //                     await this.db.models.ALGORITHMs.create({
-                //                         name: algorithm
-                //                     })
-                //                 }
-                //             })
-                //         })
-                //     }
-                //     catch (e) {
-                //         loggerConsole.error(e)
-                //     }
-                //     break
+                // TODO:
+                case 'miners' :
+                    try {
+                        for (const miner of staticData.miners) {
+                            const [minerDB, _] = await this.db.models.MINERs.findOrCreate({where: {name: miner.name, full_name: miner.fullName}})
+                            loggerConsole.data(`Received miner: ${miner.name}`)
+                            // if (!checkMiner) {
+                            //     const minerDB = await this.db.models.MINERs.create({where: {name: miner.name, full_name: miner.fullName}})
+                            //     loggerConsole.data(`Received miner: ${miner.name}`)
+                            // }
+                            for (const algorithm of miner.algorithms) {
+                                const [algorithmDB, _] = await this.db.models.ALGORITHMs.findOrCreate({where: {name: algorithm}})
+                                loggerConsole.data(`Received algorithm: ${algorithm}`)
+                                // if (!checkAlgorithm) {
+                                //     const algorithmDB = await this.db.models.ALGORITHMs.create({name: algorithm})
+                                //     loggerConsole.data(`Received algorithm: ${algorithm}`)
+                                // }
+                                // if (minerDB && algorithmDB) {
+                                    await this.db.models.ALGORITHM_MINER.findOrCreate({where: {miner_id: minerDB.id, algorithm_id: algorithmDB.id}})
+                                // }
+                            }
+                        }
+                    }
+                    catch (error) {
+                        console.log(error)
+                    }
+                    break
             }
         }
     }

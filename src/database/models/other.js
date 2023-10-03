@@ -24,11 +24,11 @@ export default function initOtherModels(db) {
             autoIncrement: true,
         },
         name: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(128),
             defaultValue: "minux"
         },
         password: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(128),
             defaultValue: "minux"
         }
     }, {
@@ -59,7 +59,7 @@ export default function initOtherModels(db) {
             autoIncrement: true,
         },
         token: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(128),
         },
         expires: {
             type: DataTypes.DATE,
@@ -85,7 +85,7 @@ export default function initOtherModels(db) {
             type: DataTypes.STRING(15),
         },
         full_name: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(128),
         },
         algorithm_id: {
             type: DataTypes.SMALLINT,
@@ -105,7 +105,7 @@ export default function initOtherModels(db) {
             autoIncrement: true,
         },
         host: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(128),
         },
         port: {
             type: DataTypes.INTEGER,
@@ -128,13 +128,13 @@ export default function initOtherModels(db) {
             autoIncrement: true,
         },
         name: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(128),
         },
         source: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(128),
         },
         address: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(128),
         },
         cryptocurrency_id: {
             type: DataTypes.SMALLINT,
@@ -154,7 +154,7 @@ export default function initOtherModels(db) {
             autoIncrement: true,
         },
         name: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(128),
         },
     }, {
         sequelize: db,
@@ -191,10 +191,10 @@ export default function initOtherModels(db) {
             autoIncrement: true
         },
         name: {
-            type: DataTypes.STRING(30)
+            type: DataTypes.STRING(128)
         },
         full_name: {
-            type: DataTypes.STRING(30)
+            type: DataTypes.STRING(128)
         } 
     }, {
         sequelize: db,
