@@ -345,10 +345,7 @@ class OtherDataController {
                         id: cryptocurrency.id,
                         name: cryptocurrency.name,
                         fullName: cryptocurrency.full_name,
-                        algorithm: {
-                            id: algorithm.id,
-                            name: algorithm.name,
-                        }
+                        algorithmId: cryptocurrency.algorithm_id,
                     },
                     miner: {
                         id: miner.id,
@@ -367,6 +364,10 @@ class OtherDataController {
                         host: pool.host,
                         port: pool.port,
                         cryptocurrencyId: pool.cryptocurrency_id
+                    },
+                    algorithm: {
+                        id: algorithm.id,
+                        name: algorithm.name,
                     }
                 })
             }
