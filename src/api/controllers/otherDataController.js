@@ -340,10 +340,30 @@ class OtherDataController {
                 reformatedFlightSheets.push({
                     id: flightSheet.id,
                     name: flightSheet.name,
-                    cryptocurrency: cryptocurrency,
-                    miner: miner,
-                    wallet: wallet,
-                    pool: pool
+                    cryptocurrency: {
+                        id: cryptocurrency.id,
+                        name: cryptocurrency.name,
+                        fullName: cryptocurrency.full_name,
+                        algorithmId: cryptocurrency.algorithm_id
+                    },
+                    miner: {
+                        id: miner.id,
+                        name: miner.name,
+                        fullName: miner.full_name,
+                    },
+                    wallet: {
+                        id: wallet.id,
+                        name: wallet.name,
+                        source: wallet.source,
+                        address: wallet.address,
+                        cryptocurrencyId: wallet.cryptocurrency_id
+                    },
+                    pool: {
+                        id: pool.id,
+                        host: pool.host,
+                        port: pool.port,
+                        cryptocurrencyId: pool.cryptocurrency_id
+                    }
                 })
             }
             res.status(200).json({"flightSheets": reformatedFlightSheets})
@@ -361,7 +381,12 @@ class OtherDataController {
                 name: wallet.name,
                 source: wallet.source,
                 address: wallet.address,
-                cryptocurrency: cryptocurrency
+                cryptocurrency: {
+                    id: cryptocurrency.id,
+                    name: cryptocurrency.name,
+                    fullName: cryptocurrency.full_name,
+                    algorithmId: cryptocurrency.algorithm_id
+                },
             })
         }
         res.status(200).json({"wallets": reformatedWallets})
