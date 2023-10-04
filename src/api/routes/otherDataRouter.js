@@ -31,4 +31,6 @@ otherDataRouter.get("/get-full-filled-wallets", OtherDataController.getFullFille
 otherDataRouter.get("/get-gpus-for-flight-sheets", OtherDataController.getGpusForFlightSheets)
 // 
 otherDataRouter.post("/edit-gpus-for-flight-sheets", OtherDataController.editGpusForFlightSheets)
+//
+otherDataRouter.get("/get-settings-gpus", OtherDataController.getSettingsGpus)
 export { otherDataRouter }

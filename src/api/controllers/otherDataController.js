@@ -1,3 +1,5 @@
+// Libs
+import _ from 'lodash';
 // Validations
 import {
     getCPUSetupSchema,
@@ -448,6 +450,52 @@ class OtherDataController {
                 } 
             }
         res.sendStatus(200)
+        } catch (error) {
+            return next(error)
+        }
+    }
+    static async getSettingsGpus(req, res, next) {
+        try {
+            const gpus = await mainDatabase.models.GPUs.findAll()
+            const reformatedGpus = _.compact(await Promise.all(gpus.map(async gpu => {
+                const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where:{gpu_uuid: gpu.uuid}})
+                if (gpuSetup) {
+                    if (!staticData.gpus) {
+                        throw new Error(`Couldn't find static data!`)
+                    }
+                    const gpuStatic = staticData.gpus.find(item =>  item.uuid === gpu.uuid)
+                    return {
+                        gpuId: gpu.id,
+                        gpuSetupId: gpuSetup.id,
+                        name: gpuStatic ? `${gpuStatic.information.manufacturer} ${gpuStatic.information.periphery}` : null,
+                        memoryClock: gpuSetup.memory_clock,
+                        coreClock: gpuSetup.core_clock,
+                        powerLimit: gpuSetup.power_limit,
+                        fanSpeed: gpuSetup.fan_speed,
+                        critTemp: gpuSetup.crit_temp, 
+                        flightSheetId: gpuSetup.flight_sheet_id,
+                    }
+                }
+                return null
+            })));
+            // for (const gpu of gpus) {
+            //     const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where:{gpu_uuid: gpu.uuid}})
+            //     if (gpuSetup) {
+            //         const gpuStatic = staticData.find(item =>  item.uuid === gpu.uuid)
+            //         reformatedGpus.push({
+            //             gpuId: gpu.id,
+            //             gpuSetupId: gpuSetup.id,
+            //             name: gpuStatic ? `${gpuStatic.information.manufacturer} ${gpuStatic.information.periphery}` : null,
+            //             memoryClock: gpuSetup.memory_clock,
+            //             coreClock: gpuSetup.core_clock,
+            //             powerLimit: gpuSetup.power_limit,
+            //             fanSpeed: gpuSetup.fan_speed,
+            //             critTemp: gpuSetup.crit_temp,
+            //             flightSheetId: gpuSetup.flight_sheet_id,
+            //         })
+            //     }
+            // }
+            res.status(200).json({settingGpus: reformatedGpus})
         } catch (error) {
             return next(error)
         }
