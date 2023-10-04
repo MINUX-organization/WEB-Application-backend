@@ -9,9 +9,16 @@ const getGPUPresetsSchema = Joi.object({
 const getCPUSetupSchema = Joi.object({
     cpuId: Joi.number().required(),
 });
+const editGpusForFlightSheetsSchema = Joi.object({
+    gpusForFlightSheets: Joi.array().items(Joi.object({
+        id: Joi.number().required(),
+        flightSheetId: Joi.number().allow(null).required()
+    })).required()
+})
 
 export { 
     getGPUSetupSchema, 
     getGPUPresetsSchema, 
-    getCPUSetupSchema 
+    getCPUSetupSchema,
+    editGpusForFlightSheetsSchema
 };

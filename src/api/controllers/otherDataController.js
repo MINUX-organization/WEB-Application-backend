@@ -3,10 +3,11 @@ import {
     getCPUSetupSchema,
     getGPUPresetsSchema,
     getGPUSetupSchema,
+    editGpusForFlightSheetsSchema
 } from "../../validation/endpoints/otherData.js";
 import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
-
+import { staticData } from "../../temp/static.js";
 
 class OtherDataController {
     static async getFullMiners(req, res, next) { // reformated + worked
@@ -377,24 +378,79 @@ class OtherDataController {
         }
     }
     static async getFullFilledWallets(req, res, next) {
-        const wallets = await mainDatabase.models.WALLETs.findAll()
-        const reformatedWallets = []
-        for (const wallet of wallets) {
-            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({where: {id: wallet.cryptocurrency_id}})
-            reformatedWallets.push({
-                id: wallet.id,
-                name: wallet.name,
-                source: wallet.source,
-                address: wallet.address,
-                cryptocurrency: {
-                    id: cryptocurrency.id,
-                    name: cryptocurrency.name,
-                    fullName: cryptocurrency.full_name,
-                    algorithmId: cryptocurrency.algorithm_id
-                },
-            })
+        try {
+            const wallets = await mainDatabase.models.WALLETs.findAll()
+            const reformatedWallets = []
+            for (const wallet of wallets) {
+                const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({where: {id: wallet.cryptocurrency_id}})
+                reformatedWallets.push({
+                    id: wallet.id,
+                    name: wallet.name,
+                    source: wallet.source,
+                    address: wallet.address,
+                    cryptocurrency: {
+                        id: cryptocurrency.id,
+                        name: cryptocurrency.name,
+                        fullName: cryptocurrency.full_name,
+                        algorithmId: cryptocurrency.algorithm_id
+                    },
+                })
+            }
+            res.status(200).json({"wallets": reformatedWallets})
+        } catch (error) {
+            return next(error)
         }
-        res.status(200).json({"wallets": reformatedWallets})
+    }
+    static async getGpusForFlightSheets(req, res, next) {
+        try {
+            const gpus = await mainDatabase.models.GPUs.findAll()
+            const reformatedGpus = [];
+            if (gpus) {
+                for (const gpu of gpus) {
+                    if (staticData.gpus) {
+                        const staticGpu = staticData.gpus.find(item => item.uuid == gpu.uuid);
+                        if (staticGpu) {
+                            gpu.dataValues.name = `${staticGpu.information.manufacturer} ${staticGpu.information.periphery}`
+                        } else {
+                            gpu.dataValues.name = null
+                        }
+                    }
+                    else {
+                        gpu.dataValues.name = null
+                    }
+                    const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
+                    if (gpuSetup) {
+                        gpu.dataValues.flightSheetId = gpuSetup.flight_sheet_id
+                    } else {
+                        gpu.dataValues.flightSheetId = null;
+                    }
+                    const {uuid, createdAt, updatedAt ,...reformatedGpu} = gpu.dataValues;
+                    reformatedGpus.push(reformatedGpu) 
+                }
+            }
+            res.status(200).json({gpusForFlightSheets: reformatedGpus})
+        } catch (error) {
+            return next(error)
+        }
+    }
+    static async editGpusForFlightSheets(req, res, next) {
+        const { error } = editGpusForFlightSheetsSchema.validate(req.body);
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message));
+        }
+        try {
+            for (const gpuForFlightSheet of req.body.gpusForFlightSheets) {
+                const gpu = await mainDatabase.models.GPUs.findOne({where: {id: gpuForFlightSheet.id}})
+                if (gpu) {
+                    const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
+                    gpuSetup.flight_sheet_id = gpuForFlightSheet.flightSheetId;
+                    await gpuSetup.save();
+                } 
+            }
+        res.sendStatus(200)
+        } catch (error) {
+            return next(error)
+        }
     }
 }
 

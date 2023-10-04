@@ -27,5 +27,8 @@ otherDataRouter.get("/get-create-flight-sheet-options", OtherDataController.getC
 otherDataRouter.get("/get-full-filled-flight-sheets", OtherDataController.getFullFilledFlightSheets)
 // 
 otherDataRouter.get("/get-full-filled-wallets", OtherDataController.getFullFilledWallets)
-
+//
+otherDataRouter.get("/get-gpus-for-flight-sheets", OtherDataController.getGpusForFlightSheets)
+// 
+otherDataRouter.get("/edit-gpus-for-flight-sheets", OtherDataController.editGpusForFlightSheets)
 export { otherDataRouter }
