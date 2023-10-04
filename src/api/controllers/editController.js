@@ -5,7 +5,8 @@ import {
     editPoolSchema,
     editMinerSchema,
     editGPUPresetSchema,
-    editFlightSheetSchema
+    editFlightSheetSchema,
+    editGPUSetupSchema
 } from '../../validation/endpoints/edit.js'
 
 import { mainDatabase } from '../../database/mainDatabase.js'
@@ -208,6 +209,48 @@ class EditController {
             }
         } catch (err) {
             return next(err)
+        }
+    }
+    static async editGPUSetup(req, res, next) {
+        // Validate request body
+        const { error } = editGPUSetupSchema.validate(req.body);
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message));
+        }
+        // Editing gpu setup
+        try {
+            const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {id: req.body.id}});
+            if (gpuSetup) {
+                // If new memory clock
+                if (req.body.newMemoryClock) {
+                    gpuSetup.memory_clock = req.body.newMemoryClock;
+                }
+                // If new core clock
+                if (req.body.newCoreClock) {
+                    gpuSetup.core_clock = req.body.newCoreClock;
+                }
+                // If new power limit
+                if (req.body.newPowerLimit) {
+                    gpuSetup.power_limit = req.body.newPowerLimit;
+                }
+                // If new fan speed
+                if (req.body.newFanSpeed) {
+                    gpuSetup.fan_speed = req.body.newFanSpeed;
+                }
+                // If new flight sheet id
+                if (req.body.newFlightSheetId) {
+                    gpuSetup.flight_sheet_id = req.body.newFlightSheetId;
+                }
+                // If new crit temp
+                if (req.body.newCritTemp) {
+                    gpuSetup.crit_temp = req.body.newCritTemp;
+                }
+                gpuSetup.save().then(() => res.status(200).json())
+            } else {
+                return next(ApiError.badRequest("Gpu setup with that id not found!"))
+            }
+        } catch (error) {
+            return next(error)
         }
     }
     static async editFlightSheet(req, res, next) { // Reformated + worked

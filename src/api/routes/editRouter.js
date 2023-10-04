@@ -13,6 +13,8 @@ editRouter.post("/pool", EditController.editPool);
 editRouter.post("/miner", EditController.editMiner);
 // http://localhost:8200/api/edit/gpu-preset
 editRouter.post("/gpu-preset", EditController.editGPUPreset);
+// http://localhost:8200/api/edit/gpu-setup
+editRouter.post("/gpu-setup", EditController.editGPUSetup);
 // http://localhost:8200/api/edit/flight-sheet
 editRouter.post("/flight-sheet", EditController.editFlightSheet);
 

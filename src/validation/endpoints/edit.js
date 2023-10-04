@@ -32,6 +32,17 @@ const editGPUPresetSchema = Joi.object({
     newCritTemp: Joi.number().integer().optional(),
     newFanSpeed: Joi.number().integer().optional().max(100)
 });
+
+const editGPUSetupSchema = Joi.object({
+    id: Joi.number().required(),
+    newMemoryClock: Joi.number().integer().optional(),
+    newCoreClock: Joi.number().integer().optional(),
+    newPowerLimit: Joi.number().integer().optional(),
+    newFanSpeed: Joi.number().integer().optional().max(100),
+    newFlightSheetId: Joi.number().integer().optional(),
+    newCritTemp: Joi.number().integer().optional()
+})
+
 const editFlightSheetSchema = Joi.object({
     id: Joi.number().required(),
     newName: Joi.string().alphanum().min(3).max(30).optional(),
@@ -47,5 +58,6 @@ export {
     editPoolSchema,
     editMinerSchema,
     editGPUPresetSchema,
+    editGPUSetupSchema,
     editFlightSheetSchema,
 };
