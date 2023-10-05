@@ -18,7 +18,7 @@ otherDataRouter.get("/get-full-flight-sheets", OtherDataController.getFullFlight
 // http://localhost:8200/api/other_data/get-gpu-setup
 otherDataRouter.post("/get-gpu-setup", OtherDataController.getGPUSetup);
 // http://localhost:8200/api/other_data/get-gpu-presets
-otherDataRouter.get("/get-gpu-presets", OtherDataController.getGPUPresets);
+otherDataRouter.post("/get-gpu-presets", OtherDataController.getGPUPresets);
 // http://localhost:8200/api/other_data/get-cpu-setup
 otherDataRouter.get("/get-cpu-setup", OtherDataController.getCPUSetup);
 // http://localhost:8200/api/other_data/get-create-flight-sheet-options
