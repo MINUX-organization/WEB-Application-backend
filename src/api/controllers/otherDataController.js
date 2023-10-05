@@ -207,9 +207,9 @@ class OtherDataController {
         try {
             // Check if gpu presets exists
             const gpuPresets = await mainDatabase.models.GPU_PRESETs.findAll({ where: { id: req.body.gpuId } });
-            if (gpuPresets.length == 0) {
-                return next(ApiError.noneData("GPU Presets not found"));
-            }
+            // if (gpuPresets.length == 0) {
+            //     return next(ApiError.noneData("GPU Presets not found"));
+            // }
             // Reformat response
             const reformatedGpuPresets = []
             gpuPresets.forEach(gpuPreset => {
@@ -226,7 +226,7 @@ class OtherDataController {
                 reformatedGpuPresets.push(reformatedGpuPreset)
             })
             // Return
-            res.status(200).json({  "gpuPresets": reformatedGpuPresets });
+            res.status(200).json({ "gpuPresets": reformatedGpuPresets });
         } catch (err) {
             return next(err)
         }
