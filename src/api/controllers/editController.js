@@ -224,10 +224,6 @@ class EditController {
             if (gpuSetup === null) {
                 throw new Error('gpu setup with id is not found')
             }
-            const flightSheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: { id: req.body.newFlightSheetId } });
-            if (flightSheet === null) {
-                throw new Error('flight sheet with this id is not found')
-            }
             // If new memory clock
             if (req.body.newMemoryClock) {
                 gpuSetup.memory_clock = req.body.newMemoryClock;
