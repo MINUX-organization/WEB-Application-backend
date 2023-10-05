@@ -39,7 +39,7 @@ const editGPUSetupSchema = Joi.object({
     newCoreClock: Joi.number().integer().optional(),
     newPowerLimit: Joi.number().integer().optional(),
     newFanSpeed: Joi.number().integer().optional().max(100),
-    newFlightSheetId: Joi.number().integer().optional(),
+    newFlightSheetId: Joi.number().integer().allow(null).optional(),
     newCritTemp: Joi.number().integer().optional()
 })
 
