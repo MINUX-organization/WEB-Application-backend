@@ -48,32 +48,34 @@ const dynamicData = {
             return total;
         }
         const calculateWorkingAlgorithms = () => {
-            const algorithms = [];
+            const algorithms = new Set();
             if (this.gpus) {
                 for (const gpu of this.gpus) {
                     if (gpu.algorithm) {
-                        algorithms.push(gpu.algorithm)
+                        algorithms.add(gpu.algorithm)
                     }
                 }
             }
             if (this.cpu && this.cpu.algorithm) {
-                algorithms.push(this.cpu.algorithm)
+                algorithms.add(this.cpu.algorithm)
             }
-            return algorithms.length
+            return algorithms.size
         }
         const calculateWorkingMiners = () => {
-            const miners = [];
+            const miners = new Set();
             if (this.gpus) {
                 for (const gpu of this.gpus) {
                     if (gpu.miner) {
-                        miners.push(gpu.miner)
+                        if (gpu.miner.uuid) {
+                            miners.add(gpu.miner.uuid)
+                        }
                     }
                 }
             }
-            if (this.cpu && this.cpu.miner) {
-                miners.push(this.cpu.miner)
+            if (this.cpu && this.cpu.miner && this.cpu.miner.uuid) {
+                miners.add(this.cpu.miner.uuid)
             }
-            return miners.length
+            return miners.size
         }
         const calculateTotalPower = () => {
             let total = 0;

@@ -449,6 +449,39 @@ class OtherDataController {
                     const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
                     gpuSetup.flight_sheet_id = gpuForFlightSheet.flightSheetId;
                     await gpuSetup.save();
+                    if (clientsData.app) {
+                        let cryptocurrency, miner, wallet, pool, algorithm;
+                        const flightSheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: { id: gpuSetup.flight_sheet_id } });
+                        if (flightSheet) {
+                            cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheet.cryptocurrency_id } });
+                            miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheet.miner_id } });
+                            wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheet.wallet_id } });
+                            pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheet.pool_id } });
+                            if (cryptocurrency) {
+                                algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
+                            }
+                        }
+                        clientsData.app.send(JSON.stringify({
+                            uuid: gpuSetup.dataValues.gpu_uuid,
+                            overclock: {
+                                clockType: "custom",
+                                autofan: false,
+                                coreClock: gpuSetup.core_clock,
+                                memoryClock: gpuSetup.memory_clock,
+                                fanSpeed: gpuSetup.fan_speed,
+                                powerLimit: gpuSetup.power_limit,
+                                criticalTemp: gpuSetup.crit_temp,
+                            },
+                            crypto: {
+                                cryptoType: "custom",
+                                coin: cryptocurrency ? cryptocurrency.name : null,
+                                algorithm: algorithm ? algorithm.name : null,
+                                wallet: wallet ? wallet.address : null,
+                                pool: pool ? `${pool.host}:${pool.port}` : null,
+                                miner: miner ? miner.name : null,
+                            }
+                        }))
+                    }
                 } 
             }
         res.sendStatus(200)

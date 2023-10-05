@@ -10,8 +10,6 @@ import { commandsData } from "../../temp/commands.js"
 import { commandInterface } from "../../classes/commands.js";
 import { ApiError } from "../../error/ApiError.js";
 import { mainDatabase } from "../../database/mainDatabase.js";
-import { loggerConsole } from "../../utils/logger.js";
-import { cli } from "winston/lib/winston/config/index.js";
 // Classes
 
 
