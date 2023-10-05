@@ -217,6 +217,7 @@ class OtherDataController {
                 gpuPreset = gpuPreset.dataValues
                 const reformatedGpuPreset = {
                     id: gpuPreset.id,
+                    name: gpuPreset.name,
                     memoryClock: gpuPreset.memory_clock,
                     coreClock: gpuPreset.core_clock,
                     powerLimit: gpuPreset.power_limit,

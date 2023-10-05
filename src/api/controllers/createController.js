@@ -128,6 +128,7 @@ class CreateController {
                 return next(ApiError.noneData('GPU with this id not found'))
             }
             await mainDatabase.models.GPU_PRESETs.create({
+                name: req.body.name,
                 memory_clock: req.body.memoryClock,
                 core_clock: req.body.coreClock,
                 power_limit: req.body.powerLimit,
