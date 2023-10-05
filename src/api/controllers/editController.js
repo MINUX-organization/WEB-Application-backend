@@ -267,26 +267,28 @@ class EditController {
                         algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
                     }
                 }
-                clientsData.app.send(JSON.stringify({
-                    uuid: gpuSetup.dataValues.gpu_uuid,
-                    overclock: {
-                        clockType: "custom",
-                        autofan: false,
-                        coreClock: gpuSetup.core_clock,
-                        memoryClock: gpuSetup.memory_clock,
-                        fanSpeed: gpuSetup.fan_speed,
-                        powerLimit: gpuSetup.power_limit,
-                        criticalTemp: gpuSetup.crit_temp,
-                    },
-                    crypto: {
-                        cryptoType: "custom",
-                        coin: cryptocurrency ? cryptocurrency.name : null,
-                        algorithm: algorithm ? algorithm.name : null,
-                        wallet: wallet ? wallet.address : null,
-                        pool: pool ? `${pool.host}:${pool.port}` : null,
-                        miner: miner ? miner.name : null,
-                    }
-                }))
+                clientsData.app.send(JSON.stringify(new commandInterface('static',{
+                    gpus: [{
+                        uuid: gpuSetup.dataValues.gpu_uuid,
+                        overclock: {
+                            clockType: "custom",
+                            autofan: false,
+                            coreClock: gpuSetup.core_clock,
+                            memoryClock: gpuSetup.memory_clock,
+                            fanSpeed: gpuSetup.fan_speed,
+                            powerLimit: gpuSetup.power_limit,
+                            criticalTemp: gpuSetup.crit_temp,
+                        },
+                        crypto: {
+                            cryptoType: "custom",
+                            coin: cryptocurrency ? cryptocurrency.name : null,
+                            algorithm: algorithm ? algorithm.name : null,
+                            wallet: wallet ? wallet.address : null,
+                            pool: pool ? `${pool.host}:${pool.port}` : null,
+                            miner: miner ? miner.name : null,
+                        }
+                    }]
+                }, "setGpusSettings")))
             }
             await gpuSetup.save();
             res.sendStatus(200)
