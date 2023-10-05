@@ -82,7 +82,7 @@ export default function initOtherModels(db) {
             autoIncrement: true,
         },
         name: {
-            type: DataTypes.STRING(15),
+            type: DataTypes.STRING(128),
         },
         full_name: {
             type: DataTypes.STRING(128),

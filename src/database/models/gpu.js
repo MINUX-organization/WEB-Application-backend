@@ -30,6 +30,9 @@ export default function initGPUModels(db) {
             primaryKey: true,
             autoIncrement: true,
         },
+        name: {
+            type: DataTypes.STRING(128),
+        },
         memory_clock: {
             type: DataTypes.SMALLINT,
         },
@@ -164,14 +167,14 @@ export default function initGPUModels(db) {
             autoIncrement: true,
         },
         name: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(128),
         },
         cryptocurrency_id: {
             type: DataTypes.SMALLINT,
             references: {
                 model: 'CRYPTOCURRENCIEs',
                 key: 'id'
-            }
+            }   
         },
         miner_id: {
             type: DataTypes.SMALLINT,
