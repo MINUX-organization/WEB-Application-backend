@@ -188,6 +188,7 @@ class OtherDataController {
                 coreClock: gpuSetup.core_clock,
                 powerLimit: gpuSetup.power_limit,
                 fanSpeed: gpuSetup.fan_speed,
+                critTemp: gpuSetup.crit_temp,
                 flightSheetId: gpuSetup.flight_sheet_id,
                 gpuUuid: gpuSetup.gpu_uuid
             }
