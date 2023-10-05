@@ -18,4 +18,4 @@ npm-debug.log
 docs
 .vscode
 .VSCodeCounter
-
+.env
