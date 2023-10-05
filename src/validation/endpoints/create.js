@@ -9,7 +9,7 @@ const createWalletSchema = Joi.object({
     name: Joi.string().pattern(new RegExp("^[a-zA-Z0-9@$!%*?&_-]{5,30}$")).min(3).max(128).required(),
     source: Joi.string().min(3).max(128).required(),
     address: Joi.string().min(3).max(128).required(),
-    cryptocurrencyId: Joi.number().integer().required()++
+    cryptocurrencyId: Joi.number().integer().required()
 });
 const createPoolSchema = Joi.object({
     host: Joi.string().min(3).max(128).required(),
