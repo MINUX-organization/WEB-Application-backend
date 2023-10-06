@@ -227,7 +227,7 @@ class CommandController {
             // Wait response
             await CommandController.waitForResponse(command.command)
             .then(response => {
-                commandData[command] = null
+                commandsData[command] = null
                 res.status(200).json(response)
             })
             .catch(err => {

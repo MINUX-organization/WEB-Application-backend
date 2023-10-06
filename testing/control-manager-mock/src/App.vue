@@ -11,6 +11,7 @@ import { testCommandReboot } from './lib/testCommandReboot';
 import { testCommandStartMining } from './lib/testCommandStartMining';
 import { backendUrl, backendUrlWs } from './lib/constants';
 import { testCommandStopMining } from './lib/testCommandStopMining';
+import { testCommandPowerOff } from './lib/testCommandPowerOff';
 
 const isDark = useDark()
 
@@ -73,26 +74,37 @@ const staticCommandHandler = (request: any) => {
           ...request,
           payload: testCommandGetGpusWorking
         }))
+        break;
       case 'getGpusSettings':
         wss.send(JSON.stringify({
           ...request,
           payload: testCommandGetGpusSettings
         }))
+        break;
       case 'reboot':
         wss.send(JSON.stringify({
           ...request,
           payload: testCommandReboot
         }))
+        break;
       case 'startMining':
         wss.send(JSON.stringify({
           ...request,
           payload: testCommandStartMining
         }))
+        break;
       case 'stopMining':
         wss.send(JSON.stringify({
           ...request,
           payload: testCommandStopMining
         }))
+        break;
+      case 'powerOff':
+        wss.send(JSON.stringify({
+          ...request,
+          payload: testCommandPowerOff
+        }))
+        break;
     }
   }
 }

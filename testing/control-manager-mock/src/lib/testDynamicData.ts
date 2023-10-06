@@ -9,6 +9,7 @@ export const testDynamicData = {
       measurement: null,
       value: null,
     },
+    minerUpTime: "-",
     isMining: false,
     miner: {
       fullName: null,
@@ -29,6 +30,7 @@ export const testDynamicData = {
         core: 1200,
         memory: 1700,
       },
+      minerUpTime: "-",
       cryptocurrency: "coin1",
       fanSpeed: 0,
       hashrate: {
@@ -59,6 +61,7 @@ export const testDynamicData = {
         core: 1200,
         memory: 1700,
       },
+      minerUpTime: "-",
       cryptocurrency: "coin1",
       fanSpeed: 0,
       hashrate: {
@@ -89,6 +92,7 @@ export const testDynamicData = {
         core: 2859,
         memory: 2392,
       },
+      minerUpTime: "-",
       cryptocurrency: null,
       fanSpeed: 82,
       hashrate: {
@@ -119,6 +123,7 @@ export const testDynamicData = {
         core: 4162,
         memory: 1700,
       },
+      minerUpTime: "-",
       cryptocurrency: null,
       fanSpeed: 45,
       hashrate: {
@@ -149,6 +154,7 @@ export const testDynamicData = {
         core: 2989,
         memory: 3093,
       },
+      minerUpTime: "-",
       cryptocurrency: null,
       fanSpeed: 69,
       hashrate: {
@@ -179,6 +185,7 @@ export const testDynamicData = {
         core: 3189,
         memory: 2773,
       },
+      minerUpTime: "-",
       cryptocurrency: null,
       fanSpeed: 77,
       hashrate: {
@@ -209,6 +216,7 @@ export const testDynamicData = {
         core: 3976,
         memory: 3625,
       },
+      minerUpTime: "-",
       cryptocurrency: null,
       fanSpeed: 93,
       hashrate: {
@@ -239,6 +247,7 @@ export const testDynamicData = {
         core: 2284,
         memory: 1988,
       },
+      minerUpTime: "-",
       cryptocurrency: null,
       fanSpeed: 31,
       hashrate: {
@@ -269,6 +278,7 @@ export const testDynamicData = {
         core: 2032,
         memory: 2638,
       },
+      minerUpTime: "-",
       cryptocurrency: null,
       fanSpeed: 77,
       hashrate: {
@@ -299,6 +309,7 @@ export const testDynamicData = {
         core: 2781,
         memory: 3075,
       },
+      minerUpTime: "-",
       cryptocurrency: null,
       fanSpeed: 33,
       hashrate: {
@@ -329,6 +340,7 @@ export const testDynamicData = {
         core: 4225,
         memory: 3323,
       },
+      minerUpTime: "-",
       cryptocurrency: null,
       fanSpeed: 48,
       hashrate: {
@@ -359,6 +371,7 @@ export const testDynamicData = {
         core: 2250,
         memory: 2940,
       },
+      minerUpTime: "-",
       cryptocurrency: null,
       fanSpeed: 76,
       hashrate: {

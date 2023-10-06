@@ -107,6 +107,7 @@ class WebSocketServer {
                                         case "powerOff":
                                             commandsData.powerOff = msgJSON.payload
                                             loggerConsole.data('Command "powerOff" received on WebSocketServer!')
+                                            break
                                         default:
                                             loggerConsole.error(`Received unknown command: ${msgJSON.command}`)
                                     }
