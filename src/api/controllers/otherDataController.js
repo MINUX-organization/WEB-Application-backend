@@ -207,7 +207,11 @@ class OtherDataController {
         // Get GPU Presets
         try {
             // Check if gpu presets exists
-            const gpuPresets = await mainDatabase.models.GPU_PRESETs.findAll({ where: { id: req.body.gpuId } });
+            const gpu = await mainDatabase.models.GPUs.findOne({ where: { id: req.body.gpuId }})
+            if (!gpu) {
+                return next(ApiError.badRequest('gpu with this id is not found'))
+            }
+            const gpuPresets = await mainDatabase.models.GPU_PRESETs.findAll({ where: { gpu_uuid: gpu.uuid } });
             // if (gpuPresets.length == 0) {
             //     return next(ApiError.noneData("GPU Presets not found"));
             // }

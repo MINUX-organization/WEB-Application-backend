@@ -221,44 +221,50 @@ class EditController {
         // Editing gpu setup
         try {
             const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {id: req.body.id}});
-            if (gpuSetup) {
-                // If new memory clock
-                if (req.body.newMemoryClock) {
-                    gpuSetup.memory_clock = req.body.newMemoryClock;
+            if (gpuSetup === null) {
+                throw new Error('gpu setup with id is not found')
+            }
+            // If new memory clock
+            if (req.body.newMemoryClock) {
+                gpuSetup.memory_clock = req.body.newMemoryClock;
+            }
+            // If new core clock
+            if (req.body.newCoreClock) {
+                gpuSetup.core_clock = req.body.newCoreClock;
+            }
+            // If new power limit
+            if (req.body.newPowerLimit) {
+                gpuSetup.power_limit = req.body.newPowerLimit;
+            }
+            // If new fan speed
+            if (req.body.newFanSpeed) {
+                gpuSetup.fan_speed = req.body.newFanSpeed;
+            }
+            // If new flight sheet id
+            if (req.body.newFlightSheetId) {
+                gpuSetup.flight_sheet_id = req.body.newFlightSheetId;
+            }
+            // If new crit temp
+            if (req.body.newCritTemp) {
+                gpuSetup.crit_temp = req.body.newCritTemp;
+            }
+            if (clientsData.app) {
+                let cryptocurrency, miner, wallet, pool, algorithm;
+                const flightSheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: { id: gpuSetup.flight_sheet_id } });
+                if (gpuSetup.flight_sheet_id !== null && flightSheet === null) {
+                    throw new Error('flight sheet with this id does not exist')
                 }
-                // If new core clock
-                if (req.body.newCoreClock) {
-                    gpuSetup.core_clock = req.body.newCoreClock;
-                }
-                // If new power limit
-                if (req.body.newPowerLimit) {
-                    gpuSetup.power_limit = req.body.newPowerLimit;
-                }
-                // If new fan speed
-                if (req.body.newFanSpeed) {
-                    gpuSetup.fan_speed = req.body.newFanSpeed;
-                }
-                // If new flight sheet id
-                if (req.body.newFlightSheetId) {
-                    gpuSetup.flight_sheet_id = req.body.newFlightSheetId;
-                }
-                // If new crit temp
-                if (req.body.newCritTemp) {
-                    gpuSetup.crit_temp = req.body.newCritTemp;
-                }
-                if (clientsData.app) {
-                    let cryptocurrency, miner, wallet, pool, algorithm;
-                    const flightSheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: { id: gpuSetup.flight_sheet_id } });
-                    if (flightSheet) {
-                        cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheet.cryptocurrency_id } });
-                        miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheet.miner_id } });
-                        wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheet.wallet_id } });
-                        pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheet.pool_id } });
-                        if (cryptocurrency) {
-                            algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
-                        }
+                if (flightSheet) {
+                    cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheet.cryptocurrency_id } });
+                    miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheet.miner_id } });
+                    wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheet.wallet_id } });
+                    pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheet.pool_id } });
+                    if (cryptocurrency) {
+                        algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
                     }
-                    clientsData.app.send(JSON.stringify({
+                }
+                clientsData.app.send(JSON.stringify(new commandInterface('static',{
+                    gpus: [{
                         uuid: gpuSetup.dataValues.gpu_uuid,
                         overclock: {
                             clockType: "custom",
@@ -277,12 +283,11 @@ class EditController {
                             pool: pool ? `${pool.host}:${pool.port}` : null,
                             miner: miner ? miner.name : null,
                         }
-                    }))
-                }
-                gpuSetup.save().then(() => res.status(200).json())
-            } else {
-                return next(ApiError.badRequest("Gpu setup with that id not found!"))
+                    }]
+                }, "setGpusSettings")))
             }
+            await gpuSetup.save();
+            res.sendStatus(200)
         } catch (error) {
             return next(error)
         }
