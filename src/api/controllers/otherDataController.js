@@ -177,9 +177,9 @@ class OtherDataController {
         // Get GPU setup
         try {
             // Check if GPU setup exists
-            const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { id: req.body.gpuId } });
+            const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { id: req.body.gpuSetupId } });
             if (!gpuSetup) {
-                return res.status(200).json({ "gpuSetup":  null});
+                return next(ApiError.badRequest("Gpu setup with this id does not exist!"));
             }
             // Reformat response
             const reformatedGpuSetup = {

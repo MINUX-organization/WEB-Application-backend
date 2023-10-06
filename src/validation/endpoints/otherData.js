@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 const getGPUSetupSchema = Joi.object({
-    gpuId: Joi.number().required(),
+    gpuSetupId: Joi.number().required(),
 });
 const getGPUPresetsSchema = Joi.object({
     gpuId: Joi.number().required(),
