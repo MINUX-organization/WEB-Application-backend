@@ -16,6 +16,7 @@ const isDark = useDark()
 const message = ref('')
 const outputRef = ref<HTMLDivElement | null>(null)
 const timerDynamicDataEnabled = ref(false)
+const websocketConnected = ref(false)
 
 const logMaxChildrenCount = 10
 const log = <T extends Object | string>(message: T) => {
@@ -37,10 +38,17 @@ const log = <T extends Object | string>(message: T) => {
 }
 
 const wss = useWebSocket(backendUrlWs, {
-  onConnected: (ws) => {
+  onConnected(ws) {
     log('ONLINE')
+    websocketConnected.value = true
     ws.send(JSON.stringify("App"))
-    ws.onclose = () => log('OFFLINE')
+    ws.onclose = () => {
+      websocketConnected.value = false;
+      log('OFFLINE');
+    }
+    ws.onopen = () => {
+      websocketConnected.value = true;
+    }
     ws.onmessage = response => {
       try {
         const data = JSON.parse(response.data)
@@ -50,8 +58,9 @@ const wss = useWebSocket(backendUrlWs, {
         log(response.data)
       }
     }
-  }
+  },
 })
+
 
 const staticCommandHandler = (request: any) => {
   if (typeof request !== 'object') return
@@ -117,6 +126,14 @@ const testRequestGetFullData = () => {
     .then(response => log(response.json()))
 }
 
+const reconnectWebsocket = () => {
+  wss.open();
+}
+
+const disconnectWebsocket = () => {
+  wss.close();
+}
+
 const intervalId = ref(0)
 watch(timerDynamicDataEnabled, (value, oldValue, onCleanup) => {
   if (timerDynamicDataEnabled.value) {
@@ -143,6 +160,8 @@ watch(timerDynamicDataEnabled, (value, oldValue, onCleanup) => {
         <Button @click="sendTestDynamicData" >send dynamic data</Button>
         <Button @click="testRequestGetFullData" >test request get full data (http)</Button>
         <Button @click="sendCommand">test send command</Button>
+        <Button type="primary" v-if="!websocketConnected" @click="reconnectWebsocket">Reconnect Websocket</Button>
+        <Button v-if="websocketConnected" @click="disconnectWebsocket">Disconnect Websocket</Button>
         <Space>
           <Typography>send dynamic data periodically</Typography>
           <Switch v-model:checked="timerDynamicDataEnabled" style="max-width: 20px; align-self: center;" />
