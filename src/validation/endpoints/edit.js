@@ -21,7 +21,7 @@ const editPoolSchema = Joi.object({
 });
 const editMinerSchema = Joi.object({
     id: Joi.number().required(),
-    newName: Joi.string().pattern(new RegExp("^[a-zA-Z0-9_-]{5,30}$"))().min(3).max(128).optional(),
+    newName: Joi.string().pattern(new RegExp("^[a-zA-Z0-9_-]{5,30}$")).min(3).max(128).optional(),
     newFullName: Joi.string().pattern(new RegExp("^[a-zA-Z0-9_-]{5,30}$")).min(3).max(128).optional()
 });
 const editGPUPresetSchema = Joi.object({
