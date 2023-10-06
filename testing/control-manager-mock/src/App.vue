@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from "uuid";
 import { testCommandReboot } from './lib/testCommandReboot';
 import { testCommandStartMining } from './lib/testCommandStartMining';
 import { backendUrl, backendUrlWs } from './lib/constants';
+import { testCommandStopMining } from './lib/testCommandStopMining';
 
 const isDark = useDark()
 
@@ -86,6 +87,11 @@ const staticCommandHandler = (request: any) => {
         wss.send(JSON.stringify({
           ...request,
           payload: testCommandStartMining
+        }))
+      case 'stopMining':
+        wss.send(JSON.stringify({
+          ...request,
+          payload: testCommandStopMining
         }))
     }
   }
