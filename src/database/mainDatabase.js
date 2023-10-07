@@ -15,6 +15,7 @@ import { dynamicData } from '../temp/dynamic.js';
 // Utils
 import { generateRecoveryCode } from '../utils/generatorRecoveryCodes.js';
 import { loggerConsole } from '../utils/logger.js';
+import _ from 'lodash'
 
 class Database {
     constructor() {
@@ -89,31 +90,56 @@ class Database {
             switch (key) {
                 case 'gpus':
                     try {
-                        staticData.gpus.forEach(async gpu => {
-                            // Log gpu UUIDs
-                            loggerConsole.data(`Received GPU: ${gpu.uuid}`)
-                            // Check if gpu is already exists
-                            const gpuCheck = await this.db.models.GPUs.findOne({where: {uuid: gpu.uuid}})
-                            if (!gpuCheck) {
-                                await this.db.models.GPUs.create({uuid: gpu.uuid})
-                                .catch(error => loggerConsole.error(`Catched error in creating GPU: ${error}`))
-                                // Log creating
-                                loggerConsole.data(`Created GPU: ${gpu.uuid}`)
-                                // Check if gpu setup is already exists
-                                const gpuSetupCheck = await this.db.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
-                                if (!gpuSetupCheck) {
-                                    await this.db.models.GPU_SETUPs.create({gpu_uuid: gpu.uuid})
-                                    .catch(error => loggerConsole.error(`Catched error in creating GPU Setup: ${error}`))
-                                    // Log creating
-                                    loggerConsole.data(`Created GPU Setup: ${gpu.uuid}`)
-                                }
-                            } else {
-                                loggerConsole.data(`GPU ${gpu.uuid} already exists.`)
-                            }
-                        })
+                        const receivedGpus = staticData.gpus
+                        const dbGpus = await this.db.models.GPUs.findAll()
+
+                        const recievedGpuUuids = receivedGpus.map(item => item.uuid);
+                        const dbGpusUuids = dbGpus.map(item => item.dataValues.uuid)
+
+                        const connectedDbGpus = dbGpus.filter(dbGpu => recievedGpuUuids.includes(dbGpu.dataValues.uuid))
+                        const orphanDbGpus = dbGpus.filter(dbGpu => !recievedGpuUuids.includes(dbGpu.dataValues.uuid))
+                        const newRecievedGpus = receivedGpus.filter(item => !dbGpusUuids.includes(item.uuid))
+
+                        for (const item of connectedDbGpus) {
+                            await item.update({ connected: true })
+                            loggerConsole.data(`mark GPU as connected: ${item.uuid}`)
+                        }
+                        for (const item of orphanDbGpus) {
+                            await item.update({ connected: false })
+                            loggerConsole.data(`mark GPU as not connected: ${item.uuid}`)
+                        }
+                        for (const item of newRecievedGpus) {
+                            await this.db.models.GPUs.create({uuid: item.uuid})
+                            loggerConsole.data(`Created GPU: ${item.uuid}`)
+                            await this.db.models.GPU_SETUPs.create({gpu_uuid: item.uuid})
+                            loggerConsole.data(`Created SETUP for GPU: ${item.uuid}`)
+                        }
+
+                        // staticData.gpus.forEach(async gpu => {
+                        //     // Log gpu UUIDs
+                        //     loggerConsole.data(`Received GPU: ${gpu.uuid}`)
+                        //     // Check if gpu is already exists
+                        //     const gpuCheck = await this.db.models.GPUs.findOne({where: {uuid: gpu.uuid}})
+                        //     if (!gpuCheck) {
+                        //         await this.db.models.GPUs.create({uuid: gpu.uuid})
+                        //         .catch(error => loggerConsole.error(`Catched error in creating GPU: ${error}`))
+                        //         // Log creating
+                        //         loggerConsole.data(`Created GPU: ${gpu.uuid}`)
+                        //         // Check if gpu setup is already exists
+                        //         const gpuSetupCheck = await this.db.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
+                        //         if (!gpuSetupCheck) {
+                        //             await this.db.models.GPU_SETUPs.create({gpu_uuid: gpu.uuid})
+                        //             .catch(error => loggerConsole.error(`Catched error in creating GPU Setup: ${error}`))
+                        //             // Log creating
+                        //             loggerConsole.data(`Created GPU Setup: ${gpu.uuid}`)
+                        //         }
+                        //     } else {
+                        //         loggerConsole.data(`GPU ${gpu.uuid} already exists.`)
+                        //     }
+                        // })
                     }
                     catch (e) {
-                        loggerConsole.error(e)
+                        loggerConsole.error(JSON.stringify(e, null, 2))
                     }
                     
                     break 

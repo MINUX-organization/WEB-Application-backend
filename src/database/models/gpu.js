@@ -16,6 +16,10 @@ export default function initGPUModels(db) {
             primaryKey: true,
             autoIncrement: true,
         },
+        connected: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
         uuid: {
             type: DataTypes.STRING(64),
             unique: true

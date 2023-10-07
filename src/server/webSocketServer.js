@@ -62,7 +62,7 @@ class WebSocketServer {
                                                         staticData[key] = JSON.parse(JSON.stringify(msgJSON.payload[key]))
                                                     }
                                                     // Log static data
-                                                    loggerConsole.data(`Static data received on WebSocketServer!: ${JSON.stringify(staticData)}`)
+                                                    loggerConsole.data(`Static data received on WebSocketServer!: ${JSON.stringify(staticData, null, 2)}`)
                                                     // Sending msg
                                                     if (clientsData.app) {
                                                         clientsData.app.send(JSON.stringify({

@@ -1,7 +1,7 @@
 export const testStaticData = {
   gpus: [
     {
-      uuid: "27ff37ede2ebdd4bb433131ab2dc69181571b325e5d53315ef789f8092bf1343",
+      uuid: "27ff37ede2ebdd4b1343131ab2dc69181571b325e5d53315ef789f8092bf1343",
       information: {
         manufacturer: "NVIDIA",
         periphery: "GeForce RTX 3080 Ti",
