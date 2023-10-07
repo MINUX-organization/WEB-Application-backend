@@ -6,16 +6,20 @@ import { commandInterface } from "../../classes/commands.js";
 class StaticDataController {
     static getFullData(req, res, next) { // Reformated + worked
         if (!staticData.gpus || !staticData.cpu || !staticData.motherboard || !staticData.harddrives || !staticData.rams || !staticData.miners) {
-            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            if (clientsData.app) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            }
             loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("Full data was not received from the server!"))
         }
         res.status(200).json(staticData)
 
     }
-    static async getGPUData(req, res, next) { // Reformated + worked 
+    static getGPUData(req, res, next) { // Reformated + worked 
         if (!staticData.gpus) {
-            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            if (clientsData.app) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            }
             loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("GPU data was not received from the server!"))
         }
@@ -24,7 +28,9 @@ class StaticDataController {
     }
     static getCPUData(req, res, next) { // Reformated + worked
         if (!staticData.cpu) {
-            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            if (clientsData.app) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            }
             loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("CPU data was not received from the server!"))
         }
@@ -32,7 +38,9 @@ class StaticDataController {
     }
     static getRAMData(req, res, next) { // Reformated + worked
         if (!staticData.rams) {
-            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            if (clientsData.app) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            }
             loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("RAM data was not received from the server!"))
         }
@@ -40,7 +48,9 @@ class StaticDataController {
     }
     static getMotherboardData(req, res, next) { // Reformated + worked
         if (!staticData.motherboard) {
-            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            if (clientsData.app) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            }
             loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("Motherboard data was not received from the server!"))
         }
@@ -48,7 +58,9 @@ class StaticDataController {
     }
     static getHarddriveData(req, res, next) { // Reformated + worked
         if (!staticData.harddrives) {
-            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            if (clientsData.app) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            }
             loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("Harddrive data was not received from the server!"))
         }
@@ -56,7 +68,9 @@ class StaticDataController {
     }       
     static getMinersData(req, res, next) { // added + worked
         if (!staticData.miners) {
-            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            if (clientsData.app) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            }
             loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("Miners data was not received from the server!"))
         }
@@ -64,7 +78,9 @@ class StaticDataController {
     }
     static getSystemInfoData(req, res, next) {
         if (!staticData.systemInfo || !staticData.motherboard || !staticData.cpu || !staticData.harddrives) {
-            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            if (clientsData.app) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            }
             loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
             return next(ApiError.noneData("System info was not received from the server!"))
         }
@@ -77,6 +93,9 @@ class StaticDataController {
     }
     static getCalculationsData(req, res, next) {
         if (!staticData.gpus) {
+            if (clientsData.app) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
+            }
             return next(ApiError.noneData("GPU data was not received from the server!"))
         }
         res.status(200).json({ calculations: staticData.calculations})
