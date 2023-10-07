@@ -2,6 +2,7 @@ import { staticData } from "../../temp/static.js";
 import { ApiError } from "../../error/ApiError.js";
 import { clientsData } from "../../temp/clients.js";
 import { commandInterface } from "../../classes/commands.js";
+import { loggerConsole } from '../../utils/logger.js';
 
 class StaticDataController {
     static getFullData(req, res, next) { // Reformated + worked

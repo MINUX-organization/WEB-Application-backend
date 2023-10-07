@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { loggerConsole } from '../../utils/logger.js';
 
 const requestLoggerMiddleware = (req, res, next) => {
   const { method, url, } = req;
@@ -15,20 +16,27 @@ const requestLoggerMiddleware = (req, res, next) => {
   const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
   const timestamp = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`
   //
-  console.log(`${chalk.magenta(`|${timestamp}|`)} ${chalk.yellow(`API:          Request received: ${method} ${url}`)} `) 
-  console.log(`${chalk.green("Request body: ")}`)
-  console.log(req_body)
+  loggerConsole.data(`${chalk.magenta(`|${timestamp}|`)} ${chalk.yellow(`API:          Request received: ${method} ${url}`)} `) 
+  loggerConsole.data(`${chalk.green("Request body: ")}`)
+  try {
+    loggerConsole.data(JSON.stringify(JSON.parse(req_body), null, 2))
+  } catch(e) {
+    loggerConsole.data(req_body)
+  }
 
   res.send = function (res_body) {
     if (res_body) {
       
-      console.log(`${chalk.green("Response body: ")}`)
-      console.log(res_body)
+      loggerConsole.data(`${chalk.green("Response body: ")}`)
+      try {
+        loggerConsole.data(JSON.stringify(JSON.parse(res_body), null, 2))
+      } catch(e) {
+        loggerConsole.data(res_body)
+      }
     } 
     originalSend.call(this, res_body);
   };
   next();
 };
-
 
 export { requestLoggerMiddleware }
