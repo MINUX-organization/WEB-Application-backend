@@ -10,6 +10,7 @@ import {
 import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
 import { staticData } from "../../temp/static.js";
+import { clientsData } from "../../temp/clients.js";
 
 class OtherDataController {
     static async getFullMiners(req, res, next) { // reformated + worked
