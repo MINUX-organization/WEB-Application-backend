@@ -513,6 +513,7 @@ class OtherDataController {
                         name: gpuStatic ? `${gpuStatic.information.manufacturer} ${gpuStatic.information.periphery}` : null,
                         memoryClock: gpuSetup.memory_clock,
                         coreClock: gpuSetup.core_clock,
+                        connected: gpu.connected,
                         powerLimit: gpuSetup.power_limit,
                         fanSpeed: gpuSetup.fan_speed,
                         critTemp: gpuSetup.crit_temp, 
