@@ -441,12 +441,11 @@ class OtherDataController {
             const reformatedGpus = [];
             for (const gpu of gpus) {
                 const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
-                gpu.dataValues.flightSheetId = gpuSetup.flight_sheet_id ?? null
                 reformatedGpus.push({
                     id: gpu.id,
                     connected: gpu.connected,
                     name: `${gpu.manufacturer} ${gpu.periphery}`,
-                    flightSheetId: gpuSetup?.flight_sheet_id ?? null
+                    flightSheetId: gpuSetup === null ? null : gpuSetup.flight_sheet_id
                 })
             }
             res.status(200).json({gpusForFlightSheets: reformatedGpus})
