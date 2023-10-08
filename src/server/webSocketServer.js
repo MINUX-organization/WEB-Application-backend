@@ -466,6 +466,10 @@ class WebSocketServer {
                 //     loggerConsole.error(`Received error: ${e}`)
                 // }
             })
+            webSocket.on('ping', () => {
+                loggerConsole.data("Received PING from app!")
+                webSocket.pong('', undefined, true);
+            });
         })
     }
     // startReceivingCommands() {
