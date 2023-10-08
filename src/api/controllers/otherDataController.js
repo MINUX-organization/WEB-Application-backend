@@ -12,6 +12,7 @@ import { ApiError } from "../../error/ApiError.js";
 import { staticData } from "../../temp/static.js";
 import { clientsData } from "../../temp/clients.js";
 import { loggerConsole } from "../../utils/logger.js";
+import { commandInterface } from "../../classes/commands.js"
 
 class OtherDataController {
     static async getFullMiners(req, res, next) { // reformated + worked
@@ -181,7 +182,11 @@ class OtherDataController {
             // Check if GPU setup exists
             const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { id: req.body.gpuSetupId } });
             if (!gpuSetup) {
-                return next(ApiError.badRequest("Gpu setup with this id does not exist!"));
+                return next(ApiError.badRequest("GPU setup with this id does not exist!"));
+            }
+            const gpu = await mainDatabase.models.GPUs.findOne({ where: { uuid: gpuSetup.gpu_uuid }})
+            if (!gpu) {
+                return next(ApiError.badRequest("GPU for that GPU setup is not found"));
             }
             // Reformat response
             const reformatedGpuSetup = {
@@ -192,7 +197,27 @@ class OtherDataController {
                 fanSpeed: gpuSetup.fan_speed,
                 critTemp: gpuSetup.crit_temp,
                 flightSheetId: gpuSetup.flight_sheet_id,
-                gpuUuid: gpuSetup.gpu_uuid
+                gpuUuid: gpuSetup.gpu_uuid,
+                options: {
+                    temperature: {
+                        maximumCritical: gpu.temperatureMaximumCritical,
+                        enforcedCritical: gpu.temperatureEnforcedCritical
+                    },
+                    power: {
+                        defaultLimit: gpu.powerDefaultLimit,
+                        enforcedLimit: gpu.powerEnforcedLimit,
+                        minimal: gpu.powerMinimal,
+                        maximum: gpu.powerMaximum
+                    },
+                    clocks: {
+                        minimalCore: gpu.clocksMinimalCore,
+                        maximumCore: gpu.clocksMaximumCore,
+                        enforcedCore: gpu.clocksEnforcedCore,
+                        minimalMemory: gpu.clocksMinimalMemory,
+                        maximumMemory: gpu.clocksMaximumMemory,
+                        enforcedMemory: gpu.clocksEnforcedMemory
+                    }
+                }
             }
             // Return
             res.status(200).json({ "gpuSetup": reformatedGpuSetup });
@@ -415,28 +440,14 @@ class OtherDataController {
         try {
             const gpus = await mainDatabase.models.GPUs.findAll()
             const reformatedGpus = [];
-            if (gpus) {
-                for (const gpu of gpus) {
-                    if (staticData.gpus) {
-                        const staticGpu = staticData.gpus.find(item => item.uuid == gpu.uuid);
-                        if (staticGpu) {
-                            gpu.dataValues.name = `${staticGpu.information.manufacturer} ${staticGpu.information.periphery}`
-                        } else {
-                            gpu.dataValues.name = null
-                        }
-                    }
-                    else {
-                        gpu.dataValues.name = null
-                    }
-                    const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
-                    if (gpuSetup) {
-                        gpu.dataValues.flightSheetId = gpuSetup.flight_sheet_id
-                    } else {
-                        gpu.dataValues.flightSheetId = null;
-                    }
-                    const {uuid, createdAt, updatedAt ,...reformatedGpu} = gpu.dataValues;
-                    reformatedGpus.push(reformatedGpu) 
-                }
+            for (const gpu of gpus) {
+                const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
+                reformatedGpus.push({
+                    id: gpu.id,
+                    connected: gpu.connected,
+                    name: `${gpu.manufacturer} ${gpu.periphery}`,
+                    flightSheetId: gpuSetup === null ? null : gpuSetup.flight_sheet_id
+                })
             }
             res.status(200).json({gpusForFlightSheets: reformatedGpus})
         } catch (error) {

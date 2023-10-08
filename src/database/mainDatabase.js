@@ -109,7 +109,31 @@ class Database {
                             loggerConsole.data(`mark GPU as not connected: ${orphanDbGpu.uuid}`)
                         }
                         for (const newReceivedGpu of newRecievedGpus) {
-                            await this.db.models.GPUs.create({uuid: newReceivedGpu.uuid})
+                            await this.db.models.GPUs.create({
+                                uuid: newReceivedGpu.uuid,
+                                connected: true,
+                                manufacturer: newReceivedGpu.information.manufacturer,
+                                periphery: newReceivedGpu.information.periphery,
+                                driverVersion: newReceivedGpu.information.driverVersion,
+                                technologyVersion: newReceivedGpu.information.technology.version,
+                                technologyName: newReceivedGpu.information.technology.name,
+                                serialNumber: newReceivedGpu.information.serialNumber,
+                                pciBusId: newReceivedGpu.information.pci.busId,
+                                pciPciBusId: newReceivedGpu.information.pci.pciBusId,
+                                temperatureMaximumCritical: newReceivedGpu.temperature.maximumCritical,
+                                temperatureEnforcedCritical: newReceivedGpu.temperature.enforcedCritical,
+                                memoryTotal: newReceivedGpu.memory.total,
+                                powerDefaultLimit: newReceivedGpu.power.defaultLimit,
+                                powerEnforcedLimit: newReceivedGpu.power.enforcedLimit,
+                                powerMinimal: newReceivedGpu.power.minimal,
+                                powerMaximum: newReceivedGpu.power.maximum,
+                                clocksMinimalCore: newReceivedGpu.clocks.minimalCore,
+                                clocksMaximumCore: newReceivedGpu.clocks.maximumCore,
+                                clocksEnforcedCore: newReceivedGpu.clocks.enforcedCore,
+                                clocksMinimalMemory: newReceivedGpu.clocks.minimalMemory,
+                                clocksMaximumMemory: newReceivedGpu.clocks.maximumMemory,
+                                clocksEnforcedMemory: newReceivedGpu.clocks.enforcedMemory
+                            })
                             loggerConsole.data(`Created GPU: ${newReceivedGpu.uuid}`)
                             await this.db.models.GPU_SETUPs.create({gpu_uuid: newReceivedGpu.uuid})
                             loggerConsole.data(`Created SETUP for GPU: ${newReceivedGpu.uuid}`)

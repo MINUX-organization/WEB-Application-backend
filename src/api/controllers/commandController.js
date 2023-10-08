@@ -16,45 +16,45 @@ import { loggerConsole } from "../../utils/logger.js";
 
 
 class CommandController {
-        static async waitForResponse(command) {
-            return new Promise((resolve, reject) => {
-                const timeout = setTimeout(() => {
-                    clearInterval(timeout)
-                    reject(ApiError.noneData("No response to the command was received"))
-                }, 3000)
-                const interval = setInterval(() => {
-                    if (commandsData[command] != null) {
-                        const response = commandsData[command]
-                        commandsData[command] = null
-                        clearInterval(interval)
-                        clearTimeout(timeout)
-                        resolve(response)
-                    }
-                }, 10)
-            })
-        }
-        static async getSystemInfo(req, res, next) { // Reformated + not tested yet
-            // Check if app is running
-            if (!clientsData.app) {
-                return next(ApiError.noneData("App is not connected!"))
-            }
-            try {
-                // Sending command
-                const command = new commandInterface("static", {}, "getSystemInfo",)
-                clientsData.app.send(JSON.stringify(command))
-                // Wait response
-                CommandController.waitForResponse(command.command)
-                .then(response => {
+    static async waitForResponse(command) {
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                clearInterval(timeout)
+                reject(ApiError.noneData("No response to the command was received"))
+            }, 3000)
+            const interval = setInterval(() => {
+                if (commandsData[command] != null) {
+                    const response = commandsData[command]
                     commandsData[command] = null
-                    res.status(200).json(response)
-                })
-                .catch(err => {
-                    return next(err)
-                })
-            } catch (err) {
-                return next(err)
-            }
+                    clearInterval(interval)
+                    clearTimeout(timeout)
+                    resolve(response)
+                }
+            }, 10)
+        })
+    }
+    static async getSystemInfo(req, res, next) { // Reformated + not tested yet
+        // Check if app is running
+        if (!clientsData.app) {
+            return next(ApiError.noneData("App is not connected!"))
         }
+        try {
+            // Sending command
+            const command = new commandInterface("static", {}, "getSystemInfo",)
+            clientsData.app.send(JSON.stringify(command))
+            // Wait response
+            CommandController.waitForResponse(command.command)
+            .then(response => {
+                commandsData[command] = null
+                res.status(200).json(response)
+            })
+            .catch(err => {
+                return next(err)
+            })
+        } catch (err) {
+            return next(err)
+        }
+    }
     static async getGpusSettings(req, res, next) { // Reformated + not tested yet
         // Check if app is running
         if (!clientsData.app) {

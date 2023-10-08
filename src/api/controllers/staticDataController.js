@@ -4,6 +4,7 @@ import { clientsData } from "../../temp/clients.js";
 import { commandInterface } from "../../classes/commands.js";
 import { loggerConsole } from "../../utils/logger.js";
 
+
 class StaticDataController {
     static getFullData(req, res, next) { // Reformated + worked
         if (!staticData.gpus || !staticData.cpu || !staticData.motherboard || !staticData.harddrives || !staticData.rams || !staticData.miners) {

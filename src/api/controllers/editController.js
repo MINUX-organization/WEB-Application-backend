@@ -223,31 +223,50 @@ class EditController {
         try {
             const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {id: req.body.id}});
             if (gpuSetup === null) {
-                throw new Error('gpu setup with id is not found')
+                throw new Error('GPU setup with id is not found')
             }
-            // If new memory clock
-            if (req.body.newMemoryClock) {
-                gpuSetup.memory_clock = req.body.newMemoryClock;
+            const gpu = await mainDatabase.models.GPUs.findOne({ where: { uuid: gpuSetup.gpu_uuid }})
+            if (!gpu) {
+                throw new Error('GPU for that GPU setup is not found')
             }
             // If new core clock
             if (req.body.newCoreClock) {
+                if (req.body.newCoreClock !== -1 && (req.body.newCoreClock < gpu.clocksMinimalCore || req.body.newCoreClock > gpu.clocksMaximumCore)) {
+                    throw new Error(`Valid core clock is in range [${gpu.clocksMinimalCore}, ${gpu.clocksMaximumCore}]`)
+                }
                 gpuSetup.core_clock = req.body.newCoreClock;
+            }
+            // If new memory clock
+            if (req.body.newMemoryClock) {
+                if (req.body.newMemoryClock !== -1 && (req.body.newMemoryClock < gpu.clocksMinimalMemory || req.body.newMemoryClock > gpu.clocksMaximumMemory)) {
+                    throw new Error(`Valid memory clock is in range [${gpu.clocksMinimalMemory}, ${gpu.clocksMaximumMemory}]`)
+                }
+                gpuSetup.memory_clock = req.body.newMemoryClock;
             }
             // If new power limit
             if (req.body.newPowerLimit) {
+                if (req.body.newPowerLimit !== -1 && (req.body.newPowerLimit < gpu.powerMinimal || req.body.newPowerLimit > gpu.powerMaximum)) {
+                    throw new Error(`Valid power is in range [${gpu.powerMinimal}, ${gpu.powerMaximum}]`)
+                }
                 gpuSetup.power_limit = req.body.newPowerLimit;
+            }
+            // If new crit temp
+            if (req.body.newCritTemp) {
+                if (req.body.newCritTemp !== -1 && (req.body.newCritTemp < 0 || req.body.newCritTemp > gpu.temperatureMaximumCritical)) {
+                    throw new Error(`Valid temperature is in range [${0}, ${gpu.temperatureMaximumCritical}]`)
+                }
+                gpuSetup.crit_temp = req.body.newCritTemp;
             }
             // If new fan speed
             if (req.body.newFanSpeed) {
+                if (req.body.newFanSpeed !== -1 && (req.body.newFanSpeed < 0 || req.body.newFanSpeed > 100)) {
+                    throw new Error(`Valid fan speed is in range [${0}, ${100}]`)
+                }
                 gpuSetup.fan_speed = req.body.newFanSpeed;
             }
             // If new flight sheet id
             if (req.body.newFlightSheetId) {
                 gpuSetup.flight_sheet_id = req.body.newFlightSheetId;
-            }
-            // If new crit temp
-            if (req.body.newCritTemp) {
-                gpuSetup.crit_temp = req.body.newCritTemp;
             }
             if (clientsData.app) {
                 let cryptocurrency, miner, wallet, pool, algorithm;
