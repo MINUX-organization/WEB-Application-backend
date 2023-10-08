@@ -96,7 +96,7 @@ const dynamicData = {
             if (this.rams) {
                 for (const ram of this.rams) {
                     if (ram.usage && ram.usage.value) {
-                        total += ram.usage.value
+                        total = ram.usage.value
                     }
                 }
             }
