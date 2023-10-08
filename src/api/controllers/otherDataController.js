@@ -439,28 +439,15 @@ class OtherDataController {
         try {
             const gpus = await mainDatabase.models.GPUs.findAll()
             const reformatedGpus = [];
-            if (gpus) {
-                for (const gpu of gpus) {
-                    if (staticData.gpus) {
-                        const staticGpu = staticData.gpus.find(item => item.uuid == gpu.uuid);
-                        if (staticGpu) {
-                            gpu.dataValues.name = `${staticGpu.information.manufacturer} ${staticGpu.information.periphery}`
-                        } else {
-                            gpu.dataValues.name = null
-                        }
-                    }
-                    else {
-                        gpu.dataValues.name = null
-                    }
-                    const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
-                    if (gpuSetup) {
-                        gpu.dataValues.flightSheetId = gpuSetup.flight_sheet_id
-                    } else {
-                        gpu.dataValues.flightSheetId = null;
-                    }
-                    const {uuid, createdAt, updatedAt ,...reformatedGpu} = gpu.dataValues;
-                    reformatedGpus.push(reformatedGpu) 
-                }
+            for (const gpu of gpus) {
+                const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
+                gpu.dataValues.flightSheetId = gpuSetup?.flight_sheet_id ?? null
+                reformatedGpus.push({
+                    id: gpu.id,
+                    connected: gpu.connected,
+                    name: `${gpu.manufacturer} ${gpu.periphery}`,
+                    flightSheetId: gpuSetup?.flight_sheet_id ?? null
+                })
             }
             res.status(200).json({gpusForFlightSheets: reformatedGpus})
         } catch (error) {
