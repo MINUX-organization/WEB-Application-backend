@@ -18,16 +18,97 @@ export default function initGPUModels(db) {
         },
         connected: {
             type: DataTypes.BOOLEAN,
-            defaultValue: false
+            defaultValue: false,
+            allowNull: false
         },
         uuid: {
             type: DataTypes.STRING(64),
-            unique: true
+            unique: true,
+            allowNull: false
+        },
+        manufacturer: {
+            type: DataTypes.STRING(128),
+            allowNull: false
+        },
+        periphery: {
+            type: DataTypes.STRING(128),
+            allowNull: false
+        },
+        driverVersion: {
+            type: DataTypes.STRING(32),
+        },
+        technologyVersion: {
+            type: DataTypes.STRING(128),
+        },
+        technologyName: {
+            type: DataTypes.STRING(128),
+        },
+        serialNumber: {
+            type: DataTypes.STRING(128)
+        },
+        pciBusId: {
+            type: DataTypes.STRING(128)
+        },
+        pciPciBusId: {
+            type: DataTypes.STRING(128)
+        },
+        temperatureMaximumCritical: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        temperatureEnforcedCritical: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        memoryTotal: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        powerDefaultLimit: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        powerEnforcedLimit: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        powerMinimal: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        powerMaximum: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        clocksMinimalCore: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        clocksMaximumCore: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        clocksEnforcedCore: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        clocksMinimalMemory: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        clocksMaximumMemory: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        clocksEnforcedMemory: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         }
     }, {
         sequelize: db,
         modelName: 'GPUs'
     }),
+
     GPU_PRESETs.init({
         id: {
             type: DataTypes.SMALLINT,

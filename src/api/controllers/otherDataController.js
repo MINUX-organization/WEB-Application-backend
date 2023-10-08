@@ -181,7 +181,11 @@ class OtherDataController {
             // Check if GPU setup exists
             const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { id: req.body.gpuSetupId } });
             if (!gpuSetup) {
-                return next(ApiError.badRequest("Gpu setup with this id does not exist!"));
+                return next(ApiError.badRequest("GPU setup with this id does not exist!"));
+            }
+            const gpu = await mainDatabase.models.GPUs.findOne({ where: { uuid: gpuSetup.gpu_uuid }})
+            if (!gpu) {
+                return next(ApiError.badRequest("GPU for that GPU setup is not found"));
             }
             // Reformat response
             const reformatedGpuSetup = {
@@ -192,7 +196,27 @@ class OtherDataController {
                 fanSpeed: gpuSetup.fan_speed,
                 critTemp: gpuSetup.crit_temp,
                 flightSheetId: gpuSetup.flight_sheet_id,
-                gpuUuid: gpuSetup.gpu_uuid
+                gpuUuid: gpuSetup.gpu_uuid,
+                options: {
+                    temperature: {
+                        maximumCritical: gpu.temperatureMaximumCritical,
+                        enforcedCritical: gpu.temperatureEnforcedCritical
+                    },
+                    power: {
+                        defaultLimit: gpu.powerDefaultLimit,
+                        enforcedLimit: gpu.powerEnforcedLimit,
+                        minimal: gpu.powerMinimal,
+                        maximum: gpu.powerMaximum
+                    },
+                    clocks: {
+                        minimalCore: gpu.clocksMinimalCore,
+                        maximumCore: gpu.clocksMaximumCore,
+                        enforcedCore: gpu.clocksEnforcedCore,
+                        minimalMemory: gpu.clocksMinimalMemory,
+                        maximumMemory: gpu.clocksMaximumMemory,
+                        enforcedMemory: gpu.clocksEnforcedMemory
+                    }
+                }
             }
             // Return
             res.status(200).json({ "gpuSetup": reformatedGpuSetup });
