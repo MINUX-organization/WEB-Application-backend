@@ -8,7 +8,7 @@ import {
 
 import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
-
+import { loggerConsole } from "../../utils/logger.js";
 
 class UserController {
     static async userInfo(req, res, next) { // reformated

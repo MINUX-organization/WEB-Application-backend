@@ -13,6 +13,7 @@ import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
 import { clientsData } from '../../temp/clients.js';
 import { commandInterface } from '../../classes/commands.js';
+import { loggerConsole } from "../../utils/logger.js";
 
 class EditController {
     static async editCryptocurrency(req, res, next) { // Reformated + worked

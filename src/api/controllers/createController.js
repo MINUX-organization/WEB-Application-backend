@@ -10,7 +10,7 @@ import {
 
 import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
-
+import { loggerConsole } from "../../utils/logger.js";
 
 class CreateController {
     static async createCryptocurrency(req, res, next) { // Reformated + worked
