@@ -34,7 +34,6 @@ class WebSocketServer {
         }
         // Start receiving signals
         this.startReceivingMessages()
-        // this.startReceivingCommands()
         this.startReceivingCloseSignal()
     }
     startReceivingMessages() {
@@ -472,41 +471,6 @@ class WebSocketServer {
             });
         })
     }
-    // startReceivingCommands() {
-    //     this.webSocketServer.on('connection', webSocket => {
-    //         webSocket.on('message', msg => {
-    //             try {
-    //                 const msgJSON = JSON.parse(msg)
-    //                 switch(msgJSON.command) {
-    //                     case "getSystemInfo":
-    //                         commandsData.getSystemInfo = msgJSON.payload
-    //                         break
-    //                     case "getGpusSettings":
-    //                         commandsData.getGpusSettings = msgJSON.payload
-    //                         break
-    //                     case "getGpusWorking":
-    //                         commandsData.getGpusWorking = msgJSON.payload
-    //                         break
-    //                     case "setGpusSettings":
-    //                         commandsData.setGpusSettings = msgJSON.payload
-    //                         break
-    //                     case "startMining": 
-    //                         commandsData.startMining = msgJSON.payload
-    //                         break
-    //                     case "stopMining":
-    //                         commandsData.stopMining = msgJSON.payload
-    //                         break
-    //                     case "reboot": 
-    //                         commandsData.reboot = msgJSON.payload
-    //                         break
-    //                 }   
-    //             }
-    //             catch (e) {
-    //                 loggerConsole.error(`Received error: ${e.message}`)
-    //             }
-    //         })
-    //     })
-    // }
     startReceivingCloseSignal() {
         this.webSocketServer.on('connection', webSocket => {
             webSocket.on('close', () => {

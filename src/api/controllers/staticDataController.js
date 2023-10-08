@@ -88,7 +88,7 @@ class StaticDataController {
         }
         res.status(200).json({ systemInfo: {
             motherboard: `${staticData.motherboard.information.manufacturer} ${staticData.motherboard.information.productName}`,
-            cpu: `${staticData.cpu.information.cores.cpus} x ${staticData.cpu.information.manufacturer} ${staticData.cpu.information.modelName} @ ${staticData.cpu.clocks.maximum}GHz`,
+            cpu: `${staticData.cpu.information.cores.cpus} x ${staticData.cpu.information.manufacturer} ${staticData.cpu.information.modelName}`,
             harddrive: `${staticData.harddrives[0].information.deviceModel} ${staticData.harddrives[0].information.capacity}GB`,
             ...staticData.systemInfo
         }})
