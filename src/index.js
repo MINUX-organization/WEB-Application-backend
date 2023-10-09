@@ -1,10 +1,9 @@
+import './envCheck.js'
 // Services
 import { HttpServer } from "./server/httpServer.js"
 import { mainDatabase } from "./database/mainDatabase.js"
 import { WebSocketServer } from "./server/webSocketServer.js"
-// Dotenv
-import dotenv from 'dotenv'
-dotenv.config()
+
 
 class MainServer {
     async start() {

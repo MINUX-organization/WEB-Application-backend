@@ -77,7 +77,7 @@ export const testStaticData = {
       },
     },
     {
-      uuid: "4b8ea6a1124e9dc52e974c4ae9f8a9797ae3a9ce97bf1a8861a4ae494c95fb47",
+      uuid: "04af2597bcac8c9169ff93adf5851e487f36330c39623e6293a3e49d828c0ea4",
       information: {
         manufacturer: "NVIDIA",
         periphery: "GeForce RTX 3060",

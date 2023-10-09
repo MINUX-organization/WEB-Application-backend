@@ -2,8 +2,9 @@ import { staticData } from "../../temp/static.js";
 import { ApiError } from "../../error/ApiError.js";
 import { clientsData } from "../../temp/clients.js";
 import { commandInterface } from "../../classes/commands.js";
-import { loggerConsole } from "../../utils/logger.js";
-
+import { loggerConsole } from '../../utils/logger.js';
+import { sequelize } from '#src/sequelizeInstance.js'
+import _ from 'lodash'
 
 class StaticDataController {
     static getFullData(req, res, next) { // Reformated + worked
@@ -17,7 +18,7 @@ class StaticDataController {
         res.status(200).json(staticData)
 
     }
-    static getGPUData(req, res, next) { // Reformated + worked 
+    static async getGPUData(req, res, next) { // Reformated + worked 
         if (!staticData.gpus) {
             if (clientsData.app) {
                 clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
@@ -26,7 +27,13 @@ class StaticDataController {
             return next(ApiError.noneData("GPU data was not received from the server!"))
         }
         
-        res.status(200).json({ gpus: staticData.gpus })
+        const dbGpus = await sequelize.models.GPUs.findAll();
+        const transformedGpus = _.compact(staticData.gpus.map(staticGpu => {
+            const dbGpu = dbGpus.find(v => v.dataValues.uuid === staticGpu.uuid)
+            if (dbGpu === undefined) return null
+            return { ...staticGpu, id: dbGpu.id }
+        }))
+        res.status(200).json({ gpus: transformedGpus })
     }
     static getCPUData(req, res, next) { // Reformated + worked
         if (!staticData.cpu) {

@@ -1,5 +1,3 @@
-// Libs
-import Sequelize from 'sequelize';
 // Dotenv
 import dotenv from 'dotenv'
 dotenv.config()
@@ -15,26 +13,12 @@ import { dynamicData } from '../temp/dynamic.js';
 // Utils
 import { generateRecoveryCode } from '../utils/generatorRecoveryCodes.js';
 import { loggerConsole } from '../utils/logger.js';
+import { sequelize } from '#src/sequelizeInstance.js';
 import _ from 'lodash'
 
 class Database {
     constructor() {
-        this.db = new Sequelize(
-            {
-                // logging: msg => loggerConsole.database(msg),
-                logging: false,
-                database: process.env.DB_NAME,
-                username: process.env.DB_USERNAME,
-                password: process.env.DB_PASSWORD,
-                dialect: process.env.DB_DIALECT,
-                dialectOptions: {
-                    useUTC: false, 
-                },
-                host: process.env.DB_HOST,
-                port: process.env.DB_PORT,
-                timezone : process.env.DB_TIMEZONE
-            }
-        )
+        this.db = sequelize
     }
     async start() {
         // Start the database

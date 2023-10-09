@@ -53,7 +53,7 @@ export const testDynamicData = {
         rejected: null,
       },
       temperature: 90,
-      uuid: "2248b28d83e7edf5089b1400d3655cf505708afc512e67290ab736aea1a6d508",
+      uuid: "27ff37ede2ebdd4b1343131ab2dc69181571b325e5d53315ef789f8092bf1343",
     },
     {
       algorithm: "algorithm1",
@@ -84,7 +84,7 @@ export const testDynamicData = {
         rejected: null,
       },
       temperature: 36,
-      uuid: "781e82f6686a81bbe0850a378939bbd339892ac51f904b6327c821d4ab4a5e51",
+      uuid: "8ee41b673e4306207f69b63dc1cda9bdb010e783c79cf0a998f4e609094951e3",
     },
     {
       algorithm: null,

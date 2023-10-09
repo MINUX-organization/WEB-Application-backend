@@ -14,6 +14,8 @@ import { dynamicDataCM } from '../validation/ws/dynamicData.js'
 import { commandInterface } from "../classes/commands.js";
 
 import { commandsData } from '../temp/commands.js'
+import { sequelize } from '#src/sequelizeInstance.js'
+import _ from 'lodash'
 
 class WebSocketServer {
     constructor(PORT, httpServer) {
@@ -130,11 +132,18 @@ class WebSocketServer {
                                                     loggerConsole.data(`Dynamic data received on WebSocketServer!: ${JSON.stringify(dynamicData)}`)
                                                     // Sending dynamic data to client
                                                     if (clientsData.front) {
+                                                        const dbGpus = await sequelize.models.GPUs.findAll();
+                                                        // extending gpus with ids from database, deleting gpus if not found in db
+                                                        const transformedGpus = _.compact(dynamicData.gpus.map(gpu => {
+                                                            const dbGpu = dbGpus.find(dbGpu => dbGpu.dataValues.uuid === gpu.uuid)
+                                                            if (dbGpu === undefined) return null
+                                                            return {...gpu, id: dbGpu.id}
+                                                        }))
                                                         // Sending msg
                                                         clientsData.front.send(JSON.stringify(
                                                             {
                                                                 state: dynamicData.state,
-                                                                gpus: dynamicData.gpus,
+                                                                gpus: transformedGpus,
                                                                 cpu: dynamicData.cpu,
                                                                 harddrives: dynamicData.harddrives,
                                                                 rams: dynamicData.rams,
