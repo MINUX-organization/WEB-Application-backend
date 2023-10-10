@@ -32,12 +32,18 @@ const staticDataCM = Joi.object({
                 maximum: Joi.number().required().greater(Joi.ref('minimal')),
             }).required(),
             clocks: Joi.object({
-                minimalCore: Joi.number().required().allow(null),
+                minimalCore: Joi.number().required(),
                 enforcedCore: Joi.number().required(),
                 maximumCore: Joi.number().required(),
-                minimalMemory: Joi.number().required().allow(null),
+                minimalCoreOffset: Joi.number().required(),
+                maximumCoreOffset: Joi.number().required(),
+                enforcedCoreOffset: Joi.number().required(),
+                minimalMemory: Joi.number().required(),
                 enforcedMemory: Joi.number().required(),
                 maximumMemory: Joi.number().required(),
+                minimalMemoryOffset: Joi.number().required(),
+                maximumMemoryOffset: Joi.number().required(),
+                enforcedMemoryOffset: Joi.number().required()
             }).required()
         }).required()
     ).required(),
