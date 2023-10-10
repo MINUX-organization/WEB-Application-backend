@@ -218,8 +218,8 @@ class WebSocketServer {
                                                 overclock: {
                                                     clockType: "custom",
                                                     autofan: false,
-                                                    coreClock: gpuSetup.dataValues.core_clock,
-                                                    memoryClock: gpuSetup.dataValues.memory_clock,
+                                                    coreClockOffset: gpuSetup.dataValues.core_clock,
+                                                    memoryClockOffset: gpuSetup.dataValues.memory_clock,
                                                     fanSpeed: gpuSetup.dataValues.fan_speed,
                                                     powerLimit: gpuSetup.dataValues.power_limit,
                                                     criticalTemp: gpuSetup.dataValues.crit_temp,

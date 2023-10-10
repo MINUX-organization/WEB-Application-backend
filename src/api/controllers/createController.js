@@ -129,8 +129,8 @@ class CreateController {
             }
             await mainDatabase.models.GPU_PRESETs.create({
                 name: req.body.name,
-                memory_clock: req.body.memoryClock,
-                core_clock: req.body.coreClock,
+                memory_clock_offset: req.body.memoryClockOffset,
+                core_clock_offset: req.body.coreClockOffset,
                 power_limit: req.body.powerLimit,
                 crit_temp: req.body.critTemp,
                 fan_speed: req.body.fanSpeed,

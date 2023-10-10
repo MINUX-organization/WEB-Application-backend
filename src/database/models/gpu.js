@@ -80,11 +80,11 @@ export default function initGPUModels(db) {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        clocksMinimalCore: {
+        clocksMinimalCoreOffsetOffset: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        clocksMaximumCore: {
+        clocksMaximumCoreOffsetOffset: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
@@ -118,10 +118,10 @@ export default function initGPUModels(db) {
         name: {
             type: DataTypes.STRING(128),
         },
-        memory_clock: {
+        memory_clock_offset: {
             type: DataTypes.SMALLINT,
         },
-        core_clock: {
+        core_clock_offset: {
             type: DataTypes.SMALLINT,
         },
         power_limit: {
@@ -205,13 +205,13 @@ export default function initGPUModels(db) {
             primaryKey: true,
             autoIncrement: true,
         },
-        memory_clock: {
+        memory_clock_offset: {
             type: DataTypes.SMALLINT,
-            defaultValue: -1
+            defaultValue: 0
         },
-        core_clock: {
+        core_clock_offset: {
             type: DataTypes.SMALLINT,
-            defaultValue: -1
+            defaultValue: 0
         },
         power_limit: {
             type: DataTypes.SMALLINT,

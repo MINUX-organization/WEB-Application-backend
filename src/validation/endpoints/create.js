@@ -22,8 +22,8 @@ const createMinerSchema = Joi.object({
 });
 const createGPUPresetSchema = Joi.object({
     name: Joi.string().pattern(new RegExp("^[a-zA-Z0-9_-]{3,128}$")),
-    memoryClock: Joi.number().integer().required(),
-    coreClock: Joi.number().integer().required(),
+    memoryClockOffset: Joi.number().integer().required(),
+    coreClockOffset: Joi.number().integer().required(),
     powerLimit: Joi.number().integer().required(),
     critTemp: Joi.number().integer().required(),
     fanSpeed: Joi.number().integer().required().min(0).max(100),

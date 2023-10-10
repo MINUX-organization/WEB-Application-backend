@@ -7,8 +7,8 @@ const setGpusSettingsSchema = Joi.object({
             overclock: Joi.object({
                 clockType: Joi.string().valid('custom', 'auto', 'semiauto').required(),
                 autofan: Joi.boolean().required(),
-                coreClock: Joi.number().allow(null).required(),
-                memoryClock: Joi.number().allow(null).required(),
+                coreClockOffset: Joi.number().allow(null).required(),
+                memoryClockOffset: Joi.number().allow(null).required(),
                 fanSpeed: Joi.number().allow(null).required(),
                 powerLimit: Joi.number().allow(null).required(),
                 criticalTemp: Joi.number().allow(null).required()

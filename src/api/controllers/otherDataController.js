@@ -191,8 +191,8 @@ class OtherDataController {
             // Reformat response
             const reformatedGpuSetup = {
                 id: gpuSetup.id,
-                memoryClock: gpuSetup.memory_clock,
-                coreClock: gpuSetup.core_clock,
+                memoryClockOffset: gpuSetup.memory_clock,
+                coreClockOffset: gpuSetup.core_clock,
                 powerLimit: gpuSetup.power_limit,
                 fanSpeed: gpuSetup.fan_speed,
                 critTemp: gpuSetup.crit_temp,
@@ -210,8 +210,8 @@ class OtherDataController {
                         maximum: gpu.powerMaximum
                     },
                     clocks: {
-                        minimalCore: gpu.clocksMinimalCore,
-                        maximumCore: gpu.clocksMaximumCore,
+                        minimalCore: gpu.clocksMinimalCoreOffset,
+                        maximumCore: gpu.clocksMaximumCoreOffset,
                         enforcedCore: gpu.clocksEnforcedCore,
                         minimalMemory: gpu.clocksMinimalMemory,
                         maximumMemory: gpu.clocksMaximumMemory,
@@ -485,8 +485,8 @@ class OtherDataController {
                                 overclock: {
                                     clockType: "custom",
                                     autofan: false,
-                                    coreClock: gpuSetup.core_clock,
-                                    memoryClock: gpuSetup.memory_clock,
+                                    coreClockOffset: gpuSetup.core_clock_offset,
+                                    memoryClockOffset: gpuSetup.memory_clock_offset,
                                     fanSpeed: gpuSetup.fan_speed,
                                     powerLimit: gpuSetup.power_limit,
                                     criticalTemp: gpuSetup.crit_temp,
@@ -523,8 +523,8 @@ class OtherDataController {
                         gpuId: gpu.id,
                         gpuSetupId: gpuSetup.id,
                         name: gpuStatic ? `${gpuStatic.information.manufacturer} ${gpuStatic.information.periphery}` : null,
-                        memoryClock: gpuSetup.memory_clock,
-                        coreClock: gpuSetup.core_clock,
+                        memoryClockOffset: gpuSetup.memory_clock_offset,
+                        coreClockOffset: gpuSetup.core_clock_offset,
                         connected: gpu.connected,
                         powerLimit: gpuSetup.power_limit,
                         fanSpeed: gpuSetup.fan_speed,

@@ -181,14 +181,14 @@ class EditController {
             // Check if gpu preset exists
             const gpu_preset = await mainDatabase.models.GPU_PRESETs.findOne({ where: {id: req.body.id}})
             if (gpu_preset) {
-                if (req.body.newMemoryClock || req.body.newCoreClock || req.body.newPowerLimit || req.body.newCritTemp || req.body.newFanSpeed ) {
+                if (req.body.newMemoryClockOffset || req.body.newCoreClockOffset || req.body.newPowerLimit || req.body.newCritTemp || req.body.newFanSpeed ) {
                     // If new memory clock
-                    if (req.body.newMemoryClock) {
-                        gpu_preset.memory_clock = req.body.newMemoryClock
+                    if (req.body.newMemoryClockOffset) {
+                        gpu_preset.memory_clock_offset = req.body.newMemoryClockOffset
                     }
                     // If new core clock
-                    if (req.body.newCoreClock) {
-                        gpu_preset.core_clock = req.body.newCoreClock
+                    if (req.body.newCoreClockOffset) {
+                        gpu_preset.core_clock_offset = req.body.newCoreClockOffset
                     }
                     // If new power limit
                     if (req.body.newPowerLimit) {
@@ -230,18 +230,18 @@ class EditController {
                 throw new Error('GPU for that GPU setup is not found')
             }
             // If new core clock
-            if (req.body.newCoreClock) {
-                if (req.body.newCoreClock !== -1 && (req.body.newCoreClock < gpu.clocksMinimalCore || req.body.newCoreClock > gpu.clocksMaximumCore)) {
-                    throw new Error(`Valid core clock is in range [${gpu.clocksMinimalCore}, ${gpu.clocksMaximumCore}]`)
+            if (req.body.newCoreClockOffset) {
+                if (req.body.newCoreClockOffset !== -1 && (req.body.newCoreClockOffset < gpu.clocksMinimalCoreOffset || req.body.newCoreClockOffset > gpu.clocksMaximumCoreOffset)) {
+                    throw new Error(`Valid core clock is in range [${gpu.clocksMinimalCoreOffset}, ${gpu.clocksMaximumCoreOffset}]`)
                 }
-                gpuSetup.core_clock = req.body.newCoreClock;
+                gpuSetup.core_clock_offset = req.body.newCoreClockOffset;
             }
             // If new memory clock
-            if (req.body.newMemoryClock) {
-                if (req.body.newMemoryClock !== -1 && (req.body.newMemoryClock < gpu.clocksMinimalMemory || req.body.newMemoryClock > gpu.clocksMaximumMemory)) {
+            if (req.body.newMemoryClockOffset) {
+                if (req.body.newMemoryClockOffset !== -1 && (req.body.newMemoryClockOffset < gpu.clocksMinimalMemory || req.body.newMemoryClockOffset > gpu.clocksMaximumMemory)) {
                     throw new Error(`Valid memory clock is in range [${gpu.clocksMinimalMemory}, ${gpu.clocksMaximumMemory}]`)
                 }
-                gpuSetup.memory_clock = req.body.newMemoryClock;
+                gpuSetup.memory_clock_offset = req.body.newMemoryClockOffset;
             }
             // If new power limit
             if (req.body.newPowerLimit) {
@@ -289,8 +289,8 @@ class EditController {
                         overclock: {
                             clockType: "custom",
                             autofan: false,
-                            coreClock: gpuSetup.core_clock,
-                            memoryClock: gpuSetup.memory_clock,
+                            coreClockOffset: gpuSetup.core_clock_offset,
+                            memoryClockOffset: gpuSetup.memory_clock_offset,
                             fanSpeed: gpuSetup.fan_speed,
                             powerLimit: gpuSetup.power_limit,
                             criticalTemp: gpuSetup.crit_temp,
