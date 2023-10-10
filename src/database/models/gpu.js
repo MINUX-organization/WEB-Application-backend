@@ -56,19 +56,11 @@ export default function initGPUModels(db) {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        temperatureEnforcedCritical: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
         memoryTotal: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
         powerDefaultLimit: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        powerEnforcedLimit: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
@@ -80,27 +72,19 @@ export default function initGPUModels(db) {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        clocksMinimalCoreOffsetOffset: {
+        clocksMinimalCoreOffset: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        clocksMaximumCoreOffsetOffset: {
+        clocksMaximumCoreOffset: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        clocksEnforcedCore: {
+        clocksMinimalMemoryOffset: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        clocksMinimalMemory: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        clocksMaximumMemory: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        clocksEnforcedMemory: {
+        clocksMaximumMemoryOffset: {
             type: DataTypes.INTEGER,
             allowNull: false
         }

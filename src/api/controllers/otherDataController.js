@@ -201,21 +201,17 @@ class OtherDataController {
                 options: {
                     temperature: {
                         maximumCritical: gpu.temperatureMaximumCritical,
-                        enforcedCritical: gpu.temperatureEnforcedCritical
                     },
                     power: {
                         defaultLimit: gpu.powerDefaultLimit,
-                        enforcedLimit: gpu.powerEnforcedLimit,
                         minimal: gpu.powerMinimal,
                         maximum: gpu.powerMaximum
                     },
                     clocks: {
-                        minimalCore: gpu.clocksMinimalCoreOffset,
-                        maximumCore: gpu.clocksMaximumCoreOffset,
-                        enforcedCore: gpu.clocksEnforcedCore,
-                        minimalMemory: gpu.clocksMinimalMemory,
-                        maximumMemory: gpu.clocksMaximumMemory,
-                        enforcedMemory: gpu.clocksEnforcedMemory
+                        minimalCoreOffset: gpu.clocksMinimalCoreOffset,
+                        maximumCoreOffset: gpu.clocksMaximumCoreOffset,
+                        minimalMemoryOffset: gpu.clocksMinimalMemoryOffset,
+                        maximumMemoryOffset: gpu.clocksMaximumMemoryOffset,
                     }
                 }
             }

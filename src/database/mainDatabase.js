@@ -105,18 +105,14 @@ class Database {
                                 pciBusId: newReceivedGpu.information.pci.busId,
                                 pciPciBusId: newReceivedGpu.information.pci.pciBusId,
                                 temperatureMaximumCritical: newReceivedGpu.temperature.maximumCritical,
-                                temperatureEnforcedCritical: newReceivedGpu.temperature.enforcedCritical,
                                 memoryTotal: newReceivedGpu.memory.total,
                                 powerDefaultLimit: newReceivedGpu.power.defaultLimit,
-                                powerEnforcedLimit: newReceivedGpu.power.enforcedLimit,
                                 powerMinimal: newReceivedGpu.power.minimal,
                                 powerMaximum: newReceivedGpu.power.maximum,
-                                clocksMinimalCoreOffset: newReceivedGpu.clocks.minimalCore,
-                                clocksMaximumCoreOffset: newReceivedGpu.clocks.maximumCore,
-                                clocksEnforcedCore: newReceivedGpu.clocks.enforcedCore,
-                                clocksMinimalMemory: newReceivedGpu.clocks.minimalMemory,
-                                clocksMaximumMemory: newReceivedGpu.clocks.maximumMemory,
-                                clocksEnforcedMemory: newReceivedGpu.clocks.enforcedMemory
+                                clocksMinimalCoreOffset: newReceivedGpu.clocks.minimalCoreOffset,
+                                clocksMaximumCoreOffset: newReceivedGpu.clocks.maximumCoreOffset,
+                                clocksMinimalMemoryOffset: newReceivedGpu.clocks.minimalMemoryOffset,
+                                clocksMaximumMemoryOffset: newReceivedGpu.clocks.maximumMemoryOffset,
                             })
                             loggerConsole.data(`Created GPU: ${newReceivedGpu.uuid}`)
                             await this.db.models.GPU_SETUPs.create({gpu_uuid: newReceivedGpu.uuid})
