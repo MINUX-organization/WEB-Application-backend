@@ -191,8 +191,8 @@ class OtherDataController {
             // Reformat response
             const reformatedGpuSetup = {
                 id: gpuSetup.id,
-                memoryClockOffset: gpuSetup.memory_clock,
-                coreClockOffset: gpuSetup.core_clock,
+                memoryClockOffset: gpuSetup.memory_clock_offset,
+                coreClockOffset: gpuSetup.core_clock_offset,
                 powerLimit: gpuSetup.power_limit,
                 fanSpeed: gpuSetup.fan_speed,
                 critTemp: gpuSetup.crit_temp,
@@ -249,8 +249,8 @@ class OtherDataController {
                 const reformatedGpuPreset = {
                     id: gpuPreset.id,
                     name: gpuPreset.name,
-                    memoryClock: gpuPreset.memory_clock,
-                    coreClock: gpuPreset.core_clock,
+                    memoryClockOffset: gpuPreset.memory_clock_offset,
+                    coreClockOffset: gpuPreset.core_clock_offset,
                     powerLimit: gpuPreset.power_limit,
                     critTemp: gpuPreset.crit_temp,
                     fanSpeed: gpuPreset.fan_speed,
