@@ -14,7 +14,7 @@ import { dynamicDataCM } from '../validation/ws/dynamicData.js'
 import { commandInterface } from "../classes/commands.js";
 
 import { commandsData } from '../temp/commands.js'
-import { sequelize } from '#src/sequelizeInstance.js'
+import { sequelize } from '../sequelizeInstance.js'
 import _ from 'lodash'
 
 class WebSocketServer {

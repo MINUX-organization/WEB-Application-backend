@@ -3,7 +3,7 @@ import { ApiError } from "../../error/ApiError.js";
 import { clientsData } from "../../temp/clients.js";
 import { commandInterface } from "../../classes/commands.js";
 import { loggerConsole } from '../../utils/logger.js';
-import { sequelize } from '#src/sequelizeInstance.js'
+import { sequelize } from '../../sequelizeInstance.js'
 import _ from 'lodash'
 
 class StaticDataController {

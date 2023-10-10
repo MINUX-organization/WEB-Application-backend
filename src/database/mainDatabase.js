@@ -13,7 +13,7 @@ import { dynamicData } from '../temp/dynamic.js';
 // Utils
 import { generateRecoveryCode } from '../utils/generatorRecoveryCodes.js';
 import { loggerConsole } from '../utils/logger.js';
-import { sequelize } from '#src/sequelizeInstance.js';
+import { sequelize } from '../sequelizeInstance.js';
 import _ from 'lodash'
 
 class Database {
