@@ -85,8 +85,29 @@ class Database {
                         const newRecievedGpus = receivedGpus.filter(item => !dbGpusUuids.includes(item.uuid))
 
                         for (const connectedDbGpu of connectedDbGpus) {
-                            await connectedDbGpu.update({ connected: true })
-                            loggerConsole.data(`mark GPU as connected: ${connectedDbGpu.uuid}`)
+                            const relatedStaticGpu = receivedGpus.find(gpu => gpu.uuid === connectedDbGpu.uuid)
+                            await connectedDbGpu.update({
+                                uuid: relatedStaticGpu.uuid,
+                                connected: true,
+                                manufacturer: relatedStaticGpu.information.manufacturer,
+                                periphery: relatedStaticGpu.information.periphery,
+                                driverVersion: relatedStaticGpu.information.driverVersion,
+                                technologyVersion: relatedStaticGpu.information.technology.version,
+                                technologyName: relatedStaticGpu.information.technology.name,
+                                serialNumber: relatedStaticGpu.information.serialNumber,
+                                pciBusId: relatedStaticGpu.information.pci.busId,
+                                pciPciBusId: relatedStaticGpu.information.pci.pciBusId,
+                                temperatureMaximumCritical: relatedStaticGpu.temperature.maximumCritical,
+                                memoryTotal: relatedStaticGpu.memory.total,
+                                powerDefaultLimit: relatedStaticGpu.power.defaultLimit,
+                                powerMinimal: relatedStaticGpu.power.minimal,
+                                powerMaximum: relatedStaticGpu.power.maximum,
+                                clocksMinimalCoreOffset: relatedStaticGpu.clocks.minimalCoreOffset,
+                                clocksMaximumCoreOffset: relatedStaticGpu.clocks.maximumCoreOffset,
+                                clocksMinimalMemoryOffset: relatedStaticGpu.clocks.minimalMemoryOffset,
+                                clocksMaximumMemoryOffset: relatedStaticGpu.clocks.maximumMemoryOffset,
+                            })
+                            loggerConsole.data(`marked GPU as connected and updated it with static data: ${connectedDbGpu.uuid}`)
                         }
                         for (const orphanDbGpu of orphanDbGpus) {
                             await orphanDbGpu.update({ connected: false })

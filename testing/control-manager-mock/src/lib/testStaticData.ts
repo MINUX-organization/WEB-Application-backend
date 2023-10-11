@@ -27,7 +27,7 @@ export const testStaticData = {
         defaultLimit: 320,
         enforcedLimit: 320,
         minimal: 100,
-        maximum: 450,
+        maximum: 800,
       },
       clocks: {
         minimalCore: 615,
