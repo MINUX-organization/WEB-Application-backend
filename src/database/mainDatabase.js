@@ -271,27 +271,33 @@ class Database {
                     }
                     break
                 case 'cpu':
-                    try {
-                        const cpu = dynamicData.cpu
-                        // Check if cpu exists
-                        const checkCpu = await this.db.models.CPUs.findOne({where: {uuid: cpu.uuid}})
-                        if (checkCpu) {
-                            await this.db.models.CPU_GRAPHs.create({
-                                hashrate: cpu.hashrate.value,
-                                power: cpu.powerUsage,
-                                temp: cpu.temperature,
-                                algorithm: cpu.algorithm,
-                                cryptocurrency: cpu.cryptocurrency,
-                                cpu_uuid: cpu.uuid
-                            }).then(() => {
-                                loggerConsole.data(`Received CPU dynamic data from ${cpu.uuid}`)
-                            })
-                        } else {
-                            loggerConsole.data(`Received unknown CPU in dynamic data: ${cpu.uuid}`)
-                        }
-                    } catch (e) {
-                        loggerConsole.error(`Catched error in creating cpus dynamic data!: ${e.message}`)
-                    }
+                    // try {
+                    //     const cpu = dynamicData.cpu
+                    //     if (cpu) {
+                    //         // Check if cpu exists
+                    //         const checkCpu = await this.db.models.CPUs.findOne({where: {uuid: cpu.uuid}})
+                    //         if (checkCpu) {
+                    //             await this.db.models.CPU_GRAPHs.create({
+                    //                 hashrate: cpu.hashrate.value ? cpu.hashrate.value ,
+                    //                 power: cpu.powerUsage,
+                    //                 temp: cpu.temperature,
+                    //                 algorithm: cpu.algorithm,
+                    //                 cryptocurrency: cpu.cryptocurrency,
+                    //                 cpu_uuid: cpu.uuid
+                    //             }).then(() => {
+                    //                 loggerConsole.data(`Received CPU dynamic data from ${cpu.uuid}`)
+                    //             }).catch(error => {
+                    //                 loggerConsole.error(`Catched error in creating cpus graphs data!: ${JSON.stringify(e, null, 2)}`)
+                    //             })
+                    //         } else {
+                    //             loggerConsole.data(`Received unknown CPU in dynamic data: ${cpu.uuid}`)
+                    //         }
+                    //     } else {
+                    //         loggerConsole.error(`Cpu dynamic data was not found!`)
+                    //     }
+                    // } catch (e) {
+                    //     loggerConsole.error(`Catched error in creating cpus dynamic data!: ${JSON.stringify(e, null, 2)}`)
+                    // }
                     break
             }
         }
