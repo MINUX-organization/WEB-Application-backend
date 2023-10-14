@@ -231,14 +231,14 @@ class EditController {
             }
             // If new core clock
             if (req.body.newCoreClockOffset) {
-                if (req.body.newCoreClockOffset !== -1 && (req.body.newCoreClockOffset < gpu.clocksMinimalCoreOffset || req.body.newCoreClockOffset > gpu.clocksMaximumCoreOffset)) {
+                if ((req.body.newCoreClockOffset < gpu.clocksMinimalCoreOffset || req.body.newCoreClockOffset > gpu.clocksMaximumCoreOffset)) {
                     throw new Error(`Valid core clock offset is in range [${gpu.clocksMinimalCoreOffset}, ${gpu.clocksMaximumCoreOffset}]`)
                 }
                 gpuSetup.core_clock_offset = req.body.newCoreClockOffset;
             }
             // If new memory clock
             if (req.body.newMemoryClockOffset) {
-                if (req.body.newMemoryClockOffset !== -1 && (req.body.newMemoryClockOffset < gpu.clocksMinimalMemoryOffset || req.body.newMemoryClockOffset > gpu.clocksMaximumMemoryOffset)) {
+                if ((req.body.newMemoryClockOffset < gpu.clocksMinimalMemoryOffset || req.body.newMemoryClockOffset > gpu.clocksMaximumMemoryOffset)) {
                     throw new Error(`Valid memory clock offset is in range [${gpu.clocksMinimalMemoryOffset}, ${gpu.clocksMaximumMemoryOffset}]`)
                 }
                 gpuSetup.memory_clock_offset = req.body.newMemoryClockOffset;

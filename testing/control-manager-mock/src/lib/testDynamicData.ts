@@ -9,10 +9,10 @@ export const testDynamicData = {
       measurement: null,
       value: null,
     },
-    minerUpTime: "-",
+    minerUpTime: "10:21:45",
     isMining: false,
     miner: {
-      fullName: null,
+      fullName: 'TRex',
       uuid: null,
     },
     powerUsage: 81,
