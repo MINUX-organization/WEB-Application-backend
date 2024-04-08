@@ -74,6 +74,9 @@ class Database {
             switch (key) {
                 case 'gpus':
                     try {
+                        if (staticData.gpus == null)
+                            break
+
                         const receivedGpus = staticData.gpus
                         const dbGpus = await this.db.models.GPUs.findAll()
 

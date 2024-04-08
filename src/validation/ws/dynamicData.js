@@ -4,7 +4,7 @@ const dynamicDataCM = Joi.object({
     state: Joi.object({
         mining: Joi.boolean().required(),
     }).required(),
-    gpus: Joi.array().items(
+    gpus: Joi.array().allow(null).items(
         Joi.object({
             uuid: Joi.string().alphanum().min(64).max(64).required(),
             temperature: Joi.number().required(),
