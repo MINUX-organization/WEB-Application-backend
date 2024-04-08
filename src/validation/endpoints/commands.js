@@ -19,7 +19,8 @@ const setGpusSettingsSchema = Joi.object({
                 algorithm: Joi.string().allow(null).required(),
                 wallet: Joi.string().allow(null).required(),
                 pool: Joi.string().allow(null).required(),
-                miner: Joi.string().required()
+                miner: Joi.string().required(),
+                additionalString: Joi.string().required()
             })
         })
     ).required()

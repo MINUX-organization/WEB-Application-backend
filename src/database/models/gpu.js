@@ -266,6 +266,9 @@ export default function initGPUModels(db) {
                 key: 'id'
             }
         },
+        additional_string: {
+            type: DataTypes.STRING
+        }
     }, {
         sequelize: db,
         modelName: 'FLIGHT_SHEETs'

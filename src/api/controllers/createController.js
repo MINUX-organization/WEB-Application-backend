@@ -169,14 +169,15 @@ class CreateController {
             return next(err);
         }
         
-        // Create GPUPreset
+        // Create FlightSheets
         try {
             await mainDatabase.models.FLIGHT_SHEETs.create({
                 name: req.body.name,
                 cryptocurrency_id: req.body.cryptocurrencyId,
                 miner_id: req.body.minerId,
                 wallet_id: req.body.walletId,
-                pool_id: req.body.poolId    
+                pool_id: req.body.poolId,
+                additional_string: req.body.additionalString
             });
             res.status(201).json();
         } catch (err) {
