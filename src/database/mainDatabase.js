@@ -35,7 +35,7 @@ class Database {
             this.models = {...modelsOthers, ...modelsGPU, ...modelsCPU, ...modelsHarddrive, ...modelsRAM}
             loggerConsole.database('Init models is successful!')
             // Synchronize database
-            await this.db.sync({force: true})
+            await this.db.sync({force: false})
             loggerConsole.database('Sync with database is successful!') 
         } catch (error) {
             loggerConsole.error(`Unable to connect with database!:  ${error}`)
