@@ -363,6 +363,9 @@ class EditController {
                         }
                         flight_sheet.pool_id = req.body.newPoolId
                     }
+                    if (req.body.newAdditionalString) {
+                        flight_sheet.additional_string = req.body.newAdditionalString
+                    }
                     flight_sheet.save().then(() => res.status(200).json())
                 }
                 else {

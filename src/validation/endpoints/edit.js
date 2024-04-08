@@ -49,7 +49,8 @@ const editFlightSheetSchema = Joi.object({
     newCryptocurrencyId: Joi.number().integer().optional(),
     newMinerId: Joi.number().integer().optional(),
     newWalletId: Joi.number().integer().optional(),
-    newPoolId: Joi.number().integer().optional()
+    newPoolId: Joi.number().integer().optional(),
+    newAdditionalString: Joi.string().optional()
 });
 
 export {
