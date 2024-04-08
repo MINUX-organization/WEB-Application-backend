@@ -401,7 +401,7 @@ class OtherDataController {
                         id: algorithm.id,
                         name: algorithm.name,
                     }: null,
-                    additionalString: flightSheet.additionalString
+                    additionalString: flightSheet.additional_string
                 })
             }
             res.status(200).json({"flightSheets": reformatedFlightSheets})
