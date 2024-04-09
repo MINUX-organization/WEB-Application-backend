@@ -275,7 +275,6 @@ class WebSocketServer {
                 } catch (error) {
                     webSocket.send(JSON.stringify(`${error}`));
                     loggerConsole.error(`Received error while parsing msg: ${error}`)
-                    console.log(errro)
                 }
                 // try {
                 //     const msgJSON = JSON.parse(msg)
