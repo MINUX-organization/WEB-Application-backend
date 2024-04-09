@@ -267,7 +267,7 @@ export default function initGPUModels(db) {
             }
         },
         additional_string: {
-            type: DataTypes.STRING
+            type: DataTypes.TEXT
         }
     }, {
         sequelize: db,
