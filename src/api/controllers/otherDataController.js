@@ -476,7 +476,6 @@ class OtherDataController {
                             }
                         }
                         // TODO:
-                        console.log(flightSheet.additional_string)
                         clientsData.app.send(JSON.stringify(new commandInterface('static',{
                             gpus: [{
                                 uuid: gpuSetup.dataValues.gpu_uuid,
