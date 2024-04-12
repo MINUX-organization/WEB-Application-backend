@@ -231,6 +231,7 @@ class WebSocketServer {
                                                     wallet: wallet ? wallet.address : null,
                                                     pool: pool ? `${pool.host}:${pool.port}` : null,
                                                     miner: miner ? miner.name : null,
+                                                    additionalString: flightSheet ? flightSheet.additional_string : ""
                                                 },
                                             })
                                         }
