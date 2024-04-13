@@ -6,6 +6,7 @@ import {
     editMinerSchema,
     editGPUPresetSchema,
     editFlightSheetSchema,
+    editFlightSheetWithCustomMinerSchema,
     editGPUSetupSchema
 } from '../../validation/endpoints/edit.js'
 
@@ -377,6 +378,61 @@ class EditController {
             }
         } catch (err) {
             return next(err)
+        }
+    }
+    static async editFlightSheetWithCustomMiner(req, res, next) {
+        const { error } = editFlightSheetWithCustomMinerSchema.validate(req.body);
+        const {id, newName, newInstallationURL, newWallet, 
+            newPoolURL, newCoin, newAlgorithm, newPoolTemplate, 
+            newWalletAndWorkerTemplate, newExtraConfigArguments} = req.body;
+
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message));
+        }
+
+        try 
+        {
+            const flightSheetWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findByPk(id);
+
+            if (!flightSheetWithCustomMiner) 
+            {
+                throw new ApiError.noneData(`Flight sheet with id ${req.body.id} is not found!`);
+            };
+            
+            if (newName) {
+                flightSheetWithCustomMiner.name = newName;
+            }
+            if (newInstallationURL) {
+                flightSheetWithCustomMiner.installation_url = newInstallationURL;
+            }
+            if (newWallet) {
+                flightSheetWithCustomMiner.wallet = newWallet;
+            }
+            if (newPoolURL) {
+                flightSheetWithCustomMiner.pool = newPoolURL;
+            }
+            if (newCoin) {
+                flightSheetWithCustomMiner.coin = newCoin;
+            }
+            if (newAlgorithm) {
+                flightSheetWithCustomMiner.algorithm = newAlgorithm;
+            }
+            if (newPoolTemplate) {
+                flightSheetWithCustomMiner.pool_template = newPoolTemplate;
+            }
+            if (newWalletAndWorkerTemplate) {
+                flightSheetWithCustomMiner.wallet_and_worker_template = newWalletAndWorkerTemplate;
+            }
+            if (newExtraConfigArguments) {
+                flightSheetWithCustomMiner.extra_config_arguments = newExtraConfigArguments;
+            }
+            
+            await flightSheetWithCustomMiner.save().then(() => res.status(200).json());
+
+        } 
+        catch (err) 
+        {
+            return next(err);
         }
     }
 }
