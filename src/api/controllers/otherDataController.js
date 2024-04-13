@@ -597,7 +597,7 @@ class OtherDataController {
             return next(ApiError.noneData("App is not connected!"))
         }
 
-        clientsData.app.send(JSON.stringify(new commandInterface('static',
+        clientsData.app.send(JSON.stringify(new commandInterface('static', // TODO: Сделать ожидание ответа
             { 
                 url: flightSheetsWithCustomMiner.installation_url,
                 wallet: flightSheetsWithCustomMiner.wallet,
@@ -607,12 +607,13 @@ class OtherDataController {
                 workerTemplate: flightSheetsWithCustomMiner.wallet_and_worker_template,
                 additionalArguments:  flightSheetsWithCustomMiner.extra_config_arguments     
             }, "setupCustomMiner")))
-        
+
         for (const GPUSetup of GPUSetups) {
             GPUSetup.isCustomMiner = true;
             GPUSetup.flight_sheet_id_with_custom_miner = req.body.flightSheetWithCustomMinerId;
-            GPUSetup.flight_sheet_id
+            GPUSetup.flight_sheet_id = null;
         }
+
         res.status(200)
     }
     static async getSettingsGpus(req, res, next) {
