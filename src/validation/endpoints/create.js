@@ -40,9 +40,9 @@ const createFlightSheetSchema = Joi.object({
 
 const createFlightSheetWithCustomMinerSchema = Joi.object({
     name: Joi.string().pattern(new RegExp("^[a-zA-Z0-9_-]{3,128}$")).required(),
-    installationUrl: Joi.string().required(),
+    installationURL: Joi.string().required(),
     wallet: Joi.string().required(),
-    pool: Joi.string().required(), 
+    poolURL: Joi.string().required(), 
     coin: Joi.string().required().allow(""),
     algorithm: Joi.string().required().allow(""),
     poolTemplate: Joi.string().required(),

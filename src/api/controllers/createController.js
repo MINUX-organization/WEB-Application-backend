@@ -193,9 +193,9 @@ class CreateController {
         try {
             await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.create({
                 name: req.body.name,
-                installation_url: req.body.installationUrl,
+                installation_url: req.body.installationURL,
                 wallet: req.body.wallet,
-                pool: req.body.pool,
+                pool: req.body.poolURL,
                 coin: req.body.coin,
                 algorithm: req.body.algorithm,
                 pool_template: req.body.poolTemplate,
