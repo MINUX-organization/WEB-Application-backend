@@ -417,7 +417,7 @@ class OtherDataController {
                 reformatedFlightSheets.push({
                     id: flightSheet.id,
                     name: flightSheet.name,
-                    type: "normal",
+                    type: "SIMPLE",
                     cryptocurrency: cryptocurrency ? {
                         id: cryptocurrency.id,
                         name: cryptocurrency.name,
@@ -452,7 +452,7 @@ class OtherDataController {
             for (const flightSheetWithCustomMiner of flightSheetsWithCustomMiner) {
                 const reformatedFlightSheetWithCustomMiner = {
                     id: flightSheetWithCustomMiner.id,
-                    type: "custom",
+                    type: "NORMAL",
                     name: flightSheetWithCustomMiner.name,
                     installationURL: flightSheetWithCustomMiner.installation_url,
                     wallet: flightSheetWithCustomMiner.wallet,
