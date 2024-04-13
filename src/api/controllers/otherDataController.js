@@ -5,7 +5,8 @@ import {
     getCPUSetupSchema,
     getGPUPresetsSchema,
     getGPUSetupSchema,
-    editGpusForFlightSheetsSchema
+    editGpusForFlightSheetsSchema,
+    editGpusForFlightSheetsWithCustomMinerSchema
 } from "../../validation/endpoints/otherData.js";
 import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
@@ -15,6 +16,23 @@ import { loggerConsole } from "../../utils/logger.js";
 import { commandInterface } from "../../classes/commands.js"
 
 class OtherDataController {
+    static async waitForResponse(command) {
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                clearInterval(timeout)
+                reject(ApiError.noneData("No response to the command was received"))
+            }, 3000)
+            const interval = setInterval(() => {
+                if (commandsData[command] != null) {
+                    const response = commandsData[command]
+                    commandsData[command] = null
+                    clearInterval(interval)
+                    clearTimeout(timeout)
+                    resolve(response)
+                }
+            }, 10)
+        })
+    }
     static async getFullMiners(req, res, next) { // reformated + worked
         // Getting all miners
         try {
@@ -148,7 +166,8 @@ class OtherDataController {
         try {
             // Check if flight sheets exist
             const flightSheets = await mainDatabase.models.FLIGHT_SHEETs.findAll();
-            if (flightSheets.length == 0) {
+            const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findAll();
+            if (flightSheets.length == 0 && flightSheetsWithCustomMiner.length == 0) {
                 return res.status(200).json({ "flightSheets": [] });
             }
             // Reformat response
@@ -158,15 +177,38 @@ class OtherDataController {
                 const reformatedFlightSheet = {
                     id: flightSheet.id,
                     name: flightSheet.name,
+                    type: "normal",
                     cryptocurrencyId: flightSheet.cryptocurrency_id,
                     minerId: flightSheet.miner_id,
                     walletId: flightSheet.wallet_id,
-                    poolId: flightSheet.pool_id
+                    poolId: flightSheet.pool_id,
                 }
                 reformatedFlightSheets.push(reformatedFlightSheet)
             })
+            
+            const reformatedFlightSheetsWithCustomMiner = []
+            flightSheetsWithCustomMiner.forEach(flightSheetWithCustomMiner => {
+                flightSheetWithCustomMiner = flightSheetWithCustomMiner.dataValues
+                const reformatedFlightSheetWithCustomMiner = {
+                    id: flightSheetWithCustomMiner.id,
+                    name: flightSheetWithCustomMiner.name,
+                    type: "custom",
+                    installation_url: flightSheetWithCustomMiner.installationUrl,
+                    wallet: flightSheetWithCustomMiner.wallet,
+                    pool: flightSheetWithCustomMiner.pool,
+                    coin: flightSheetWithCustomMiner.coin,
+                    algorithm: flightSheetWithCustomMiner.algorithm,
+                    pool_template: flightSheetWithCustomMiner.poolTemplate,
+                    wallet_and_worker_template: flightSheetWithCustomMiner.walletAndWorketTemplate,
+                    extra_config_arguments: flightSheetWithCustomMiner.extraConfigArguments
+                }
+                reformatedFlightSheetsWithCustomMiner.push(reformatedFlightSheetWithCustomMiner)
+            })
+            
+            const result = [...reformatedFlightSheets, ...reformatedFlightSheetsWithCustomMiner]
+           
             // Return
-            res.status(200).json({ "flightSheets": reformatedFlightSheets });
+            res.status(200).json({ "flightSheets": result });
         } catch (err) {
             return next(err)
         }
@@ -363,6 +405,8 @@ class OtherDataController {
     static async getFullFilledFlightSheets(req, res, next) {
         try {
             const flightSheets = await mainDatabase.models.FLIGHT_SHEETs.findAll()
+            const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findAll()
+            
             const reformatedFlightSheets = []
             for (const flightSheet of flightSheets) {
                 const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({where: {id: flightSheet.cryptocurrency_id}})
@@ -373,6 +417,7 @@ class OtherDataController {
                 reformatedFlightSheets.push({
                     id: flightSheet.id,
                     name: flightSheet.name,
+                    type: "normal",
                     cryptocurrency: cryptocurrency ? {
                         id: cryptocurrency.id,
                         name: cryptocurrency.name,
@@ -403,6 +448,22 @@ class OtherDataController {
                     }: null,
                     additionalString: flightSheet.additional_string
                 })
+            }
+            for (const flightSheetWithCustomMiner of flightSheetsWithCustomMiner) {
+                const reformatedFlightSheetWithCustomMiner = {
+                    id: flightSheetWithCustomMiner.id,
+                    type: "custom",
+                    name: flightSheetWithCustomMiner.name,
+                    installationUrl: flightSheetWithCustomMiner.installation_url,
+                    wallet: flightSheetWithCustomMiner.wallet,
+                    pool: flightSheetWithCustomMiner.pool,
+                    coin: flightSheetWithCustomMiner.coin,
+                    algorithm: flightSheetWithCustomMiner.algorithm,
+                    poolTemplate: flightSheetWithCustomMiner.pool_template,
+                    walletAndWorkerTemplate: flightSheetWithCustomMiner.wallet_and_worker_template,
+                    extraConfigArguments: flightSheetWithCustomMiner.extra_config_arguments
+                }
+                reformatedFlightSheets.push(reformatedFlightSheetWithCustomMiner)
             }
             res.status(200).json({"flightSheets": reformatedFlightSheets})
         } catch (err) {
@@ -506,6 +567,53 @@ class OtherDataController {
         } catch (error) {
             return next(error)
         }
+    }
+    static async editGpusForFlightSheetsWithCustomMiner(req, res, next) {
+        const { error } = editGpusForFlightSheetsWithCustomMinerSchema.validate(req.body);
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message));
+        }
+
+        const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findOne({where: {id: req.body.flightSheetWithCustomMinerId}})
+        if (flightSheetsWithCustomMiner == null) {
+            return next(ApiError.badRequest("Полетного листа с таким id не существует!"));
+        }
+        const GPUs = await mainDatabase.models.GPUs.findAll();
+        if (GPUs.length == 0) {
+            return next(ApiError.badRequest("Видеокарт в системе не найдено!"));
+        }
+        const connectedGPUs = GPUs.filter(gpu => gpu.connected == true)
+        if (connectedGPUs.length == 0) {
+            return next(ApiError.badRequest("Подключенных видеокарт в системе не найдено!"));
+        }
+        const connectedGPUIds = connectedGPUs.map(gpu => gpu.uuid);
+        
+        const GPUSetups = await mainDatabase.models.GPU_SETUPs.findAll({
+            where: {
+                gpu_uuid: connectedGPUIds
+            }
+        })
+        if (!clientsData.app) {
+            return next(ApiError.noneData("App is not connected!"))
+        }
+
+        clientsData.app.send(JSON.stringify(new commandInterface('static',
+            { 
+                url: flightSheetsWithCustomMiner.installation_url,
+                wallet: flightSheetsWithCustomMiner.wallet,
+                pool: flightSheetsWithCustomMiner.pool,
+                algorithm: flightSheetsWithCustomMiner.algorithm,
+                poolTemplate: flightSheetsWithCustomMiner.pool_template,
+                workerTemplate: flightSheetsWithCustomMiner.wallet_and_worker_template,
+                additionalArguments:  flightSheetsWithCustomMiner.extra_config_arguments     
+            }, "setupCustomMiner")))
+        
+        for (const GPUSetup of GPUSetups) {
+            GPUSetup.isCustomMiner = true;
+            GPUSetup.flight_sheet_id_with_custom_miner = req.body.flightSheetWithCustomMinerId;
+            GPUSetup.flight_sheet_id
+        }
+        res.status(200)
     }
     static async getSettingsGpus(req, res, next) {
         try {

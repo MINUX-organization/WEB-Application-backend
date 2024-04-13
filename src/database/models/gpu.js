@@ -7,6 +7,7 @@ class GPU_GRAPHs extends Model {}
 class GPU_SETUPs extends Model {}
 
 class FLIGHT_SHEETs extends Model {}
+class FLIGHT_SHEETs_WITH_CUSTOM_MINER extends Model {}
 
 export default function initGPUModels(db) {
 
@@ -92,7 +93,6 @@ export default function initGPUModels(db) {
         sequelize: db,
         modelName: 'GPUs'
     }),
-
     GPU_PRESETs.init({
         id: {
             type: DataTypes.SMALLINT,
@@ -223,6 +223,18 @@ export default function initGPUModels(db) {
                 key: 'id'
             },
             allowNull: true
+        },
+        flight_sheet_id_with_custom_miner: {
+            type: DataTypes.SMALLINT,
+            references: {
+                model: 'FLIGHT_SHEETs_WITH_CUSTOM_MINER',
+                key: 'id'
+            },
+            allowNull: true
+        },
+        isCustomMiner: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         }
     }, {
         sequelize: db,
@@ -273,9 +285,48 @@ export default function initGPUModels(db) {
         sequelize: db,
         modelName: 'FLIGHT_SHEETs'
     })
+    FLIGHT_SHEETs_WITH_CUSTOM_MINER.init({
+        id: {
+            type: DataTypes.SMALLINT,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        name: {
+            type: DataTypes.TEXT
+        },
+        installation_url: {
+            type: DataTypes.TEXT
+        },
+        wallet: {
+            type: DataTypes.TEXT
+        },
+        pool: {
+            type: DataTypes.TEXT
+        },
+        coin: {
+            type: DataTypes.TEXT
+        },
+        algorithm: {
+            type: DataTypes.TEXT
+        },
+        pool_template: {
+            type: DataTypes.TEXT
+        },
+        wallet_and_worker_template: {
+            type: DataTypes.TEXT
+        },
+        extra_config_arguments: {
+            type: DataTypes.TEXT
+        }
+    }, {
+        sequelize: db,
+        modelName: 'FLIGHT_SHEETs_WITH_CUSTOM_MINER',
+        freezeTableName: true
+    })
 
     return {
-        FLIGHT_SHEETs, 
+        FLIGHT_SHEETs,
+        FLIGHT_SHEETs_WITH_CUSTOM_MINER, 
         GPUs, 
         GPU_PRESETs, 
         GPU_EVENTs, 

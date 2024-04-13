@@ -16,9 +16,14 @@ const editGpusForFlightSheetsSchema = Joi.object({
     })).required()
 })
 
+const editGpusForFlightSheetsWithCustomMinerSchema = Joi.object({
+    flightSheetWithCustomMinerId: Joi.number().required()
+})
+
 export { 
     getGPUSetupSchema, 
     getGPUPresetsSchema, 
     getCPUSetupSchema,
-    editGpusForFlightSheetsSchema
+    editGpusForFlightSheetsSchema,
+    editGpusForFlightSheetsWithCustomMinerSchema
 };

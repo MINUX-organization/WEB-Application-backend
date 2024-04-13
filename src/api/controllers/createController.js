@@ -6,6 +6,7 @@ import {
     createMinerSchema,
     createGPUPresetSchema,
     createFlightSheetSchema,
+    createFlightSheetWithCustomMinerSchema
 } from "../../validation/endpoints/create.js";
 
 import { mainDatabase } from '../../database/mainDatabase.js'
@@ -178,6 +179,28 @@ class CreateController {
                 wallet_id: req.body.walletId,
                 pool_id: req.body.poolId,
                 additional_string: req.body.additionalString
+            });
+            res.status(201).json();
+        } catch (err) {
+            return next(err);
+        }
+    }
+    static async createFlightSheetWithCustomMiner(req, res, next) {
+        const { error } = createFlightSheetWithCustomMinerSchema.validate(req.body)
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message))
+        }
+        try {
+            await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.create({
+                name: req.body.name,
+                installation_url: req.body.installationUrl,
+                wallet: req.body.wallet,
+                pool: req.body.pool,
+                coin: req.body.coin,
+                algorithm: req.body.algorithm,
+                pool_template: req.body.poolTemplate,
+                wallet_and_worker_template: req.body.walletAndWorkerTemplate,
+                extra_config_arguments: req.body.extraConfigArguments
             });
             res.status(201).json();
         } catch (err) {
