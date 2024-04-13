@@ -452,7 +452,7 @@ class OtherDataController {
             for (const flightSheetWithCustomMiner of flightSheetsWithCustomMiner) {
                 const reformatedFlightSheetWithCustomMiner = {
                     id: flightSheetWithCustomMiner.id,
-                    type: "NORMAL",
+                    type: "CUSTOM",
                     name: flightSheetWithCustomMiner.name,
                     installationURL: flightSheetWithCustomMiner.installation_url,
                     wallet: flightSheetWithCustomMiner.wallet,
