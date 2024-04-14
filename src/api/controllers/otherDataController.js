@@ -575,8 +575,8 @@ class OtherDataController {
             return next(ApiError.badRequest(error.details[0].message));
         }
 
-        const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findOne({ where: { id: req.body.flightSheetWithCustomMinerId } })
-        if (flightSheetsWithCustomMiner == null) {
+        const flightSheetWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findOne({ where: { id: req.body.flightSheetWithCustomMinerId } })
+        if (flightSheetWithCustomMiner == null) {
             return next(ApiError.badRequest("Полетного листа с таким id не существует!"));
         }
         const GPUs = await mainDatabase.models.GPUs.findAll();
@@ -600,13 +600,13 @@ class OtherDataController {
         // Sending command
         const command = new commandInterface('static',
             {
-                url: flightSheetsWithCustomMiner.installation_url,
-                wallet: flightSheetsWithCustomMiner.wallet,
-                pool: flightSheetsWithCustomMiner.pool,
-                algorithm: flightSheetsWithCustomMiner.algorithm,
-                poolTemplate: flightSheetsWithCustomMiner.pool_template,
-                workerTemplate: flightSheetsWithCustomMiner.wallet_and_worker_template,
-                additionalArguments: flightSheetsWithCustomMiner.extra_config_arguments
+                url: flightSheetWithCustomMiner.installation_url,
+                wallet: flightSheetWithCustomMiner.wallet,
+                pool: flightSheetWithCustomMiner.pool,
+                algorithm: flightSheetWithCustomMiner.algorithm,
+                poolTemplate: flightSheetWithCustomMiner.pool_template,
+                workerTemplate: flightSheetWithCustomMiner.wallet_and_worker_template,
+                additionalArguments: flightSheetWithCustomMiner.extra_config_arguments
             }, "setupCustomMiner");
 
         clientsData.app.send(JSON.stringify(command))
