@@ -628,6 +628,7 @@ class OtherDataController {
             GPUSetup.isCustomMiner = true;
             GPUSetup.flight_sheet_id_with_custom_miner = req.body.flightSheetWithCustomMinerId;
             GPUSetup.flight_sheet_id = null;
+            await GPUSetup.save()
         }
 
         res.status(200).json();
