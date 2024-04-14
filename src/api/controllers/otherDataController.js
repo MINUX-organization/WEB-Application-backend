@@ -614,8 +614,10 @@ class OtherDataController {
         await OtherDataController.waitForResponse(command.command)
             .then(response => {
                 commandsData[command] = null
-                if (response == 'false') {
+                if (response.status == false) {
                     throw new ApiError.noneData("Failed to install custom miner!");
+                } else {
+                    loggerConsole.info("Custom miner applied to system!");
                 }
             })
             .catch(err => {
@@ -628,7 +630,7 @@ class OtherDataController {
             GPUSetup.flight_sheet_id = null;
         }
 
-        res.status(200)
+        res.status(200).json();
     }
     static async getSettingsGpus(req, res, next) {
         try {
