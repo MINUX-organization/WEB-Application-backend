@@ -617,7 +617,7 @@ class OtherDataController {
                 if (response.status == false) {
                     throw new ApiError.noneData("Failed to install custom miner!");
                 } else {
-                    loggerConsole.info("Custom miner applied to system!");
+                    loggerConsole.basicInfo("Custom miner applied to system!");
                 }
             })
             .catch(err => {
