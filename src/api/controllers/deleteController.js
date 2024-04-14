@@ -217,7 +217,7 @@ class DeleteController {
             return next(error);
         }
     }
-    static async deleteFlightSheetWithCustomMinerй(req, res, next) {
+    static async deleteFlightSheetWithCustomMiner(req, res, next) {
         const { error } = deleteFlightSheetWithCustomMinerSchema.validate(req.body);
 
         if (error) {
@@ -229,6 +229,47 @@ class DeleteController {
             if (!flightSheetWithCustomMiner) {
                 return next(ApiError.noneData('Could not find flight sheet with that id!'));
             }
+
+            const GPUSetups = await mainDatabase.models.GPU_SETUPs.findAll({
+                where: {
+                    flight_sheet_id_with_custom_miner: flightSheetWithCustomMiner.id
+                }
+            });
+
+            if (!clientsData.app) {
+                return next(ApiError.noneData("App is not connected!"))
+            }
+
+            for (const GPUSetup of GPUSetups) {
+                GPUSetup.isCustomMiner = false;
+                GPUSetup.flight_sheet_id_with_custom_miner = null;
+                clientsData.app.send(JSON.stringify(new commandInterface('static', {
+                    gpus: [{
+                        uuid: GPUSetup.dataValues.gpu_uuid,
+                        overclock: {
+                            clockType: "custom",
+                            autofan: false,
+                            coreClockOffset: GPUSetup.core_clock_offset,
+                            memoryClockOffset: GPUSetup.memory_clock_offset,
+                            fanSpeed: GPUSetup.fan_speed,
+                            powerLimit: GPUSetup.power_limit,
+                            criticalTemp: GPUSetup.crit_temp,
+                        },
+                        crypto: {
+                            cryptoType: "custom",
+                            coin: null,
+                            algorithm: null,
+                            wallet: null,
+                            pool: null,
+                            miner: null
+                        }
+                    }]
+                }, "setGpusSettings")))
+            }
+
+            await flightSheetWithCustomMiner.destroy().then(() => {
+                res.status(200).json();
+            });
 
         } catch (error) {
             return next(error);

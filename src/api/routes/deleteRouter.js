@@ -15,5 +15,6 @@ deleteRouter.delete("/miner", DeleteController.deleteMiner);
 deleteRouter.delete("/gpu-preset", DeleteController.deleteGPUPreset);
 // http://localhost:8200/api/delete/flightSheet
 deleteRouter.delete("/flight-sheet", DeleteController.deleteFlightSheet);
-
+// 
+deleteRouter.delete("/flight-sheet-with-custom-miner", DeleteController.deleteFlightSheetWithCustomMiner);
 export { deleteRouter }
