@@ -611,7 +611,7 @@ class OtherDataController {
 
         clientsData.app.send(JSON.stringify(command))
         // Wait response
-        await CommandController.waitForResponse(command.command)
+        await OtherDataController.waitForResponse(command.command)
             .then(response => {
                 commandsData[command] = null
                 if (response == 'false') {
