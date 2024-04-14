@@ -615,7 +615,7 @@ class OtherDataController {
             .then(response => {
                 commandsData[command] = null
                 if (response.status == false) {
-                    throw new ApiError.noneData("Failed to install custom miner!");
+                    throw ApiError.noneData("Failed to install custom miner!");
                 } else {
                     loggerConsole.basicInfo("Custom miner applied to system!");
                 }
