@@ -218,9 +218,21 @@ class DeleteController {
         }
     }
     static async deleteFlightSheetWithCustomMinerй(req, res, next) {
-        const { error } = deleteFlightSheetWithCustomMiner.validate(req.body);
+        const { error } = deleteFlightSheetWithCustomMinerSchema.validate(req.body);
 
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message))
+        }
+        try {
+            const flightSheetWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findByPk(id);
 
+            if (!flightSheetWithCustomMiner) {
+                return next(ApiError.noneData('Could not find flight sheet with that id!'));
+            }
+
+        } catch (error) {
+            return next(error);
+        }
     }
 }
 

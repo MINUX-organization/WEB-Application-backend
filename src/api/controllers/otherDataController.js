@@ -193,14 +193,14 @@ class OtherDataController {
                     id: flightSheetWithCustomMiner.id,
                     name: flightSheetWithCustomMiner.name,
                     type: "CUSTOM",
-                    installationURL: flightSheetWithCustomMiner.installationUrl,
+                    installationURL: flightSheetWithCustomMiner.installation_url,
                     wallet: flightSheetWithCustomMiner.wallet,
                     poolURL: flightSheetWithCustomMiner.pool,
                     coin: flightSheetWithCustomMiner.coin,
                     algorithm: flightSheetWithCustomMiner.algorithm,
-                    poolTemplate: flightSheetWithCustomMiner.poolTemplate,
-                    walletAndWorkerTemplate: flightSheetWithCustomMiner.walletAndWorkerTemplate,
-                    extraConfigArguments: flightSheetWithCustomMiner.extraConfigArguments
+                    poolTemplate: flightSheetWithCustomMiner.pool_template,
+                    walletAndWorkerTemplate: flightSheetWithCustomMiner.wallet_and_worker_template,
+                    extraConfigArguments: flightSheetWithCustomMiner.extra_config_arguments
                 }
                 reformatedFlightSheetsWithCustomMiner.push(reformatedFlightSheetWithCustomMiner)
             })
