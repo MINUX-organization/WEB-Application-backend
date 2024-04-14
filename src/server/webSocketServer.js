@@ -22,14 +22,14 @@ class WebSocketServer {
         // Start ws server
         try {
             this.webSocketServer = new WebSocket.Server({
-                noServer: true 
+                noServer: true
             })
             httpServer.on('upgrade', (request, socket, head) => {
                 this.webSocketServer.handleUpgrade(request, socket, head, socket => {
                     this.webSocketServer.emit('connection', socket, request);
                 });
             });
-            loggerConsole.basicInfo(`WebSocketServer started on ws://localhost:${PORT}`)     
+            loggerConsole.basicInfo(`WebSocketServer started on ws://localhost:${PORT}`)
         }
         catch (error) {
             console.log(error)
@@ -70,7 +70,7 @@ class WebSocketServer {
                                                             message: 'WebSocketServer received your static data!'
                                                         }))
                                                     }
-                                                } catch(e) {
+                                                } catch (e) {
                                                     loggerConsole.error(`Error in creating static data: ${e.message}`)
                                                 }
                                                 try {
@@ -93,6 +93,9 @@ class WebSocketServer {
                                             commandsData.setGpusSettings = msgJSON.payload
                                             loggerConsole.data('Command "setGpusSettings" received on WebSocketServer!')
                                             break
+                                        case "setupCustomMiner":
+                                            commandsData.setupCustomMiner = msgJSON.payload
+                                            loggerConsole.data('Command "setupCustomMiner" received on WebSocketServer!');
                                         case "startMining":
                                             commandsData.startMining = msgJSON.payload
                                             loggerConsole.data('Command "startMining" received on WebSocketServer!')
@@ -101,7 +104,7 @@ class WebSocketServer {
                                             commandsData.stopMining = msgJSON.payload
                                             loggerConsole.data('Command "stopMining "received on WebSocketServer!')
                                             break
-                                        case "reboot": 
+                                        case "reboot":
                                             commandsData.reboot = msgJSON.payload
                                             loggerConsole.data('Command "reboot" received on WebSocketServer!')
                                             break
@@ -109,6 +112,7 @@ class WebSocketServer {
                                             commandsData.powerOff = msgJSON.payload
                                             loggerConsole.data('Command "powerOff" received on WebSocketServer!')
                                             break
+
                                         default:
                                             loggerConsole.error(`Received unknown command: ${msgJSON.command}`)
                                     }
@@ -118,14 +122,14 @@ class WebSocketServer {
                                         case 'getDynamicData':
                                             // Validate dynamic data
                                             const validationDynamic = dynamicDataCM.validate(msgJSON.payload)
-                                            if (validationDynamic.error) { 
+                                            if (validationDynamic.error) {
                                                 if (clientsData.app) {
                                                     clientsData.app.send(JSON.stringify(validationDynamic.error.details[0].message))
                                                 }
                                             } else {
                                                 try {
                                                     // Creating dynamic data on server
-                                                    for (let key in msgJSON.payload){
+                                                    for (let key in msgJSON.payload) {
                                                         dynamicData[key] = JSON.parse(JSON.stringify(msgJSON.payload[key]))
                                                     }
                                                     // Log dynamic data
@@ -137,7 +141,7 @@ class WebSocketServer {
                                                         const transformedGpus = _.compact(dynamicData.gpus.map(gpu => {
                                                             const dbGpu = dbGpus.find(dbGpu => dbGpu.dataValues.uuid === gpu.uuid)
                                                             if (dbGpu === undefined) return null
-                                                            return {...gpu, id: dbGpu.id}
+                                                            return { ...gpu, id: dbGpu.id }
                                                         }))
                                                         // Sending msg
                                                         clientsData.front.send(JSON.stringify(
@@ -174,13 +178,13 @@ class WebSocketServer {
                             }
                             break
                         case false:
-                            switch(msgJSON) {
+                            switch (msgJSON) {
                                 case 'Front':
                                     // Saving connection information
                                     clientsData.front = webSocket
                                     // Sending message about connection
                                     if (clientsData.front) {
-                                        clientsData.front.send(JSON.stringify({message: "Type of connection Front received!"}))
+                                        clientsData.front.send(JSON.stringify({ message: "Type of connection Front received!" }))
                                         loggerConsole.basicInfo('Type of connection "Front" received!')
                                     }
                                     break
@@ -189,14 +193,14 @@ class WebSocketServer {
                                     clientsData.app = webSocket
                                     // Sending message about connection
                                     if (clientsData.app) {
-                                        clientsData.app.send(JSON.stringify({message: "Type of connection App received!"}))
+                                        clientsData.app.send(JSON.stringify({ message: "Type of connection App received!" }))
                                         loggerConsole.basicInfo('Type of connection "App" received!')
                                     }
                                     // Init 
                                     if (clientsData.app) {
                                         // Sending request for system info TODO: sending 5 times
-                                        clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "getSystemInfo")))
-                                        loggerConsole.basicInfo("Command getSystemInfo sended to app!") 
+                                        clientsData.app.send(JSON.stringify(new commandInterface('static', {}, "getSystemInfo")))
+                                        loggerConsole.basicInfo("Command getSystemInfo sended to app!")
                                         // Sending saved gpu setups
                                         const gpuSetups = await mainDatabase.models.GPU_SETUPs.findAll()
                                         const gpuSetupsDB = []
@@ -237,15 +241,15 @@ class WebSocketServer {
                                         }
                                         if (gpuSetupsDB.length > 0) {
                                             clientsData.app.send(JSON.stringify(new commandInterface('static',
-                                            {
-                                            gpus: gpuSetupsDB,
-                                            }, 
-                                            "setGpusSettings")))
+                                                {
+                                                    gpus: gpuSetupsDB,
+                                                },
+                                                "setGpusSettings")))
                                         }
                                         // Sending request for start mining
                                         const farmState = await mainDatabase.models.FARM_STATE.findOne()
                                         if (farmState.mining == true) {
-                                            clientsData.app.send(JSON.stringify(new commandInterface('static',{}, "startMining")))
+                                            clientsData.app.send(JSON.stringify(new commandInterface('static', {}, "startMining")))
                                             loggerConsole.basicInfo("Command startMining sended to app!")
                                         }
                                     }
@@ -484,11 +488,11 @@ class WebSocketServer {
     startReceivingCloseSignal() {
         this.webSocketServer.on('connection', webSocket => {
             webSocket.on('close', () => {
-                if (webSocket === clientsData.app){
+                if (webSocket === clientsData.app) {
                     clientsData.app = null
                     loggerConsole.basicInfo(`Type of connection "App" closed!`)
                 }
-                else if (webSocket === clientsData.front){
+                else if (webSocket === clientsData.front) {
                     clientsData.front = null
                     loggerConsole.basicInfo(`Type of connection "Front" closed!`)
                 }
@@ -498,6 +502,6 @@ class WebSocketServer {
             })
         })
     }
-} 
+}
 
 export { WebSocketServer } 

@@ -12,6 +12,7 @@ import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
 import { staticData } from "../../temp/static.js";
 import { clientsData } from "../../temp/clients.js";
+import { commandsData } from "../../temp/commands.js"
 import { loggerConsole } from "../../utils/logger.js";
 import { commandInterface } from "../../classes/commands.js"
 
@@ -21,7 +22,7 @@ class OtherDataController {
             const timeout = setTimeout(() => {
                 clearInterval(timeout)
                 reject(ApiError.noneData("No response to the command was received"))
-            }, 3000)
+            }, 300000)
             const interval = setInterval(() => {
                 if (commandsData[command] != null) {
                     const response = commandsData[command]
@@ -596,8 +597,8 @@ class OtherDataController {
         if (!clientsData.app) {
             return next(ApiError.noneData("App is not connected!"))
         }
-
-        clientsData.app.send(JSON.stringify(new commandInterface('static', // TODO: Сделать ожидание ответа
+        // Sending command
+        const command = new commandInterface('static',
             {
                 url: flightSheetsWithCustomMiner.installation_url,
                 wallet: flightSheetsWithCustomMiner.wallet,
@@ -606,7 +607,20 @@ class OtherDataController {
                 poolTemplate: flightSheetsWithCustomMiner.pool_template,
                 workerTemplate: flightSheetsWithCustomMiner.wallet_and_worker_template,
                 additionalArguments: flightSheetsWithCustomMiner.extra_config_arguments
-            }, "setupCustomMiner")))
+            }, "setupCustomMiner");
+
+        clientsData.app.send(JSON.stringify(command))
+        // Wait response
+        await CommandController.waitForResponse(command.command)
+            .then(response => {
+                commandsData[command] = null
+                if (response == 'false') {
+                    throw new ApiError.noneData("Failed to install custom miner!");
+                }
+            })
+            .catch(err => {
+                return next(err)
+            })
 
         for (const GPUSetup of GPUSetups) {
             GPUSetup.isCustomMiner = true;

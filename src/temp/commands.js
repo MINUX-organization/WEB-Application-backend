@@ -3,9 +3,10 @@ const commandsData = {
     'getGpusSettings': null,
     'getGpusWorking': null,
     'setGpusSettings': null,
+    'setupCustomMiner': null,
     'startMining': null,
     'stopMining': null,
-    'reboot' : null,
+    'reboot': null,
     'powerOff': null
 };
 
