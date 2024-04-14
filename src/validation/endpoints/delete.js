@@ -15,8 +15,11 @@ const deletePoolSchema = Joi.object({
 const deleteGPUPresetSchema = Joi.object({
     id: Joi.number().required()
 });
-const deleteFlightSheetSchema =  Joi.object({
-    id: Joi.number().required() 
+const deleteFlightSheetSchema = Joi.object({
+    id: Joi.number().required()
+});
+const deleteFlightSheetWithCustomMiner = Joi.object({
+    id: Joi.number().required()
 });
 
 export {
@@ -26,4 +29,5 @@ export {
     deleteMinerSchema,
     deleteGPUPresetSchema,
     deleteFlightSheetSchema,
+    deleteFlightSheetWithCustomMiner
 };

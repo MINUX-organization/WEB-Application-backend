@@ -177,7 +177,7 @@ class OtherDataController {
                 const reformatedFlightSheet = {
                     id: flightSheet.id,
                     name: flightSheet.name,
-                    type: "normal",
+                    type: "SIMPLE",
                     cryptocurrencyId: flightSheet.cryptocurrency_id,
                     minerId: flightSheet.miner_id,
                     walletId: flightSheet.wallet_id,
@@ -185,28 +185,28 @@ class OtherDataController {
                 }
                 reformatedFlightSheets.push(reformatedFlightSheet)
             })
-            
+
             const reformatedFlightSheetsWithCustomMiner = []
             flightSheetsWithCustomMiner.forEach(flightSheetWithCustomMiner => {
                 flightSheetWithCustomMiner = flightSheetWithCustomMiner.dataValues
                 const reformatedFlightSheetWithCustomMiner = {
                     id: flightSheetWithCustomMiner.id,
                     name: flightSheetWithCustomMiner.name,
-                    type: "custom",
-                    installation_url: flightSheetWithCustomMiner.installationUrl,
+                    type: "CUSTOM",
+                    installationURL: flightSheetWithCustomMiner.installationUrl,
                     wallet: flightSheetWithCustomMiner.wallet,
-                    pool: flightSheetWithCustomMiner.pool,
+                    poolURL: flightSheetWithCustomMiner.pool,
                     coin: flightSheetWithCustomMiner.coin,
                     algorithm: flightSheetWithCustomMiner.algorithm,
-                    pool_template: flightSheetWithCustomMiner.poolTemplate,
-                    wallet_and_worker_template: flightSheetWithCustomMiner.walletAndWorketTemplate,
-                    extra_config_arguments: flightSheetWithCustomMiner.extraConfigArguments
+                    poolTemplate: flightSheetWithCustomMiner.poolTemplate,
+                    walletAndWorkerTemplate: flightSheetWithCustomMiner.walletAndWorkerTemplate,
+                    extraConfigArguments: flightSheetWithCustomMiner.extraConfigArguments
                 }
                 reformatedFlightSheetsWithCustomMiner.push(reformatedFlightSheetWithCustomMiner)
             })
-            
+
             const result = [...reformatedFlightSheets, ...reformatedFlightSheetsWithCustomMiner]
-           
+
             // Return
             res.status(200).json({ "flightSheets": result });
         } catch (err) {
@@ -226,7 +226,7 @@ class OtherDataController {
             if (!gpuSetup) {
                 return next(ApiError.badRequest("GPU setup with this id does not exist!"));
             }
-            const gpu = await mainDatabase.models.GPUs.findOne({ where: { uuid: gpuSetup.gpu_uuid }})
+            const gpu = await mainDatabase.models.GPUs.findOne({ where: { uuid: gpuSetup.gpu_uuid } })
             if (!gpu) {
                 return next(ApiError.badRequest("GPU for that GPU setup is not found"));
             }
@@ -272,7 +272,7 @@ class OtherDataController {
         // Get GPU Presets
         try {
             // Check if gpu presets exists
-            const gpu = await mainDatabase.models.GPUs.findOne({ where: { id: req.body.gpuId }})
+            const gpu = await mainDatabase.models.GPUs.findOne({ where: { id: req.body.gpuId } })
             if (!gpu) {
                 return next(ApiError.badRequest('gpu with this id is not found'))
             }
@@ -313,7 +313,7 @@ class OtherDataController {
             // Check if cpu setup exists
             const cpuSetup = await mainDatabase.models.CPU_SETUP.findOne({ where: { id: req.body.cpuId } });
             if (!cpuSetup) {
-                return res.status(200).json({ "cpuSetup": null})
+                return res.status(200).json({ "cpuSetup": null })
             }
             // Reformat response
             const reformatedCpuSetup = {
@@ -324,7 +324,7 @@ class OtherDataController {
                 cpu_uuid: cpuSetup.cpu_uuid
             }
             // Return
-            res.status(200).json({ "cpuSetup" : reformatedCpuSetup });
+            res.status(200).json({ "cpuSetup": reformatedCpuSetup });
         } catch (err) {
             return next(err)
         }
@@ -338,12 +338,12 @@ class OtherDataController {
             const miners = await mainDatabase.models.MINERs.findAll()
             const algorithmsMiners = await mainDatabase.models.ALGORITHM_MINER.findAll()
             // Reformat
-            const reformatedCryptocurrencies = []; 
-            const reformatedWallets = []; 
-            const reformatedPools = []; 
+            const reformatedCryptocurrencies = [];
+            const reformatedWallets = [];
+            const reformatedPools = [];
             const reformatedAlgorithms = [];
-            const reformatedMiners = []; 
-            const reformatedAlgorithmMiner = []; 
+            const reformatedMiners = [];
+            const reformatedAlgorithmMiner = [];
             cryptocurrencies.forEach(cryptocurrency => {
                 reformatedCryptocurrencies.push({
                     id: cryptocurrency.id,
@@ -406,14 +406,14 @@ class OtherDataController {
         try {
             const flightSheets = await mainDatabase.models.FLIGHT_SHEETs.findAll()
             const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findAll()
-            
+
             const reformatedFlightSheets = []
             for (const flightSheet of flightSheets) {
-                const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({where: {id: flightSheet.cryptocurrency_id}})
-                const miner = await mainDatabase.models.MINERs.findOne({where: {id: flightSheet.miner_id}});
-                const wallet = await mainDatabase.models.WALLETs.findOne({where: {id: flightSheet.wallet_id}});
-                const pool = await mainDatabase.models.POOLs.findOne({where: {id: flightSheet.pool_id}});
-                const algorithm = await mainDatabase.models.ALGORITHMs.findOne({where: {id: cryptocurrency.algorithm_id}})
+                const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheet.cryptocurrency_id } })
+                const miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheet.miner_id } });
+                const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheet.wallet_id } });
+                const pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheet.pool_id } });
+                const algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } })
                 reformatedFlightSheets.push({
                     id: flightSheet.id,
                     name: flightSheet.name,
@@ -423,29 +423,29 @@ class OtherDataController {
                         name: cryptocurrency.name,
                         fullName: cryptocurrency.full_name,
                         algorithmId: cryptocurrency.algorithm_id,
-                    }: null,
+                    } : null,
                     miner: miner ? {
                         id: miner.id,
                         name: miner.name,
                         fullName: miner.full_name,
-                    }: null,
+                    } : null,
                     wallet: wallet ? {
                         id: wallet.id,
                         name: wallet.name,
                         source: wallet.source,
                         address: wallet.address,
                         cryptocurrencyId: wallet.cryptocurrency_id
-                    }: null,
+                    } : null,
                     pool: pool ? {
                         id: pool.id,
                         host: pool.host,
                         port: pool.port,
                         cryptocurrencyId: pool.cryptocurrency_id
-                    }: null,
+                    } : null,
                     algorithm: algorithm ? {
                         id: algorithm.id,
                         name: algorithm.name,
-                    }: null,
+                    } : null,
                     additionalString: flightSheet.additional_string
                 })
             }
@@ -465,7 +465,7 @@ class OtherDataController {
                 }
                 reformatedFlightSheets.push(reformatedFlightSheetWithCustomMiner)
             }
-            res.status(200).json({"flightSheets": reformatedFlightSheets})
+            res.status(200).json({ "flightSheets": reformatedFlightSheets })
         } catch (err) {
             return next(err)
         }
@@ -475,7 +475,7 @@ class OtherDataController {
             const wallets = await mainDatabase.models.WALLETs.findAll()
             const reformatedWallets = []
             for (const wallet of wallets) {
-                const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({where: {id: wallet.cryptocurrency_id}})
+                const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: wallet.cryptocurrency_id } })
                 reformatedWallets.push({
                     id: wallet.id,
                     name: wallet.name,
@@ -489,7 +489,7 @@ class OtherDataController {
                     },
                 })
             }
-            res.status(200).json({"wallets": reformatedWallets})
+            res.status(200).json({ "wallets": reformatedWallets })
         } catch (error) {
             return next(error)
         }
@@ -499,7 +499,7 @@ class OtherDataController {
             const gpus = await mainDatabase.models.GPUs.findAll()
             const reformatedGpus = [];
             for (const gpu of gpus) {
-                const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
+                const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { gpu_uuid: gpu.uuid } })
                 reformatedGpus.push({
                     id: gpu.id,
                     connected: gpu.connected,
@@ -507,7 +507,7 @@ class OtherDataController {
                     flightSheetId: gpuSetup === null ? null : gpuSetup.flight_sheet_id
                 })
             }
-            res.status(200).json({gpusForFlightSheets: reformatedGpus})
+            res.status(200).json({ gpusForFlightSheets: reformatedGpus })
         } catch (error) {
             return next(error)
         }
@@ -519,9 +519,9 @@ class OtherDataController {
         }
         try {
             for (const gpuForFlightSheet of req.body.gpusForFlightSheets) {
-                const gpu = await mainDatabase.models.GPUs.findOne({where: {id: gpuForFlightSheet.id}})
+                const gpu = await mainDatabase.models.GPUs.findOne({ where: { id: gpuForFlightSheet.id } })
                 if (gpu) {
-                    const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where: {gpu_uuid: gpu.uuid}})
+                    const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { gpu_uuid: gpu.uuid } })
                     gpuSetup.flight_sheet_id = gpuForFlightSheet.flightSheetId;
                     await gpuSetup.save();
                     if (clientsData.app) {
@@ -537,7 +537,7 @@ class OtherDataController {
                             }
                         }
                         // TODO:
-                        clientsData.app.send(JSON.stringify(new commandInterface('static',{
+                        clientsData.app.send(JSON.stringify(new commandInterface('static', {
                             gpus: [{
                                 uuid: gpuSetup.dataValues.gpu_uuid,
                                 overclock: {
@@ -561,9 +561,9 @@ class OtherDataController {
                             }]
                         }, "setGpusSettings")))
                     }
-                } 
+                }
             }
-        res.sendStatus(200)
+            res.sendStatus(200)
         } catch (error) {
             return next(error)
         }
@@ -574,7 +574,7 @@ class OtherDataController {
             return next(ApiError.badRequest(error.details[0].message));
         }
 
-        const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findOne({where: {id: req.body.flightSheetWithCustomMinerId}})
+        const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findOne({ where: { id: req.body.flightSheetWithCustomMinerId } })
         if (flightSheetsWithCustomMiner == null) {
             return next(ApiError.badRequest("Полетного листа с таким id не существует!"));
         }
@@ -587,7 +587,7 @@ class OtherDataController {
             return next(ApiError.badRequest("Подключенных видеокарт в системе не найдено!"));
         }
         const connectedGPUIds = connectedGPUs.map(gpu => gpu.uuid);
-        
+
         const GPUSetups = await mainDatabase.models.GPU_SETUPs.findAll({
             where: {
                 gpu_uuid: connectedGPUIds
@@ -598,14 +598,14 @@ class OtherDataController {
         }
 
         clientsData.app.send(JSON.stringify(new commandInterface('static', // TODO: Сделать ожидание ответа
-            { 
+            {
                 url: flightSheetsWithCustomMiner.installation_url,
                 wallet: flightSheetsWithCustomMiner.wallet,
                 pool: flightSheetsWithCustomMiner.pool,
                 algorithm: flightSheetsWithCustomMiner.algorithm,
                 poolTemplate: flightSheetsWithCustomMiner.pool_template,
                 workerTemplate: flightSheetsWithCustomMiner.wallet_and_worker_template,
-                additionalArguments:  flightSheetsWithCustomMiner.extra_config_arguments     
+                additionalArguments: flightSheetsWithCustomMiner.extra_config_arguments
             }, "setupCustomMiner")))
 
         for (const GPUSetup of GPUSetups) {
@@ -620,12 +620,12 @@ class OtherDataController {
         try {
             const gpus = await mainDatabase.models.GPUs.findAll()
             const reformatedGpus = _.compact(await Promise.all(gpus.map(async gpu => {
-                const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({where:{gpu_uuid: gpu.uuid}})
+                const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { gpu_uuid: gpu.uuid } })
                 if (gpuSetup) {
                     if (!staticData.gpus) {
                         throw new Error(`Couldn't find static data!`)
                     }
-                    const gpuStatic = staticData.gpus.find(item =>  item.uuid === gpu.uuid)
+                    const gpuStatic = staticData.gpus.find(item => item.uuid === gpu.uuid)
                     return {
                         gpuId: gpu.id,
                         gpuSetupId: gpuSetup.id,
@@ -635,7 +635,7 @@ class OtherDataController {
                         connected: gpu.connected,
                         powerLimit: gpuSetup.power_limit,
                         fanSpeed: gpuSetup.fan_speed,
-                        critTemp: gpuSetup.crit_temp, 
+                        critTemp: gpuSetup.crit_temp,
                         flightSheetId: gpuSetup.flight_sheet_id,
                     }
                 }
@@ -658,7 +658,7 @@ class OtherDataController {
             //         })
             //     }
             // }
-            res.status(200).json({settingGpus: reformatedGpus})
+            res.status(200).json({ settingGpus: reformatedGpus })
         } catch (error) {
             return next(error)
         }
