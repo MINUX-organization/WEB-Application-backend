@@ -626,7 +626,7 @@ class OtherDataController {
 
         for (const GPUSetup of GPUSetups) {
             GPUSetup.isCustomMiner = true;
-            GPUSetup.flight_sheet_id_with_custom_miner = req.body.flightSheetWithCustomMinerId;
+            GPUSetup.flight_sheet_id_with_custom_miner = flightSheetWithCustomMiner.id;
             GPUSetup.flight_sheet_id = null;
         }
 

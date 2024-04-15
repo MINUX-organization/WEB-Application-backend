@@ -224,7 +224,7 @@ class DeleteController {
             return next(ApiError.badRequest(error.details[0].message))
         }
         try {
-            const flightSheetWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findByPk(id);
+            const flightSheetWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findByPk(req.body.id);
 
             if (!flightSheetWithCustomMiner) {
                 return next(ApiError.noneData('Could not find flight sheet with that id!'));
@@ -265,6 +265,7 @@ class DeleteController {
                         }
                     }]
                 }, "setGpusSettings")))
+
             }
 
             await flightSheetWithCustomMiner.destroy().then(() => {
