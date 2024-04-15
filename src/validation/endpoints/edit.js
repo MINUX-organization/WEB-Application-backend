@@ -58,12 +58,12 @@ const editFlightSheetWithCustomMinerSchema = Joi.object({
     newName: Joi.string().pattern(new RegExp("^[a-zA-Z0-9_-]{3,128}$")).optional(),
     newInstallationURL: Joi.string().optional(),
     newWallet: Joi.string().optional(),
-    newPoolURL: Joi.string().optional(), 
+    newPoolURL: Joi.string().optional(),
     newCoin: Joi.string().optional(),
     newAlgorithm: Joi.string().optional(),
     newPoolTemplate: Joi.string().optional(),
     newWalletAndWorkerTemplate: Joi.string().optional(),
-    newExtraConfigArguments: Joi.string().optional()
+    newExtraConfigArguments: Joi.string().optional().allow("")
 });
 
 export {
