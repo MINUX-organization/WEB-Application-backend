@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 const staticDataCM = Joi.object({
-    gpus: Joi.array().allow(null).items(
+    gpus: Joi.array().allow(null, []).items(
         Joi.object({
             uuid: Joi.string().alphanum().min(64).max(64).required(),
             information: Joi.object({
@@ -130,7 +130,7 @@ const staticDataCM = Joi.object({
         macAddress: Joi.string().required()
     }).required(),
 });
-    
+
 export {
     staticDataCM
 }
