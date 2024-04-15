@@ -138,10 +138,25 @@ class WebSocketServer {
                                                     if (clientsData.front) {
                                                         const dbGpus = await sequelize.models.GPUs.findAll();
                                                         // extending gpus with ids from database, deleting gpus if not found in db
-                                                        const transformedGpus = _.compact(dynamicData.gpus.map(gpu => {
+                                                        const transformedGpus = _.compact(dynamicData.gpus.map(async gpu => {
                                                             const dbGpu = dbGpus.find(dbGpu => dbGpu.dataValues.uuid === gpu.uuid)
                                                             if (dbGpu === undefined) return null
-                                                            return { ...gpu, id: dbGpu.id }
+
+                                                            var flightSheet, flightSheetWithCustomMiner
+                                                            const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { gpu_uuid: dbGpu.uuid } });
+                                                            if (gpuSetup.flight_sheet_id != null) {
+                                                                flightSheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: { id: gpuSetup.flight_sheet_id } })
+                                                            }
+                                                            if (gpuSetup.flight_sheet_id_with_custom_miner != null) {
+                                                                flightSheetWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findOne({ where: { id: gpuSetup.flight_sheet_id_with_custom_miner } })
+                                                            }
+
+                                                            return {
+                                                                ...gpu,
+                                                                id: dbGpu.id,
+                                                                flightSheetName: flightSheet?.name ?? null,
+                                                                flightSheetWithCustomMiner: flightSheetWithCustomMiner?.name ?? null
+                                                            }
                                                         }))
                                                         // Sending msg
                                                         clientsData.front.send(JSON.stringify(
