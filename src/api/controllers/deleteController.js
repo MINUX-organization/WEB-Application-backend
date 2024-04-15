@@ -6,11 +6,13 @@ import {
     deleteMinerSchema,
     deleteGPUPresetSchema,
     deleteFlightSheetSchema,
-    deleteFlightSheetWithCustomMinerSchema
+    deleteFlightSheetWithCustomMinerSchema,
 } from "../../validation/endpoints/delete.js";
 
 import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
+import { clientsData } from "../../temp/clients.js";
+import { commandInterface } from "../../classes/commands.js";
 
 class DeleteController {
     static async deleteCryptocurrency(req, res, next) { // Reformated + worked
@@ -243,6 +245,7 @@ class DeleteController {
             for (const GPUSetup of GPUSetups) {
                 GPUSetup.isCustomMiner = false;
                 GPUSetup.flight_sheet_id_with_custom_miner = null;
+                await GPUSetup.save()
                 clientsData.app.send(JSON.stringify(new commandInterface('static', {
                     gpus: [{
                         uuid: GPUSetup.dataValues.gpu_uuid,

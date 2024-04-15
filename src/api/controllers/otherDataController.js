@@ -615,7 +615,7 @@ class OtherDataController {
             .then(response => {
                 commandsData[command] = null
                 if (response.status == false) {
-                    throw new ApiError.noneData("Failed to install custom miner!");
+                    throw ApiError.noneData("Failed to install custom miner!");
                 } else {
                     loggerConsole.basicInfo("Custom miner applied to system!");
                 }
@@ -628,6 +628,7 @@ class OtherDataController {
             GPUSetup.isCustomMiner = true;
             GPUSetup.flight_sheet_id_with_custom_miner = flightSheetWithCustomMiner.id;
             GPUSetup.flight_sheet_id = null;
+            await GPUSetup.save()
         }
 
         res.status(200).json();
