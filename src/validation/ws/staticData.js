@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 const staticDataCM = Joi.object({
-    gpus: Joi.array().allow(null).items(
+    gpus: Joi.array().items(
         Joi.object({
             uuid: Joi.string().alphanum().min(64).max(64).required(),
             information: Joi.object({
@@ -45,8 +45,8 @@ const staticDataCM = Joi.object({
                 maximumMemoryOffset: Joi.number().required(),
                 enforcedMemoryOffset: Joi.number().required()
             }).required()
-        }).required()
-    ).empty().required(),
+        }).empty().required()
+    ).required(),
     cpu: Joi.object({
         uuid: Joi.string().alphanum().min(64).max(64).required(),
         information: Joi.object({

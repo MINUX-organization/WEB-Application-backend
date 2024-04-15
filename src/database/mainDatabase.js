@@ -2,11 +2,11 @@
 import dotenv from 'dotenv'
 dotenv.config()
 // Models
-import  initOtherModels  from './models/other.js'
-import  initGPUModels  from './models/gpu.js'
-import  initCPUModels  from './models/cpu.js'
-import  initHarddriveModels  from './models/harddrive.js'
-import  initRAMModels from './models/ram.js'
+import initOtherModels from './models/other.js'
+import initGPUModels from './models/gpu.js'
+import initCPUModels from './models/cpu.js'
+import initHarddriveModels from './models/harddrive.js'
+import initRAMModels from './models/ram.js'
 // Temp data
 import { staticData } from "../temp/static.js"
 import { dynamicData } from '../temp/dynamic.js';
@@ -32,11 +32,11 @@ class Database {
             const modelsCPU = initCPUModels(this.db)
             const modelsHarddrive = initHarddriveModels(this.db)
             const modelsRAM = initRAMModels(this.db)
-            this.models = {...modelsOthers, ...modelsGPU, ...modelsCPU, ...modelsHarddrive, ...modelsRAM}
+            this.models = { ...modelsOthers, ...modelsGPU, ...modelsCPU, ...modelsHarddrive, ...modelsRAM }
             loggerConsole.database('Init models is successful!')
             // Synchronize database
-            await this.db.sync({force: false})
-            loggerConsole.database('Sync with database is successful!') 
+            await this.db.sync({ force: false })
+            loggerConsole.database('Sync with database is successful!')
         } catch (error) {
             loggerConsole.error(`Unable to connect with database!:  ${error}`)
             return process.exit(1)
@@ -51,8 +51,8 @@ class Database {
             // Recovery codes 
             const codes = await this.db.models.RECOVERY_CODEs.findOne()
             if (!codes) {
-                for (let amount  = 0; amount < 10; amount++) {
-                    await this.db.models.RECOVERY_CODEs.create({code: generateRecoveryCode(), used: false});
+                for (let amount = 0; amount < 10; amount++) {
+                    await this.db.models.RECOVERY_CODEs.create({ code: generateRecoveryCode(), used: false });
                 }
             }
             // Farm state
@@ -69,7 +69,7 @@ class Database {
     async shutdown() {
         await this.db.close()
     }
-    async createStaticData() { 
+    async createStaticData() {
         for (let key in staticData) {
             switch (key) {
                 case 'gpus':
@@ -139,32 +139,32 @@ class Database {
                                 clocksMaximumMemoryOffset: newReceivedGpu.clocks.maximumMemoryOffset,
                             })
                             loggerConsole.data(`Created GPU: ${newReceivedGpu.uuid}`)
-                            await this.db.models.GPU_SETUPs.create({gpu_uuid: newReceivedGpu.uuid})
+                            await this.db.models.GPU_SETUPs.create({ gpu_uuid: newReceivedGpu.uuid })
                             loggerConsole.data(`Created SETUP for GPU: ${newReceivedGpu.uuid}`)
                         }
                     }
                     catch (e) {
                         loggerConsole.error(JSON.stringify(e, null, 2))
                     }
-                    
-                    break 
-                case 'cpu': 
+
+                    break
+                case 'cpu':
                     try {
                         // Log cpu UUID
                         const cpu = staticData.cpu
                         loggerConsole.data(`Received CPU ${cpu.uuid}`)
                         // Check if cpu is already exists
-                        const cpuCheck = await this.db.models.CPUs.findOne({where: {uuid: cpu.uuid}})
+                        const cpuCheck = await this.db.models.CPUs.findOne({ where: { uuid: cpu.uuid } })
                         if (!cpuCheck) {
-                            await this.db.models.CPUs.create({uuid: cpu.uuid})
-                            .catch(error => loggerConsole.error(`Catched error in creating CPU: ${error}`))
+                            await this.db.models.CPUs.create({ uuid: cpu.uuid })
+                                .catch(error => loggerConsole.error(`Catched error in creating CPU: ${error}`))
                             // Log creating
                             loggerConsole.data(`Created CPU: ${cpu.uuid}`)
                             // Check if cpu setup is already exists
-                            const cpuSetupCheck = await this.db.models.CPU_SETUP.findOne({where: {cpu_uuid: cpu.uuid}})
+                            const cpuSetupCheck = await this.db.models.CPU_SETUP.findOne({ where: { cpu_uuid: cpu.uuid } })
                             if (!cpuSetupCheck) {
-                                await this.db.models.CPU_SETUP.create({cpu_uuid: cpu.uuid})
-                                .catch(error => loggerConsole.error(`Catched error in creating CPU Setup: ${error}`))
+                                await this.db.models.CPU_SETUP.create({ cpu_uuid: cpu.uuid })
+                                    .catch(error => loggerConsole.error(`Catched error in creating CPU Setup: ${error}`))
                                 // Log creating
                                 loggerConsole.data(`Created CPU Setup: ${cpu.uuid}`)
                             }
@@ -173,17 +173,17 @@ class Database {
                     catch (e) {
                         loggerConsole.error(JSON.stringify(e, null, 2))
                     }
-                    break 
+                    break
                 case 'harddrives':
                     try {
                         staticData.harddrives.forEach(async harddrive => {
                             // Log harddrive UUID
                             loggerConsole.data(`Received harddrive: ${harddrive.uuid}`)
                             // Check if harddrive is already exists
-                            const harddriveCheck = await this.db.models.HARDDRIVEs.findOne({where: {uuid: harddrive.uuid}})
+                            const harddriveCheck = await this.db.models.HARDDRIVEs.findOne({ where: { uuid: harddrive.uuid } })
                             if (!harddriveCheck) {
-                                await this.db.models.HARDDRIVEs.create({uuid: harddrive.uuid})
-                                .catch(error => loggerConsole.error(`Catched error in creating harddrive: ${error}`))
+                                await this.db.models.HARDDRIVEs.create({ uuid: harddrive.uuid })
+                                    .catch(error => loggerConsole.error(`Catched error in creating harddrive: ${error}`))
                                 // Log creating
                                 loggerConsole.data(`Created harddrive: ${harddrive.uuid}`)
                             } else {
@@ -201,10 +201,10 @@ class Database {
                             // Log ram UUID
                             loggerConsole.data(`Received ram: ${ram.uuid}`)
                             // Check if harddrive is already exists
-                            const ramCheck = await this.db.models.RAMs.findOne({where: {uuid: ram.uuid}})
+                            const ramCheck = await this.db.models.RAMs.findOne({ where: { uuid: ram.uuid } })
                             if (!ramCheck) {
-                                await this.db.models.RAMs.create({uuid: ram.uuid})
-                                .catch(error => loggerConsole.error(`Catched error in creating ram: ${error}`))
+                                await this.db.models.RAMs.create({ uuid: ram.uuid })
+                                    .catch(error => loggerConsole.error(`Catched error in creating ram: ${error}`))
                                 // Log creating
                                 loggerConsole.data(`Created ram: ${ram.uuid}`)
                             } else {
@@ -217,24 +217,24 @@ class Database {
                     }
                     break
                 // TODO:
-                case 'miners' :
+                case 'miners':
                     try {
                         for (const miner of staticData.miners) {
-                            const [minerDB, _] = await this.db.models.MINERs.findOrCreate({where: {name: miner.name, full_name: miner.fullName}})
+                            const [minerDB, _] = await this.db.models.MINERs.findOrCreate({ where: { name: miner.name, full_name: miner.fullName } })
                             loggerConsole.data(`Received miner: ${miner.name}`)
                             // if (!checkMiner) {
                             //     const minerDB = await this.db.models.MINERs.create({where: {name: miner.name, full_name: miner.fullName}})
                             //     loggerConsole.data(`Received miner: ${miner.name}`)
                             // }
                             for (const algorithm of miner.algorithms) {
-                                const [algorithmDB, _] = await this.db.models.ALGORITHMs.findOrCreate({where: {name: algorithm}})
+                                const [algorithmDB, _] = await this.db.models.ALGORITHMs.findOrCreate({ where: { name: algorithm } })
                                 loggerConsole.data(`Received algorithm: ${algorithm}`)
                                 // if (!checkAlgorithm) {
                                 //     const algorithmDB = await this.db.models.ALGORITHMs.create({name: algorithm})
                                 //     loggerConsole.data(`Received algorithm: ${algorithm}`)
                                 // }
                                 // if (minerDB && algorithmDB) {
-                                    await this.db.models.ALGORITHM_MINER.findOrCreate({where: {miner_id: minerDB.id, algorithm_id: algorithmDB.id}})
+                                await this.db.models.ALGORITHM_MINER.findOrCreate({ where: { miner_id: minerDB.id, algorithm_id: algorithmDB.id } })
                                 // }
                             }
                         }
@@ -246,14 +246,14 @@ class Database {
             }
         }
     }
-    async createDynamicData() { 
+    async createDynamicData() {
         for (let key in dynamicData) {
             switch (key) {
                 case 'gpus':
                     try {
                         dynamicData.gpus.forEach(async gpu => {
                             // Check if gpu exists
-                            const checkGpu = await this.db.models.GPUs.findOne({where: {uuid: gpu.uuid}})
+                            const checkGpu = await this.db.models.GPUs.findOne({ where: { uuid: gpu.uuid } })
                             if (checkGpu) {
                                 await this.db.models.GPU_GRAPHs.create({
                                     hashrate: gpu.hashrate.value,
@@ -262,7 +262,7 @@ class Database {
                                     algorithm: gpu.algorithm,
                                     cryptocurrency: gpu.cryptocurrency,
                                     gpu_uuid: gpu.uuid
-                                }).then(()=> {
+                                }).then(() => {
                                     loggerConsole.data(`Received GPU dynamic data from ${gpu.uuid}`)
                                 })
                             } else {

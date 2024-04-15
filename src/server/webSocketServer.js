@@ -138,7 +138,7 @@ class WebSocketServer {
                                                     if (clientsData.front) {
                                                         const dbGpus = await sequelize.models.GPUs.findAll();
                                                         // extending gpus with ids from database, deleting gpus if not found in db
-                                                        const transformedGpus = _.compact(dynamicData.gpus.map(async gpu => {
+                                                        const transformedGpus = _.compact(await Promise.all(dynamicData.gpus.map(async gpu => {
                                                             const dbGpu = dbGpus.find(dbGpu => dbGpu.dataValues.uuid === gpu.uuid)
                                                             if (dbGpu === undefined) return null
 
@@ -155,9 +155,17 @@ class WebSocketServer {
                                                                 ...gpu,
                                                                 id: dbGpu.id,
                                                                 flightSheetName: flightSheet?.name ?? null,
-                                                                flightSheetWithCustomMiner: flightSheetWithCustomMiner?.name ?? null
+                                                                flightSheetWithCustomMinerName: flightSheetWithCustomMiner?.name ?? null
                                                             }
-                                                        }))
+                                                        })))
+                                                        console.log({
+                                                            state: dynamicData.state,
+                                                            gpus: transformedGpus,
+                                                            cpu: dynamicData.cpu,
+                                                            harddrives: dynamicData.harddrives,
+                                                            rams: dynamicData.rams,
+                                                            calculations: dynamicData.calculations
+                                                        });
                                                         // Sending msg
                                                         clientsData.front.send(JSON.stringify(
                                                             {
