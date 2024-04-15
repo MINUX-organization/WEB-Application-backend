@@ -35,7 +35,7 @@ const createFlightSheetSchema = Joi.object({
     minerId: Joi.number().integer().required(),
     walletId: Joi.number().integer().required(),
     poolId: Joi.number().integer().required(),
-    additionalString: Joi.string().required()
+    additionalString: Joi.string().required().allow("")
 });
 
 const createFlightSheetWithCustomMinerSchema = Joi.object({
