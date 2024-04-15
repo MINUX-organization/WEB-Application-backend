@@ -185,7 +185,7 @@ class WebSocketServer {
                                                 }
                                                 try {
                                                     // Creating dynamic data in database
-                                                    mainDatabase.createDynamicData()
+                                                    // mainDatabase.createDynamicData()
                                                 } catch (error) {
                                                     loggerConsole.error(`Unable to DB dynamic data!: ${error.message}`)
                                                 }
