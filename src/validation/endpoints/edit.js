@@ -50,7 +50,7 @@ const editFlightSheetSchema = Joi.object({
     newMinerId: Joi.number().integer().optional(),
     newWalletId: Joi.number().integer().optional(),
     newPoolId: Joi.number().integer().optional(),
-    newAdditionalString: Joi.string().optional()
+    newAdditionalString: Joi.string().optional().allow("")
 });
 
 const editFlightSheetWithCustomMinerSchema = Joi.object({
@@ -63,7 +63,7 @@ const editFlightSheetWithCustomMinerSchema = Joi.object({
     newAlgorithm: Joi.string().optional(),
     newPoolTemplate: Joi.string().optional(),
     newWalletAndWorkerTemplate: Joi.string().optional(),
-    newExtraConfigArguments: Joi.string().optional().allow("")
+    newExtraConfigArguments: Joi.string().optional().allow()
 });
 
 export {
