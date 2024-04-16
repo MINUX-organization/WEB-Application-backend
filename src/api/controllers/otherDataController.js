@@ -519,6 +519,18 @@ class OtherDataController {
             return next(ApiError.badRequest(error.details[0].message));
         }
         try {
+            const checkGpuSetupForCustomMiner = await mainDatabase.models.GPU_SETUPs.findAll({
+                where: {
+                    flight_sheet_id_with_custom_miner: { $ne: null }
+                }
+            });
+            if (checkGpuSetupForCustomMiner.length > 0) {
+                for (const gpuSetup of checkGpuSetupForCustomMiner) {
+                    gpuSetup.flight_sheet_id_with_custom_miner = null;
+                    await gpuSetup.save();
+                }
+            }
+
             for (const gpuForFlightSheet of req.body.gpusForFlightSheets) {
                 const gpu = await mainDatabase.models.GPUs.findOne({ where: { id: gpuForFlightSheet.id } })
                 if (gpu) {
