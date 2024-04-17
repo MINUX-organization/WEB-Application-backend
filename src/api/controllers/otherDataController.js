@@ -15,6 +15,7 @@ import { clientsData } from "../../temp/clients.js";
 import { commandsData } from "../../temp/commands.js"
 import { loggerConsole } from "../../utils/logger.js";
 import { commandInterface } from "../../classes/commands.js"
+import { Op } from 'sequelize';
 
 class OtherDataController {
     static async waitForResponse(command) {
@@ -521,7 +522,7 @@ class OtherDataController {
         try {
             const checkGpuSetupForCustomMiner = await mainDatabase.models.GPU_SETUPs.findAll({
                 where: {
-                    flight_sheet_id_with_custom_miner: { $ne: null }
+                    flight_sheet_id_with_custom_miner: { [Op.ne]: null }
                 }
             });
             if (checkGpuSetupForCustomMiner.length > 0) {
