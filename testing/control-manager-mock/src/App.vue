@@ -105,6 +105,14 @@ const staticCommandHandler = (request: any) => {
           payload: testCommandPowerOff
         }))
         break;
+      case 'setupCustomMiner':
+        wss.send(JSON.stringify({
+          ...request,
+          payload: {
+            status: true
+          }
+        }))
+        break;
     }
   }
 }
