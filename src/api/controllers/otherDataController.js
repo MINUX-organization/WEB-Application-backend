@@ -522,16 +522,17 @@ class OtherDataController {
         try {
             const checkGpuSetupForCustomMiner = await mainDatabase.models.GPU_SETUPs.findAll({
                 where: {
-                    flight_sheet_id_with_custom_miner: { [Op.ne]: null }
+                    isCustomMiner: true,
                 }
             });
+
             if (checkGpuSetupForCustomMiner.length > 0) {
                 for (const gpuSetup of checkGpuSetupForCustomMiner) {
                     gpuSetup.flight_sheet_id_with_custom_miner = null;
+                    gpuSetup.isCustomMiner = false;
                     await gpuSetup.save();
                 }
             }
-
             for (const gpuForFlightSheet of req.body.gpusForFlightSheets) {
                 const gpu = await mainDatabase.models.GPUs.findOne({ where: { id: gpuForFlightSheet.id } })
                 if (gpu) {
