@@ -1,7 +1,7 @@
 // Validations
-import { 
-    setGpusSettingsSchema, 
-    rebootSchema  
+import {
+    setGpusSettingsSchema,
+    rebootSchema
 } from "../../validation/endpoints/commands.js"
 // Temp
 import { clientsData } from "../../temp/clients.js";
@@ -21,7 +21,7 @@ class CommandController {
             const timeout = setTimeout(() => {
                 clearInterval(timeout)
                 reject(ApiError.noneData("No response to the command was received"))
-            }, 3000)
+            }, 10000)
             const interval = setInterval(() => {
                 if (commandsData[command] != null) {
                     const response = commandsData[command]
@@ -44,13 +44,13 @@ class CommandController {
             clientsData.app.send(JSON.stringify(command))
             // Wait response
             CommandController.waitForResponse(command.command)
-            .then(response => {
-                commandsData[command] = null
-                res.status(200).json(response)
-            })
-            .catch(err => {
-                return next(err)
-            })
+                .then(response => {
+                    commandsData[command] = null
+                    res.status(200).json(response)
+                })
+                .catch(err => {
+                    return next(err)
+                })
         } catch (err) {
             return next(err)
         }
@@ -66,13 +66,13 @@ class CommandController {
             clientsData.app.send(JSON.stringify(command))
             // Wait response
             await CommandController.waitForResponse(command.command)
-            .then(response => {
-                commandsData[command] = null
-                res.status(200).json(response)
-            })
-            .catch(err => {
-                return next(err)
-            })
+                .then(response => {
+                    commandsData[command] = null
+                    res.status(200).json(response)
+                })
+                .catch(err => {
+                    return next(err)
+                })
         } catch (err) {
             return next(err)
         }
@@ -88,13 +88,13 @@ class CommandController {
             clientsData.app.send(JSON.stringify(command))
             // Wait response
             await CommandController.waitForResponse(command.command)
-            .then(response => {
-                commandsData[command] = null
-                res.status(200).json(response)
-            })
-            .catch(err => {
-                return next(err)
-            })
+                .then(response => {
+                    commandsData[command] = null
+                    res.status(200).json(response)
+                })
+                .catch(err => {
+                    return next(err)
+                })
         } catch (err) {
             return next(err)
         }
@@ -115,13 +115,13 @@ class CommandController {
             clientsData.app.send(JSON.stringify(command))
             // Wait response
             CommandController.waitForResponse(command.command)
-            .then(response => {
-                commandsData[command] = null
-                res.status(200).json(response)
-            })
-            .catch(err => {
-                return next(err)
-            })
+                .then(response => {
+                    commandsData[command] = null
+                    res.status(200).json(response)
+                })
+                .catch(err => {
+                    return next(err)
+                })
         } catch (err) {
             return next(err)
         }
@@ -137,23 +137,23 @@ class CommandController {
             clientsData.app.send(JSON.stringify(command))
             // Wait response
             CommandController.waitForResponse(command.command)
-            .then(async response => {
-                console.log(response)
-                commandsData[command] = null
-                const farmState = await mainDatabase.models.FARM_STATE.findOne()
-                // Update farmstate
-                if (farmState) {
-                    farmState.mining = true
-                    await farmState.save()
-                }
-                else {
-                    return next(ApiError.noneData("Unavailable to update farm state!"))
-                }
-                res.status(200).json(response)
-            })
-            .catch(err => {
-                return next(err)
-            })
+                .then(async response => {
+                    console.log(response)
+                    commandsData[command] = null
+                    const farmState = await mainDatabase.models.FARM_STATE.findOne()
+                    // Update farmstate
+                    if (farmState) {
+                        farmState.mining = true
+                        await farmState.save()
+                    }
+                    else {
+                        return next(ApiError.noneData("Unavailable to update farm state!"))
+                    }
+                    res.status(200).json(response)
+                })
+                .catch(err => {
+                    return next(err)
+                })
         } catch (err) {
             return next(err)
         }
@@ -169,22 +169,22 @@ class CommandController {
             clientsData.app.send(JSON.stringify(command))
             // Wait response
             CommandController.waitForResponse(command.command)
-            .then(async response => {
-                commandsData[command] = null
-                const farmState = await mainDatabase.models.FARM_STATE.findOne()
-                // Update farmstate
-                if (farmState) {
-                    farmState.mining = false
-                    await farmState.save()
-                }
-                else {
-                    return next(ApiError.noneData("Unavailable to update farm state!"))
-                }
-                res.status(200).json(response)
-            })
-            .catch(err => {
-                return next(err)
-            })
+                .then(async response => {
+                    commandsData[command] = null
+                    const farmState = await mainDatabase.models.FARM_STATE.findOne()
+                    // Update farmstate
+                    if (farmState) {
+                        farmState.mining = false
+                        await farmState.save()
+                    }
+                    else {
+                        return next(ApiError.noneData("Unavailable to update farm state!"))
+                    }
+                    res.status(200).json(response)
+                })
+                .catch(err => {
+                    return next(err)
+                })
         } catch (err) {
             return next(err)
         }
@@ -205,13 +205,13 @@ class CommandController {
             clientsData.app.send(JSON.stringify(command))
             // Wait response
             await CommandController.waitForResponse(command.command)
-            .then(response => {
-                commandsData[command] = null
-                res.status(200).json(response)
-            })
-            .catch(err => {
-                return next(err)
-            })
+                .then(response => {
+                    commandsData[command] = null
+                    res.status(200).json(response)
+                })
+                .catch(err => {
+                    return next(err)
+                })
         } catch (err) {
             return next(err)
         }
@@ -227,13 +227,13 @@ class CommandController {
             clientsData.app.send(JSON.stringify(command))
             // Wait response
             await CommandController.waitForResponse(command.command)
-            .then(response => {
-                commandsData[command] = null
-                res.status(200).json(response)
-            })
-            .catch(err => {
-                return next(err)
-            })
+                .then(response => {
+                    commandsData[command] = null
+                    res.status(200).json(response)
+                })
+                .catch(err => {
+                    return next(err)
+                })
         } catch (err) {
             return next(err)
         }
