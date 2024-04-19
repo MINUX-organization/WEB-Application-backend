@@ -66,6 +66,17 @@ const editFlightSheetWithCustomMinerSchema = Joi.object({
     newExtraConfigArguments: Joi.string().optional().allow()
 });
 
+const editFlightSheetWithCPUSchema = Joi.object({
+    id: Joi.number().required(),
+    newName: Joi.string().pattern(new RegExp("^[a-zA-Z0-9_-]{3,128}$")).optional(),
+    newCryptocurrencyId: Joi.number().integer().optional(),
+    newMinerId: Joi.number().integer().optional(),
+    newWalletId: Joi.number().integer().optional(),
+    newPoolId: Joi.number().integer().optional(),
+    newAdditionalString: Joi.string().optional().allow(""),
+    newHugePages: Joi.number().integer().positive().optional()
+});
+
 export {
     editCryptocurrencySchema,
     editWalletSchema,
@@ -74,5 +85,6 @@ export {
     editGPUPresetSchema,
     editGPUSetupSchema,
     editFlightSheetSchema,
-    editFlightSheetWithCustomMinerSchema
+    editFlightSheetWithCustomMinerSchema,
+    editFlightSheetWithCPUSchema
 };

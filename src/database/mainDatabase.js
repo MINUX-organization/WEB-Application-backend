@@ -161,9 +161,9 @@ class Database {
                             // Log creating
                             loggerConsole.data(`Created CPU: ${cpu.uuid}`)
                             // Check if cpu setup is already exists
-                            const cpuSetupCheck = await this.db.models.CPU_SETUP.findOne({ where: { cpu_uuid: cpu.uuid } })
+                            const cpuSetupCheck = await this.db.models.CPU_SETUPs.findOne({ where: { cpu_uuid: cpu.uuid } })
                             if (!cpuSetupCheck) {
-                                await this.db.models.CPU_SETUP.create({ cpu_uuid: cpu.uuid })
+                                await this.db.models.CPU_SETUPs.create({ cpu_uuid: cpu.uuid })
                                     .catch(error => loggerConsole.error(`Catched error in creating CPU Setup: ${error}`))
                                 // Log creating
                                 loggerConsole.data(`Created CPU Setup: ${cpu.uuid}`)

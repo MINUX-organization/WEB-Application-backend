@@ -6,7 +6,8 @@ import {
     createMinerSchema,
     createGPUPresetSchema,
     createFlightSheetSchema,
-    createFlightSheetWithCustomMinerSchema
+    createFlightSheetWithCustomMinerSchema,
+    createFlightSheetWithCPUSchema
 } from "../../validation/endpoints/create.js";
 
 import { mainDatabase } from '../../database/mainDatabase.js'
@@ -208,7 +209,46 @@ class CreateController {
         }
     }
     static async FlightSheetWithCPU(req, res, next) {
-
+        const { error } = createFlightSheetWithCPUSchema.validate(req.body)
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message))
+        }
+        // Validate foreign keys
+        try {
+            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrencyId } })
+            if (!cryptocurrency) {
+                return next(ApiError.noneData('Cryptocurrency with this id not found'))
+            }
+            const miner = await mainDatabase.models.MINERs.findOne({ where: { id: req.body.minerId } })
+            if (!miner) {
+                return next(ApiError.noneData('Miner with this id not found'))
+            }
+            const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: req.body.walletId } })
+            if (!wallet) {
+                return next(ApiError.noneData('Wallet with this id not found'))
+            }
+            const pool = await mainDatabase.models.POOLs.findOne({ where: { id: req.body.poolId } })
+            if (!pool) {
+                return next(ApiError.noneData('Pool with this id not found'))
+            }
+        } catch (err) {
+            return next(err);
+        }
+        // Create FlightSheets
+        try {
+            await mainDatabase.models.FLIGHT_SHEETs.create({
+                name: req.body.name,
+                cryptocurrency_id: req.body.cryptocurrencyId,
+                miner_id: req.body.minerId,
+                wallet_id: req.body.walletId,
+                pool_id: req.body.poolId,
+                additional_string: req.body.additionalString,
+                huge_pages: req.body.hugePages,
+            });
+            res.status(201).json();
+        } catch (err) {
+            return next(err);
+        }
     }
 }
 

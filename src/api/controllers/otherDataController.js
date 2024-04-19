@@ -313,7 +313,7 @@ class OtherDataController {
         // Get CPU setup
         try {
             // Check if cpu setup exists
-            const cpuSetup = await mainDatabase.models.CPU_SETUP.findOne({ where: { id: req.body.cpuId } });
+            const cpuSetup = await mainDatabase.models.CPU_SETUPs.findOne({ where: { id: req.body.cpuId } });
             if (!cpuSetup) {
                 return res.status(200).json({ "cpuSetup": null })
             }

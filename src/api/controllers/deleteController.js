@@ -7,6 +7,7 @@ import {
     deleteGPUPresetSchema,
     deleteFlightSheetSchema,
     deleteFlightSheetWithCustomMinerSchema,
+    deleteFlightSheetWithCPUSchema,
 } from "../../validation/endpoints/delete.js";
 
 import { mainDatabase } from '../../database/mainDatabase.js'
@@ -276,6 +277,31 @@ class DeleteController {
             });
 
         } catch (error) {
+            return next(error);
+        }
+    }
+    static async FlightSheetWithCPU(req, res, next) {
+        const { error } = deleteFlightSheetWithCPUSchema.validate(req.body);
+
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message))
+        };
+
+        try {
+            const existingFlightSheetWithCPU = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findByPk(req.body.id);
+            if (!existingFlightSheetWithCPU) {
+                return next(ApiError.noneData($`Couldn't find flight sheet with id ${req.body.id}`))
+            }
+            const cpuSetups = await mainDatabase.models.CPU_SETUPs.findAll({ where: { flight_sheet_id: existingFlightSheetWithCPU.id } })
+            for (const cpuSetup of cpuSetups) {
+                await cpuSetup.update({ flight_sheet_id: null })
+            }
+
+            await existingFlightSheetWithCPU.destroy().then(() => {
+                res.status(200).json();
+            });
+        }
+        catch (error) {
             return next(error);
         }
     }

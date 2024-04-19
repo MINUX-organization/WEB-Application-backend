@@ -50,6 +50,16 @@ const createFlightSheetWithCustomMinerSchema = Joi.object({
     extraConfigArguments: Joi.string().required()
 })
 
+const createFlightSheetWithCPUSchema = Joi.object({
+    name: Joi.string().pattern(new RegExp("^[a-zA-Z0-9_-]{3,128}$")).required(),
+    cryptocurrencyId: Joi.number().integer().required(),
+    minerId: Joi.number().integer().required(),
+    walletId: Joi.number().integer().required(),
+    poolId: Joi.number().integer().required(),
+    additionalString: Joi.string().required().allow(""),
+    hugePages: Joi.number().integer().positive().required()
+});
+
 export {
     createCryptocurrencySchema,
     createWalletSchema,
@@ -57,5 +67,6 @@ export {
     createMinerSchema,
     createGPUPresetSchema,
     createFlightSheetSchema,
-    createFlightSheetWithCustomMinerSchema
+    createFlightSheetWithCustomMinerSchema,
+    createFlightSheetWithCPUSchema
 };

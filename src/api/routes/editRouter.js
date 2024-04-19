@@ -19,5 +19,7 @@ editRouter.post("/gpu-setup", EditController.GPUSetup);
 editRouter.post("/flight-sheet", EditController.FlightSheet);
 // http://localhost:8200/api/edit/flight-sheet-with-custom-miner
 editRouter.post("/flight-sheet-with-custom-miner", EditController.FlightSheetWithCustomMiner);
+// http://localhost:8200/api/edit/flight-sheet-with-cpu
+editRouter.post("/flight-sheet-with-cpu", EditController.FlightSheetWithCpu);
 
 export { editRouter }

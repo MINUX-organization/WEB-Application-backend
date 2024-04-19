@@ -11,10 +11,12 @@ deleteRouter.delete("/wallet", DeleteController.Wallet);
 deleteRouter.delete("/pool", DeleteController.Pool);
 // http://localhost:8200/api/delete/miner
 deleteRouter.delete("/miner", DeleteController.Miner);
-// http://localhost:8200/api/delete/gpuPreset
+// http://localhost:8200/api/delete/gpu-preset
 deleteRouter.delete("/gpu-preset", DeleteController.GPUPreset);
-// http://localhost:8200/api/delete/flightSheet
+// http://localhost:8200/api/delete/flight-sheet
 deleteRouter.delete("/flight-sheet", DeleteController.FlightSheet);
-// 
+//  http://localhost:8200/api/delete/flight-sheet-with-custom-miner
 deleteRouter.delete("/flight-sheet-with-custom-miner", DeleteController.FlightSheetWithCustomMiner);
+// http://localhost:8200/api/delete/flight-sheet-with-cpu
+deleteRouter.delete("/flight-sheet-with-cpu", DeleteController.FlightSheetWithCPU);
 export { deleteRouter }

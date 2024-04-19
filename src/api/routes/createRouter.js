@@ -18,5 +18,7 @@ createRouter.post("/gpu-preset", CreateController.GPUPreset);
 createRouter.post("/flight-sheet", CreateController.FlightSheet);
 // http://localhost:8200/api/create/flight-sheet-with-custom-miner
 createRouter.post("/flight-sheet-with-custom-miner", CreateController.FlightSheetWithCustomMiner)
+// http://localhost:8200/api/create/flight-sheet-with-cpu
+createRouter.post("/flight-sheet-with-cpu", CreateController.FlightSheetWithCPU)
 export { createRouter }
 

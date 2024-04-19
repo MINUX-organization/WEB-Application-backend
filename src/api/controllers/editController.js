@@ -7,6 +7,7 @@ import {
     editGPUPresetSchema,
     editFlightSheetSchema,
     editFlightSheetWithCustomMinerSchema,
+    editFlightSheetWithCPUSchema,
     editGPUSetupSchema
 } from '../../validation/endpoints/edit.js'
 
@@ -429,6 +430,61 @@ class EditController {
 
         }
         catch (err) {
+            return next(err);
+        }
+    }
+    static async FlightSheetWithCpu(req, res, next) {
+        const { error } = editFlightSheetWithCPUSchema.validate(req.body);
+        const { id, newName, newCryptocurrencyId, newMinerId,
+            newWalletId, newPoolId, newAdditionalString, newHugePages } = req.body;
+
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message));
+        }
+        try {
+            const flightSheetWithCpu = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findByPk(id);
+
+            if (!flightSheetWithCpu) {
+                throw new ApiError.noneData(`Flight sheet with id ${req.body.id} is not found!`);
+            }
+            if (newName) {
+                flightSheetWithCpu.name = newName;
+            }
+            if (newCryptocurrencyId) {
+                const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findByPk(newCryptocurrencyId);
+                if (cryptocurrency) {
+                    flightSheetWithCpu.cryptocurrency_id = newCryptocurrencyId;
+                }
+            }
+            if (newMinerId) {
+                const miner = await mainDatabase.models.MINERs.findByPk(newMinerId);
+                if (miner) {
+                    flightSheetWithCpu.miner_id = newMinerId;
+                }
+            }
+            if (newWalletId) {
+                const wallet = await mainDatabase.models.WALLETs.findByPk(newWalletId);
+                if (wallet) {
+                    flightSheetWithCpu.wallet_id = newWalletId;
+                }
+            }
+            if (newPoolId) {
+                const pool = await mainDatabase.models.POOLs.findByPk(newPoolId);
+                if (pool) {
+                    flightSheetWithCpu.pool_id = newPoolId;
+                }
+            }
+            if (newAdditionalString) {
+                flightSheetWithCpu.additional_string = newAdditionalString;
+            }
+            if (newHugePages) {
+                flightSheetWithCpu.huge_pages = newHugePages;
+            }
+            await flightSheetWithCpu.save().then(() => {
+                res.status(200).json()
+            });
+
+        } catch (err) {
             return next(err);
         }
     }
