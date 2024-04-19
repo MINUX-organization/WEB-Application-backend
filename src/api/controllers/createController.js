@@ -14,8 +14,8 @@ import { ApiError } from "../../error/ApiError.js";
 import { loggerConsole } from "../../utils/logger.js";
 
 class CreateController {
-    static async createCryptocurrency(req, res, next) { // Reformated + worked
-        
+    static async Cryptocurrency(req, res, next) { // Reformated + worked
+
         // Validate request body
         const { error } = createCryptocurrencySchema.validate(req.body);
         if (error) {
@@ -41,7 +41,7 @@ class CreateController {
             return next(error);
         }
     }
-    static async createWallet(req, res, next) { // Reformated + worked
+    static async Wallet(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = createWalletSchema.validate(req.body)
         if (error) {
@@ -49,14 +49,14 @@ class CreateController {
         }
         // Validate foreign keys
         try {
-            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrencyId }})
+            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrencyId } })
             if (!cryptocurrency) {
                 return next(ApiError.noneData('Cryptocurrency with this id not found'))
-        }
-        } catch (err) { 
+            }
+        } catch (err) {
             return next(err);
         }
-        
+
         // Create wallet
         try {
             await mainDatabase.models.WALLETs.create({
@@ -70,7 +70,7 @@ class CreateController {
             return next(err);
         }
     }
-    static async createPool(req, res, next) { // Reformated + worked
+    static async Pool(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = createPoolSchema.validate(req.body)
         if (error) {
@@ -78,14 +78,14 @@ class CreateController {
         }
         // Validate foreign keys
         try {
-            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrencyId }})
+            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrencyId } })
             if (!cryptocurrency) {
                 return next(ApiError.noneData('Cryptocurrency with this id not found'))
-        }
+            }
         } catch (err) {
             return next(err);
         }
-        
+
         // Create pool
         try {
             await mainDatabase.models.POOLs.create({
@@ -98,7 +98,7 @@ class CreateController {
             return next(err);
         }
     }
-    static async createMiner(req, res, next) { // Reformated + worked
+    static async Miner(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = createMinerSchema.validate(req.body)
         if (error) {
@@ -115,7 +115,7 @@ class CreateController {
             return next(err);
         }
     }
-    static async createGPUPreset(req, res, next) { // Reformated + worked
+    static async GPUPreset(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = createGPUPresetSchema.validate(req.body)
         if (error) {
@@ -124,7 +124,7 @@ class CreateController {
         // Create GPUPreset
         try {
             // Validate foreign keys
-            const gpu = await mainDatabase.models.GPUs.findOne({ where: { id: req.body.gpuId }})
+            const gpu = await mainDatabase.models.GPUs.findOne({ where: { id: req.body.gpuId } })
             if (!gpu) {
                 return next(ApiError.noneData('GPU with this id not found'))
             }
@@ -142,7 +142,7 @@ class CreateController {
             return next(err);
         }
     }
-    static async createFlightSheet(req, res, next) { // Reformated + worked
+    static async FlightSheet(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = createFlightSheetSchema.validate(req.body)
         if (error) {
@@ -150,26 +150,26 @@ class CreateController {
         }
         // Validate foreign keys
         try {
-            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrencyId }})
+            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: req.body.cryptocurrencyId } })
             if (!cryptocurrency) {
                 return next(ApiError.noneData('Cryptocurrency with this id not found'))
             }
-            const miner = await mainDatabase.models.MINERs.findOne({ where: { id: req.body.minerId }})
+            const miner = await mainDatabase.models.MINERs.findOne({ where: { id: req.body.minerId } })
             if (!miner) {
                 return next(ApiError.noneData('Miner with this id not found'))
             }
-            const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: req.body.walletId }})
+            const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: req.body.walletId } })
             if (!wallet) {
                 return next(ApiError.noneData('Wallet with this id not found'))
             }
-            const pool = await mainDatabase.models.POOLs.findOne({ where: { id: req.body.poolId }})
+            const pool = await mainDatabase.models.POOLs.findOne({ where: { id: req.body.poolId } })
             if (!pool) {
                 return next(ApiError.noneData('Pool with this id not found'))
-            }    
+            }
         } catch (err) {
             return next(err);
         }
-        
+
         // Create FlightSheets
         try {
             await mainDatabase.models.FLIGHT_SHEETs.create({
@@ -185,7 +185,7 @@ class CreateController {
             return next(err);
         }
     }
-    static async createFlightSheetWithCustomMiner(req, res, next) {
+    static async FlightSheetWithCustomMiner(req, res, next) {
         const { error } = createFlightSheetWithCustomMinerSchema.validate(req.body)
         if (error) {
             return next(ApiError.badRequest(error.details[0].message))
@@ -206,6 +206,9 @@ class CreateController {
         } catch (err) {
             return next(err);
         }
+    }
+    static async FlightSheetWithCPU(req, res, next) {
+
     }
 }
 

@@ -4,17 +4,17 @@ import { DeleteController } from "../controllers/deleteController.js";
 const deleteRouter = express.Router()
 
 // http://localhost:8200/api/delete/cryptocurrency
-deleteRouter.delete("/cryptocurrency", DeleteController.deleteCryptocurrency);
+deleteRouter.delete("/cryptocurrency", DeleteController.Cryptocurrency);
 // http://localhost:8200/api/delete/wallet
-deleteRouter.delete("/wallet", DeleteController.deleteWallet);
+deleteRouter.delete("/wallet", DeleteController.Wallet);
 // http://localhost:8200/api/delete/pool
-deleteRouter.delete("/pool", DeleteController.deletePool);
+deleteRouter.delete("/pool", DeleteController.Pool);
 // http://localhost:8200/api/delete/miner
-deleteRouter.delete("/miner", DeleteController.deleteMiner);
+deleteRouter.delete("/miner", DeleteController.Miner);
 // http://localhost:8200/api/delete/gpuPreset
-deleteRouter.delete("/gpu-preset", DeleteController.deleteGPUPreset);
+deleteRouter.delete("/gpu-preset", DeleteController.GPUPreset);
 // http://localhost:8200/api/delete/flightSheet
-deleteRouter.delete("/flight-sheet", DeleteController.deleteFlightSheet);
+deleteRouter.delete("/flight-sheet", DeleteController.FlightSheet);
 // 
-deleteRouter.delete("/flight-sheet-with-custom-miner", DeleteController.deleteFlightSheetWithCustomMiner);
+deleteRouter.delete("/flight-sheet-with-custom-miner", DeleteController.FlightSheetWithCustomMiner);
 export { deleteRouter }

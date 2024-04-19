@@ -15,7 +15,7 @@ import { clientsData } from "../../temp/clients.js";
 import { commandInterface } from "../../classes/commands.js";
 
 class DeleteController {
-    static async deleteCryptocurrency(req, res, next) { // Reformated + worked
+    static async Cryptocurrency(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = deleteCryptocurrencySchema.validate(req.body);
         if (error) {
@@ -65,7 +65,7 @@ class DeleteController {
             return next(error);
         }
     }
-    static async deleteWallet(req, res, next) { // Reformated + worked
+    static async Wallet(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = deleteWalletSchema.validate(req.body);
         if (error) {
@@ -97,7 +97,7 @@ class DeleteController {
             return next(error);
         }
     }
-    static async deletePool(req, res, next) { // Reformated + worked
+    static async Pool(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = deletePoolSchema.validate(req.body);
         if (error) {
@@ -129,7 +129,7 @@ class DeleteController {
             return next(error);
         }
     }
-    static async deleteMiner(req, res, next) { // Reformated + not tested yet
+    static async Miner(req, res, next) { // Reformated + not tested yet
         // Validate request body
         const { error } = deleteMinerSchema.validate(req.body);
         if (error) {
@@ -161,7 +161,7 @@ class DeleteController {
             return next(error);
         }
     }
-    static async deleteGPUPreset(req, res, next) { // Reformated + worked
+    static async GPUPreset(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = deleteGPUPresetSchema.validate(req.body);
         if (error) {
@@ -187,7 +187,7 @@ class DeleteController {
         }
 
     }
-    static async deleteFlightSheet(req, res, next) { // Reformated + worked
+    static async FlightSheet(req, res, next) { // Reformated + worked
         // Validate request body
         const { error } = deleteFlightSheetSchema.validate(req.body);
         if (error) {
@@ -219,7 +219,7 @@ class DeleteController {
             return next(error);
         }
     }
-    static async deleteFlightSheetWithCustomMiner(req, res, next) {
+    static async FlightSheetWithCustomMiner(req, res, next) {
         const { error } = deleteFlightSheetWithCustomMinerSchema.validate(req.body);
 
         if (error) {

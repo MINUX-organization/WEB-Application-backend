@@ -5,18 +5,18 @@ const createRouter = express.Router()
 
 
 // http://localhost:8200/api/create/cryptocurrency
-createRouter.post("/cryptocurrency", CreateController.createCryptocurrency);
+createRouter.post("/cryptocurrency", CreateController.Cryptocurrency);
 // http://localhost:8200/api/create/wallet
-createRouter.post("/wallet", CreateController.createWallet);
+createRouter.post("/wallet", CreateController.Wallet);
 // http://localhost:8200/api/create/pool
-createRouter.post("/pool", CreateController.createPool);
+createRouter.post("/pool", CreateController.Pool);
 // http://localhost:8200/api/create/miner
-createRouter.post("/miner", CreateController.createMiner);
+createRouter.post("/miner", CreateController.Miner);
 // http://localhost:8200/api/create/gpu-preset
-createRouter.post("/gpu-preset", CreateController.createGPUPreset);
+createRouter.post("/gpu-preset", CreateController.GPUPreset);
 // http://localhost:8200/api/create/flight-sheet
-createRouter.post("/flight-sheet", CreateController.createFlightSheet);
+createRouter.post("/flight-sheet", CreateController.FlightSheet);
 // http://localhost:8200/api/create/flight-sheet-with-custom-miner
-createRouter.post("/flight-sheet-with-custom-miner", CreateController.createFlightSheetWithCustomMiner)
+createRouter.post("/flight-sheet-with-custom-miner", CreateController.FlightSheetWithCustomMiner)
 export { createRouter }
 
