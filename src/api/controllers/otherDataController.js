@@ -169,7 +169,9 @@ class OtherDataController {
             // Check if flight sheets exist
             const flightSheets = await mainDatabase.models.FLIGHT_SHEETs.findAll();
             const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findAll();
-            if (flightSheets.length == 0 && flightSheetsWithCustomMiner.length == 0) {
+            const flightSheetsWithCPU = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findAll();
+
+            if (flightSheets.length == 0 && flightSheetsWithCustomMiner.length == 0 && flightSheetsWithCPU.length == 0) {
                 return res.status(200).json({ "flightSheets": [] });
             }
             // Reformat response
@@ -207,7 +209,23 @@ class OtherDataController {
                 reformatedFlightSheetsWithCustomMiner.push(reformatedFlightSheetWithCustomMiner)
             })
 
-            const result = [...reformatedFlightSheets, ...reformatedFlightSheetsWithCustomMiner]
+            const reformatedFlightSheetsWithCPU = [];
+            flightSheetsWithCPU.forEach(flightSheetWithCPU => {
+                flightSheetWithCPU = flightSheetWithCPU.dataValues;
+                const reformatedFlightSheetWithCPU = {
+                    id: flightSheetWithCPU.id,
+                    name: flightSheetWithCPU.name,
+                    type: "CPU",
+                    cryptocurrencyId: flightSheetWithCPU.cryptocurrency_id,
+                    minerId: flightSheetWithCPU.miner_id,
+                    walletId: flightSheetWithCPU.wallet_id,
+                    poolId: flightSheetWithCPU.pool_id,
+                    additionalString: flightSheetWithCPU.additional_string,
+                    hugePages: flightSheetWithCPU.huge_pages
+                };
+                reformatedFlightSheetsWithCPU.push(reformatedFlightSheetWithCPU);
+            });        
+            const result = [...reformatedFlightSheets, ...reformatedFlightSheetsWithCustomMiner, ...reformatedFlightSheetsWithCPU]
 
             // Return
             res.status(200).json({ "flightSheets": result });
@@ -406,8 +424,9 @@ class OtherDataController {
     }
     static async getFullFilledFlightSheets(req, res, next) {
         try {
-            const flightSheets = await mainDatabase.models.FLIGHT_SHEETs.findAll()
-            const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findAll()
+            const flightSheets = await mainDatabase.models.FLIGHT_SHEETs.findAll();
+            const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findAll();
+            const flightSheetsWithCPU = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findAll();
 
             const reformatedFlightSheets = []
             for (const flightSheet of flightSheets) {
@@ -466,6 +485,51 @@ class OtherDataController {
                     extraConfigArguments: flightSheetWithCustomMiner.extra_config_arguments
                 }
                 reformatedFlightSheets.push(reformatedFlightSheetWithCustomMiner)
+            }
+            for (const flightSheetWithCPU of flightSheetsWithCPU) {
+                const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheetWithCPU.cryptocurrency_id } })
+                const miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheetWithCPU.miner_id } });
+                const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheetWithCPU.wallet_id } });
+                const pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheetWithCPU.pool_id } });
+                const algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } })
+
+                const reformatedFlightSheetWithCPU = {
+                    id: flightSheetWithCPU.id,
+                    type: "CPU",
+                    name: flightSheetWithCPU.name,
+                    cryptocurrency: cryptocurrency ? {
+                        id: cryptocurrency.id,
+                        name: cryptocurrency.name,
+                        fullName: cryptocurrency.full_name,
+                        algorithmId: cryptocurrency.algorithm_id,
+                    } : null,
+                    miner: miner ? {
+                        id: miner.id,
+                        name: miner.name,
+                        fullName: miner.full_name,
+                    } : null,
+                    wallet: wallet ? {
+                        id: wallet.id,
+                        name: wallet.name,
+                        source: wallet.source,
+                        address: wallet.address,
+                        cryptocurrencyId: wallet.cryptocurrency_id
+                    } : null,
+                    pool: pool ? {
+                        id: pool.id,
+                        host: pool.host,
+                        port: pool.port,
+                        cryptocurrencyId: pool.cryptocurrency_id
+                    } : null,
+                    algorithm: algorithm ? {
+                        id: algorithm.id,
+                        name: algorithm.name,
+                    } : null,
+                    additionalString: flightSheetWithCPU.additional_string,
+                    hugePages: flightSheetWithCPU.huge_pages
+                   
+                }
+                reformatedFlightSheets.push(reformatedFlightSheetWithCPU)  
             }
             res.status(200).json({ "flightSheets": reformatedFlightSheets })
         } catch (err) {
