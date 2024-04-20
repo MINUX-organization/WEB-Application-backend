@@ -236,7 +236,7 @@ class CreateController {
         }
         // Create FlightSheets
         try {
-            await mainDatabase.models.FLIGHT_SHEETs.create({
+            await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.create({
                 name: req.body.name,
                 cryptocurrency_id: req.body.cryptocurrencyId,
                 miner_id: req.body.minerId,
