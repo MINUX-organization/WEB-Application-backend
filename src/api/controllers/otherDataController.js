@@ -6,7 +6,8 @@ import {
     getGPUPresetsSchema,
     getGPUSetupSchema,
     editGpusForFlightSheetsSchema,
-    editGpusForFlightSheetsWithCustomMinerSchema
+    editGpusForFlightSheetsWithCustomMinerSchema,
+    editGpusForFlightSheetsWithCPUSchema
 } from "../../validation/endpoints/otherData.js";
 import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
@@ -710,6 +711,12 @@ class OtherDataController {
         }
 
         res.status(200).json();
+    }
+    static async editGpusForFlightSheetWithCPU(req, res, next) {
+        const { error } = editGpusForFlightSheetsWithCPUSchema.validate(req.body);
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message));
+        }
     }
     static async getSettingsGpus(req, res, next) {
         try {
