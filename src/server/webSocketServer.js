@@ -523,7 +523,12 @@ class WebSocketServer {
             })
             webSocket.on('ping', () => {
                 loggerConsole.data("Received PING from app!")
-                webSocket.pong('', undefined, true);
+                const options = {
+                    mask: false,
+                    binary: false,
+                    compress: false
+                };
+                ws.pong('', options);
             });
         })
     }
