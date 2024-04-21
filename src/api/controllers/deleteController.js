@@ -261,11 +261,12 @@ class DeleteController {
                         },
                         crypto: {
                             cryptoType: "custom",
-                            coin: null,
-                            algorithm: null,
-                            wallet: null,
-                            pool: null,
-                            miner: null
+                            coin: "",
+                            algorithm: "",
+                            wallet: "",
+                            pool: "",
+                            miner: "",
+                            additionalString: ""
                         }
                     }]
                 }, "setGpusSettings")))

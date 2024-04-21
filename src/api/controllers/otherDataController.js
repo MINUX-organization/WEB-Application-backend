@@ -754,11 +754,11 @@ class OtherDataController {
                         hugepages: flightSheetWithCPU.huge_pages
                     },
                     crypto: {
-                        coin: cryptocurrency ? cryptocurrency.name : null,
-                        algorithm: algorithm ? algorithm.name : null,
-                        wallet: wallet ? wallet.address : null,
-                        pool: pool ? `${pool.host}:${pool.port}` : null,
-                        miner: miner ? miner.name : null,
+                        coin: cryptocurrency ? cryptocurrency.name : "",
+                        algorithm: algorithm ? algorithm.name : "",
+                        wallet: wallet ? wallet.address : "",
+                        pool: pool ? `${pool.host}:${pool.port}` : "",
+                        miner: miner ? miner.name : "",
                         additionalString: flightSheetWithCPU ? flightSheetWithCPU.additional_string : "",
                         configFile: flightSheetWithCPU ? flightSheetWithCPU.config_file : ""
                     }

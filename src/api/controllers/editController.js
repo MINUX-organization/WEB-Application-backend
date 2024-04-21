@@ -271,7 +271,7 @@ class EditController {
                 gpuSetup.flight_sheet_id = req.body.newFlightSheetId;
             }
             if (clientsData.app) {
-                let cryptocurrency, miner, wallet, pool, algorithm;
+                let cryptocurrency, miner, wallet, pool, algorithm, additionalString;
                 const flightSheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: { id: gpuSetup.flight_sheet_id } });
                 if (gpuSetup.flight_sheet_id !== null && flightSheet === null) {
                     throw new Error('flight sheet with this id does not exist')
@@ -281,6 +281,7 @@ class EditController {
                     miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheet.miner_id } });
                     wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheet.wallet_id } });
                     pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheet.pool_id } });
+                    additionalString = flightSheet.additional_string;
                     if (cryptocurrency) {
                         algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
                     }
@@ -299,11 +300,12 @@ class EditController {
                         },
                         crypto: {
                             cryptoType: "custom",
-                            coin: cryptocurrency ? cryptocurrency.name : null,
-                            algorithm: algorithm ? algorithm.name : null,
-                            wallet: wallet ? wallet.address : null,
-                            pool: pool ? `${pool.host}:${pool.port}` : null,
-                            miner: miner ? miner.name : null,
+                            coin: cryptocurrency ? cryptocurrency.name : "",
+                            algorithm: algorithm ? algorithm.name : "",
+                            wallet: wallet ? wallet.address : "",
+                            pool: pool ? `${pool.host}:${pool.port}` : "",
+                            miner: miner ? miner.name : "",
+                            additionalString: additionalString ?? ""
                         }
                     }]
                 }, "setGpusSettings")))
