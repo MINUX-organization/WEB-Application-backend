@@ -528,7 +528,7 @@ class WebSocketServer {
                     binary: false,
                     compress: false
                 };
-                ws.pong('', options);
+                webSocket.pong('', options);
             });
         })
     }
