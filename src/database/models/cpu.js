@@ -165,6 +165,9 @@ export default function initCPUModels(db) {
         },
         huge_pages: {
             type: DataTypes.INTEGER
+        },
+        config_file: {
+            type: DataTypes.TEXT
         }
     }, {
         sequelize: db,

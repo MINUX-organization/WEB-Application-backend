@@ -222,10 +222,11 @@ class OtherDataController {
                     walletId: flightSheetWithCPU.wallet_id,
                     poolId: flightSheetWithCPU.pool_id,
                     additionalString: flightSheetWithCPU.additional_string,
-                    hugePages: flightSheetWithCPU.huge_pages
+                    hugePages: flightSheetWithCPU.huge_pages,
+                    configFile: flightSheetWithCPU.config_file
                 };
                 reformatedFlightSheetsWithCPU.push(reformatedFlightSheetWithCPU);
-            });        
+            });
             const result = [...reformatedFlightSheets, ...reformatedFlightSheetsWithCustomMiner, ...reformatedFlightSheetsWithCPU]
 
             // Return
@@ -468,7 +469,8 @@ class OtherDataController {
                         id: algorithm.id,
                         name: algorithm.name,
                     } : null,
-                    additionalString: flightSheet.additional_string
+                    additionalString: flightSheet.additional_string,
+                    configFile: flightSheet.config_file
                 })
             }
             for (const flightSheetWithCustomMiner of flightSheetsWithCustomMiner) {
@@ -528,9 +530,9 @@ class OtherDataController {
                     } : null,
                     additionalString: flightSheetWithCPU.additional_string,
                     hugePages: flightSheetWithCPU.huge_pages
-                   
+
                 }
-                reformatedFlightSheets.push(reformatedFlightSheetWithCPU)  
+                reformatedFlightSheets.push(reformatedFlightSheetWithCPU)
             }
             res.status(200).json({ "flightSheets": reformatedFlightSheets })
         } catch (err) {

@@ -244,6 +244,7 @@ class CreateController {
                 pool_id: req.body.poolId,
                 additional_string: req.body.additionalString,
                 huge_pages: req.body.hugePages,
+                config_file: req.body.configFile
             });
             res.status(201).json();
         } catch (err) {

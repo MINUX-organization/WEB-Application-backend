@@ -57,7 +57,8 @@ const createFlightSheetWithCPUSchema = Joi.object({
     walletId: Joi.number().integer().required(),
     poolId: Joi.number().integer().required(),
     additionalString: Joi.string().required().allow(""),
-    hugePages: Joi.number().integer().positive().required()
+    hugePages: Joi.number().integer().positive().required(),
+    configFile: Joi.string().required().allow("")
 });
 
 export {

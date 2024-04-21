@@ -74,7 +74,8 @@ const editFlightSheetWithCPUSchema = Joi.object({
     newWalletId: Joi.number().integer().optional(),
     newPoolId: Joi.number().integer().optional(),
     newAdditionalString: Joi.string().optional().allow(""),
-    newHugePages: Joi.number().integer().positive().optional()
+    newHugePages: Joi.number().integer().positive().optional(),
+    newConfigFile: Joi.string().optional().allow(""),
 });
 
 export {

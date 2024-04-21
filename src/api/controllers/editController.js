@@ -436,7 +436,8 @@ class EditController {
     static async FlightSheetWithCpu(req, res, next) {
         const { error } = editFlightSheetWithCPUSchema.validate(req.body);
         const { id, newName, newCryptocurrencyId, newMinerId,
-            newWalletId, newPoolId, newAdditionalString, newHugePages } = req.body;
+            newWalletId, newPoolId, newAdditionalString, newHugePages,
+            newConfigFile } = req.body;
 
         if (error) {
             return next(ApiError.badRequest(error.details[0].message));
@@ -479,6 +480,9 @@ class EditController {
             }
             if (newHugePages) {
                 flightSheetWithCpu.huge_pages = newHugePages;
+            }
+            if (newConfigFile) {
+                flightSheetWithCpu.config_file = newConfigFile;
             }
             await flightSheetWithCpu.save().then(() => {
                 res.status(200).json()
