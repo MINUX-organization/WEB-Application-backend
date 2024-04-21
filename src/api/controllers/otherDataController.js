@@ -725,11 +725,11 @@ class OtherDataController {
             if (!flightSheetWithCPU) {
                 return next(ApiError.noneData("Can't find Flight Sheet in system!"));
             }
-            const cpu = await mainDatabase.models.CPUs.find({ where: { uuid: dynamicData.cpu.uuid } });
+            const cpu = await mainDatabase.models.CPUs.findOne({ where: { uuid: staticData.cpu.uuid } });
             if (!cpu) {
                 return next(ApiError.noneData("Can't find CPU in system!"));
             }
-            const cpuSetup = await mainDatabase.models.CPU_SETUPs.find({ where: { cpu_uuid: cpu.uuid } });
+            const cpuSetup = await mainDatabase.models.CPU_SETUPs.findOne({ where: { cpu_uuid: cpu.uuid } });
             if (!cpuSetup) {
                 return next(ApiError.noneData("Can't find CPU SETUP in system!"));
             }
@@ -759,8 +759,8 @@ class OtherDataController {
                         wallet: wallet ? wallet.address : null,
                         pool: pool ? `${pool.host}:${pool.port}` : null,
                         miner: miner ? miner.name : null,
-                        additionalString: flightSheet ? flightSheet.additional_string : "",
-                        configFile: flight ? flightSheet.config_file : ""
+                        additionalString: flightSheetWithCPU ? flightSheetWithCPU.additional_string : "",
+                        configFile: flightSheetWithCPU ? flightSheetWithCPU.config_file : ""
                     }
                 }
             }, "setCpusSettings")))
