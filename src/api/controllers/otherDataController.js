@@ -12,6 +12,7 @@ import {
 import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
 import { staticData } from "../../temp/static.js";
+import { dynamicData } from '../../temp/dynamic.js';
 import { clientsData } from "../../temp/clients.js";
 import { commandsData } from "../../temp/commands.js"
 import { loggerConsole } from "../../utils/logger.js";
@@ -714,11 +715,59 @@ class OtherDataController {
 
         res.status(200).json();
     }
-    static async editGpusForFlightSheetWithCPU(req, res, next) {
+    static async editCpusForFlightSheetWithCPU(req, res, next) {
         const { error } = editGpusForFlightSheetsWithCPUSchema.validate(req.body);
         if (error) {
             return next(ApiError.badRequest(error.details[0].message));
         }
+        try {
+            const flightSheetWithCPU = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findByPk(req.body.flightSheetWithCPUId);
+            if (!flightSheetWithCPU) {
+                return next(ApiError.noneData("Can't find Flight Sheet in system!"));
+            }
+            const cpu = await mainDatabase.models.CPUs.find({ where: { uuid: dynamicData.cpu.uuid } });
+            if (!cpu) {
+                return next(ApiError.noneData("Can't find CPU in system!"));
+            }
+            const cpuSetup = await mainDatabase.models.CPU_SETUPs.find({ where: { cpu_uuid: cpu.uuid } });
+            if (!cpuSetup) {
+                return next(ApiError.noneData("Can't find CPU SETUP in system!"));
+            }
+            if (!clientsData.app) {
+                return next(ApiError.noneData("App is not connected!"))
+            }
+            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheetWithCPU.cryptocurrency_id } });
+            const algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
+            const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheetWithCPU.wallet_id } });
+            const pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheetWithCPU.pool_id } });
+            const miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheetWithCPU.miner_id } });
+
+            cpuSetup.flight_sheet_id = flightSheetWithCPU.id;
+            await cpuSetup.save();
+
+            clientsData.app.send(JSON.stringify(new commandInterface('static', {
+                cpus: {
+                    uuid: cpu.uuid,
+                    overclock: {
+                        clockType: "manual",
+                        autofan: false,
+                        hugepages: flightSheetWithCPU.huge_pages
+                    },
+                    crypto: {
+                        coin: cryptocurrency ? cryptocurrency.name : null,
+                        algorithm: algorithm ? algorithm.name : null,
+                        wallet: wallet ? wallet.address : null,
+                        pool: pool ? `${pool.host}:${pool.port}` : null,
+                        miner: miner ? miner.name : null,
+                        additionalString: flightSheet ? flightSheet.additional_string : "",
+                        configFile: flight ? flightSheet.config_file : ""
+                    }
+                }
+            }, "setCpusSettings")))
+        } catch (error) {
+            return next(error);
+        }
+        res.status(200).json();
     }
     static async getSettingsGpus(req, res, next) {
         try {

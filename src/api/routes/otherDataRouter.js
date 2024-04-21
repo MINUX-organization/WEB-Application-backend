@@ -34,6 +34,8 @@ otherDataRouter.post("/edit-gpus-for-flight-sheets", OtherDataController.editGpu
 //
 otherDataRouter.post("/edit-gpus-for-flight-sheets-with-custom-miner", OtherDataController.editGpusForFlightSheetsWithCustomMiner)
 //
+otherDataRouter.post("/edit-cpus-for-flight-sheets-with-cpu", OtherDataController.editCpusForFlightSheetWithCPU);
+//
 otherDataRouter.get("/get-settings-gpus", OtherDataController.getSettingsGpus)
 //
 export { otherDataRouter }
