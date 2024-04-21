@@ -470,7 +470,6 @@ class OtherDataController {
                         name: algorithm.name,
                     } : null,
                     additionalString: flightSheet.additional_string,
-                    configFile: flightSheet.config_file
                 })
             }
             for (const flightSheetWithCustomMiner of flightSheetsWithCustomMiner) {
@@ -529,7 +528,8 @@ class OtherDataController {
                         name: algorithm.name,
                     } : null,
                     additionalString: flightSheetWithCPU.additional_string,
-                    hugePages: flightSheetWithCPU.huge_pages
+                    hugePages: flightSheetWithCPU.huge_pages,
+                    configFile: flightSheetWithCPU.config_file
 
                 }
                 reformatedFlightSheets.push(reformatedFlightSheetWithCPU)
