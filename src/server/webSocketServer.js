@@ -93,9 +93,14 @@ class WebSocketServer {
                                             commandsData.setGpusSettings = msgJSON.payload
                                             loggerConsole.data('Command "setGpusSettings" received on WebSocketServer!')
                                             break
+                                        case "setCpusSettings":
+                                            commandsData.setCpusSettings = msgJSON.payload
+                                            loggerConsole.data('Command "setCpusSettings" received on WebSocketServer!')
+                                            break
                                         case "setupCustomMiner":
                                             commandsData.setupCustomMiner = msgJSON.payload
                                             loggerConsole.data('Command "setupCustomMiner" received on WebSocketServer!');
+                                            break
                                         case "startMining":
                                             commandsData.startMining = msgJSON.payload
                                             loggerConsole.data('Command "startMining" received on WebSocketServer!')
@@ -226,6 +231,7 @@ class WebSocketServer {
                                         loggerConsole.basicInfo("Command getSystemInfo sended to app!")
                                         // Sending saved gpu setups
                                         const gpuSetups = await mainDatabase.models.GPU_SETUPs.findAll();
+                                        const cpuSetups = await mainDatabase.models.CPU_SETUPs.findAll();
 
                                         let flightSheetIdWithCustomMiner = null;
                                         const gpuSetupWithCustomMiner = gpuSetups.find(gpuSetup => gpuSetup.isCustomMiner === true);
@@ -245,6 +251,7 @@ class WebSocketServer {
                                                 }, "setupCustomMiner")))
                                         } else {
                                             const gpuSetupsDB = []
+                                            const cpuSetupsDB = []
                                             for (const gpuSetup of gpuSetups) {
                                                 let cryptocurrency, miner, wallet, pool, algorithm;
 
@@ -286,6 +293,20 @@ class WebSocketServer {
                                                         gpus: gpuSetupsDB,
                                                     },
                                                     "setGpusSettings")))
+                                            }
+                                            for (const cpuSetup of cpuSetups) {
+                                                const flightSheet = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findOne({ where: { id: cpuSetup.dataValues.flight_sheet_id } });
+
+                                                const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheetWithCPU.cryptocurrency_id } });
+                                                const algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
+                                                const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheetWithCPU.wallet_id } });
+                                                const pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheetWithCPU.pool_id } });
+                                                const miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheetWithCPU.miner_id } });
+
+                                                cpuSetupsDB.push({
+                                                    uuid: cpuSetup.dataValues.cpu_uuid,
+
+                                                })
                                             }
                                         }
                                         // Sending request for start mining
