@@ -251,7 +251,6 @@ class WebSocketServer {
                                                 }, "setupCustomMiner")))
                                         } else {
                                             const gpuSetupsDB = []
-                                            const cpuSetupsDB = []
                                             for (const gpuSetup of gpuSetups) {
                                                 let cryptocurrency, miner, wallet, pool, algorithm;
 
@@ -302,11 +301,27 @@ class WebSocketServer {
                                                 const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheetWithCPU.wallet_id } });
                                                 const pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheetWithCPU.pool_id } });
                                                 const miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheetWithCPU.miner_id } });
-
-                                                cpuSetupsDB.push({
-                                                    uuid: cpuSetup.dataValues.cpu_uuid,
-
-                                                })
+                                                clientsData.app.send(JSON.stringify(new commandInterface('static',
+                                                    {
+                                                        cpus: {
+                                                            uuid: cpuSetup.dataValues.cpu_uuid,
+                                                            overclock: {
+                                                                clockType: "custom",
+                                                                autofan: false,
+                                                                hugePages: flightSheet.huge_pages
+                                                            },
+                                                            crypto: {
+                                                                coin: cryptocurrency ? cryptocurrency.name : null,
+                                                                algorithm: algorithm ? algorithm.name : null,
+                                                                wallet: wallet ? wallet.address : null,
+                                                                pool: pool ? `${pool.host}:${pool.port}` : null,
+                                                                miner: miner ? miner.name : null,
+                                                                additionalString: flightSheet ? flightSheet.additional_string : "",
+                                                                configFile: flightSheet ? flightSheet.config_file : ""
+                                                            }
+                                                        },
+                                                    },
+                                                    "setCpusSettings")))
                                             }
                                         }
                                         // Sending request for start mining

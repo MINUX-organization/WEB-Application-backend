@@ -74,8 +74,6 @@ const dynamicData = {
         }
         const calculateCoinsValue = () => {
             const coins = {};
-
-            // Перебираем GPU
             if (this.gpus) {
                 for (const gpu of this.gpus) {
                     if (gpu.cryptocurrency) {
@@ -90,8 +88,6 @@ const dynamicData = {
                     }
                 }
             }
-
-            // Перебираем CPU
             if (this.cpu && this.cpu.cryptocurrency) {
                 if (coins[this.cpu.cryptocurrency]) {
                     coins[this.cpu.cryptocurrency].cpu = true;
@@ -100,13 +96,9 @@ const dynamicData = {
                     coins[this.cpu.cryptocurrency] = { gpus: [], cpu: true, algorithm: this.cpu.algorithm };
                 }
             }
-
-            // Формируем результаты
             const coinsResult = [];
             for (const coin in coins) {
                 let totalHashrate = 0;
-
-                // Суммируем хэшрейт для GPU
                 coins[coin].gpus.forEach(gpuCoin => {
                     this.gpus.forEach(gpuData => {
                         if (gpuCoin == gpuData.uuid) {
@@ -114,12 +106,9 @@ const dynamicData = {
                         }
                     });
                 });
-
-                // Добавляем хэшрейт для CPU, если он есть
                 if (coins[coin].cpu && this.cpu && this.cpu.hashrate) {
                     totalHashrate += this.cpu.hashrate.value;
                 }
-
                 coinsResult.push({
                     coin: coin,
                     algorithm: coins[coin].algorithm,
