@@ -847,7 +847,7 @@ class OtherDataController {
         if (!clientsData.app) {
             return next(ApiError.noneData("App is not available!"))
         }
-        if (gpuSetupsDB.length > 0) {
+        if (gpuSetupsReformated.length > 0) {
             clientsData.app.send(JSON.stringify(new commandInterface('static',
                 {
                     gpus: gpuSetupsReformated,
@@ -869,7 +869,7 @@ class OtherDataController {
                         overclock: {
                             clockType: "custom",
                             autofan: false,
-                            hugePages: 1000
+                            hugepages: 1000
                         },
                         crypto: {
                             coin: "",
