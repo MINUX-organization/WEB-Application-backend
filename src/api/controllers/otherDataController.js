@@ -822,6 +822,8 @@ class OtherDataController {
         const gpuSetupsReformated = [];
 
         for (const gpuSetup of gpuSetups) {
+            await gpuSetup.update({ flight_sheet_id: null });
+
             gpuSetupsReformated.push({
                 uuid: gpuSetup.dataValues.gpu_uuid,
                 overclock: {
