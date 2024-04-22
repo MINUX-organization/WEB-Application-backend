@@ -18,6 +18,7 @@ import { commandsData } from "../../temp/commands.js"
 import { loggerConsole } from "../../utils/logger.js";
 import { commandInterface } from "../../classes/commands.js"
 import { Op } from 'sequelize';
+import { cli } from 'winston/lib/winston/config/index.js';
 
 class OtherDataController {
     static async waitForResponse(command) {
@@ -816,6 +817,76 @@ class OtherDataController {
             return next(error)
         }
     }
+    static async resetGPUsSettings(req, res, next) {
+        const gpuSetups = await mainDatabase.models.GPU_SETUPs.findAll();
+        const gpuSetupsReformated = [];
+
+        for (const gpuSetup of gpuSetups) {
+            gpuSetupsReformated.push({
+                uuid: gpuSetup.dataValues.gpu_uuid,
+                overclock: {
+                    clockType: "custom",
+                    autofan: false,
+                    coreClockOffset: gpuSetup.dataValues.core_clock_offset,
+                    memoryClockOffset: gpuSetup.dataValues.memory_clock_offset,
+                    fanSpeed: gpuSetup.dataValues.fan_speed,
+                    powerLimit: gpuSetup.dataValues.power_limit,
+                    criticalTemp: gpuSetup.dataValues.crit_temp,
+                },
+                crypto: {
+                    cryptoType: "custom",
+                    coin: "",
+                    algorithm: "",
+                    wallet: "",
+                    pool: "",
+                    miner: "",
+                    additionalString: ""
+                },
+            })
+        }
+        if (!clientsData.app) {
+            return next(ApiError.noneData("App is not available!"))
+        }
+        if (gpuSetupsDB.length > 0) {
+            clientsData.app.send(JSON.stringify(new commandInterface('static',
+                {
+                    gpus: gpuSetupsReformated,
+                },
+                "setGpusSettings")))
+        }
+        res.status(200).json();
+    }
+    static async resetCPUsSettings(req, res, next) {
+        const cpuSetups = await mainDatabase.models.CPU_SETUPs.findAll();
+        if (!clientsData.app) {
+            return next(ApiError.noneData("App is not available!"))
+        }
+        for (const cpuSetup of cpuSetups) {
+            clientsData.app.send(JSON.stringify(new commandInterface('static',
+                {
+                    cpus: {
+                        uuid: cpuSetup.dataValues.cpu_uuid,
+                        overclock: {
+                            clockType: "custom",
+                            autofan: false,
+                            hugePages: 1000
+                        },
+                        crypto: {
+                            coin: "",
+                            algorithm: "",
+                            wallet: "",
+                            pool: "",
+                            miner: "",
+                            additionalString: "",
+                            configFile: ""
+                        }
+                    },
+                },
+                "setCpusSettings")))
+        }
+        res.status(200).json();
+    }
+
 }
 
 export { OtherDataController };

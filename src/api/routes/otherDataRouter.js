@@ -38,4 +38,7 @@ otherDataRouter.post("/edit-cpus-for-flight-sheets-with-cpu", OtherDataControlle
 //
 otherDataRouter.get("/get-settings-gpus", OtherDataController.getSettingsGpus)
 //
+otherDataRouter.post("/reset-gpu-settings", OtherDataController.resetGPUsSettings);
+otherDataRouter.post("/reset-cpu-settings", OtherDataController.resetCPUsSettings);
+
 export { otherDataRouter }

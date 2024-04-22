@@ -277,11 +277,11 @@ class WebSocketServer {
                                                     },
                                                     crypto: {
                                                         cryptoType: "custom",
-                                                        coin: cryptocurrency ? cryptocurrency.name : null,
-                                                        algorithm: algorithm ? algorithm.name : null,
-                                                        wallet: wallet ? wallet.address : null,
-                                                        pool: pool ? `${pool.host}:${pool.port}` : null,
-                                                        miner: miner ? miner.name : null,
+                                                        coin: cryptocurrency ? cryptocurrency.name : "",
+                                                        algorithm: algorithm ? algorithm.name : "",
+                                                        wallet: wallet ? wallet.address : "",
+                                                        pool: pool ? `${pool.host}:${pool.port}` : "",
+                                                        miner: miner ? miner.name : "",
                                                         additionalString: flightSheet ? flightSheet.additional_string : ""
                                                     },
                                                 })
@@ -311,11 +311,11 @@ class WebSocketServer {
                                                                 hugePages: flightSheet.huge_pages
                                                             },
                                                             crypto: {
-                                                                coin: cryptocurrency ? cryptocurrency.name : null,
-                                                                algorithm: algorithm ? algorithm.name : null,
-                                                                wallet: wallet ? wallet.address : null,
-                                                                pool: pool ? `${pool.host}:${pool.port}` : null,
-                                                                miner: miner ? miner.name : null,
+                                                                coin: cryptocurrency ? cryptocurrency.name : "",
+                                                                algorithm: algorithm ? algorithm.name : "",
+                                                                wallet: wallet ? wallet.address : "",
+                                                                pool: pool ? `${pool.host}:${pool.port}` : "",
+                                                                miner: miner ? miner.name : "",
                                                                 additionalString: flightSheet ? flightSheet.additional_string : "",
                                                                 configFile: flightSheet ? flightSheet.config_file : ""
                                                             }
