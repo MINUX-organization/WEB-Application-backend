@@ -95,8 +95,9 @@ const dynamicData = {
             if (this.cpu && this.cpu.cryptocurrency) {
                 if (coins[this.cpu.cryptocurrency]) {
                     coins[this.cpu.cryptocurrency].cpu = true;
+                    coins[this.cpu.cryptocurrency].algorithm = this.cpu.algorithm;
                 } else {
-                    coins[this.cpu.cryptocurrency] = { gpus: [], cpu: true };
+                    coins[this.cpu.cryptocurrency] = { gpus: [], cpu: true, algorithm: this.cpu.algorithm };
                 }
             }
 
