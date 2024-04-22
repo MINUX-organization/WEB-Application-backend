@@ -2,10 +2,10 @@ import { staticData } from "./static.js"
 
 const dynamicData = {
     state: null,
-    _gpus : null,
-    cpu : null,
-    harddrives : null,
-    rams : null,
+    _gpus: null,
+    cpu: null,
+    harddrives: null,
+    rams: null,
     set gpus(inputGpus) {
         for (const inputGpu of inputGpus) {
             if (staticData.gpus) {
@@ -24,71 +24,41 @@ const dynamicData = {
     get gpus() {
         return this._gpus;
     },
-    get calculations() {    
+    get calculations() {
         const calculateTotalSharesAccepted = () => {
             let total = 0;
-            if (this.gpus) {
-                for (const gpu of this.gpus) {
-                    if (gpu.shares.accepted) {
-                        total += gpu.shares.accepted
-                    }
-                }
-            }
+            total += (this.gpus || []).reduce((acc, gpu) => acc + ((gpu.shares && gpu.shares.accepted) ?? 0), 0);
+            total += (this.cpus && this.cpus.shares && this.cpus.shares.accepted) ?? 0;
             return total;
-        } 
+        }
         const calculateTotalSharesRejected = () => {
             let total = 0;
-            if (this.gpus) {
-                for (const gpu of this.gpus) {
-                    if (gpu.shares.rejected) {
-                        total += gpu.shares.rejected
-                    }
-                }
-            }
+            total += (this.gpus || []).reduce((acc, gpu) => acc + ((gpu.shares && gpu.shares.rejected) ?? 0), 0);
+            total += (this.cpus && this.cpus.shares && this.cpus.shares.rejected) ?? 0;
             return total;
         }
         const calculateWorkingAlgorithms = () => {
             const algorithms = new Set();
-            if (this.gpus) {
-                for (const gpu of this.gpus) {
-                    if (gpu.algorithm) {
-                        algorithms.add(gpu.algorithm)
-                    }
-                }
-            }
-            if (this.cpu && this.cpu.algorithm) {
-                algorithms.add(this.cpu.algorithm)
-            }
-            return algorithms.size
+
+            this.gpus?.forEach(gpu => gpu.algorithm && algorithms.add(gpu.algorithm));
+            this.cpu?.algorithm && algorithms.add(this.cpu.algorithm);
+
+            return algorithms.size;
         }
         const calculateWorkingMiners = () => {
             const miners = new Set();
-            if (this.gpus) {
-                for (const gpu of this.gpus) {
-                    if (gpu.miner) {
-                        if (gpu.miner.uuid) {
-                            miners.add(gpu.miner.uuid)
-                        }
-                    }
-                }
-            }
-            if (this.cpu && this.cpu.miner && this.cpu.miner.uuid) {
-                miners.add(this.cpu.miner.uuid)
-            }
-            return miners.size
+
+            this.gpus?.forEach(gpu => gpu.miner?.uuid && miners.add(gpu.miner.uuid));
+            this.cpu?.miner?.uuid && miners.add(this.cpu.miner.uuid);
+
+            return miners.size;
         }
         const calculateTotalPower = () => {
             let total = 0;
-            if (this.gpus) {
-                for (const gpu of this.gpus) {
-                    if (gpu.powerUsage) {
-                        total += gpu.powerUsage;
-                    }
-                }
-            }
-            if (this.cpu && this.cpu.powerUsage) {
-                total += this.cpu.powerUsage;
-            }
+
+            total += (this.gpus || []).reduce((acc, gpu) => acc + (gpu.powerUsage || 0), 0);
+            total += this.cpu?.powerUsage || 0;
+
             return total;
         }
         const calculateTotalRam = () => {
@@ -104,37 +74,58 @@ const dynamicData = {
         }
         const calculateCoinsValue = () => {
             const coins = {};
-            
+
+            // Перебираем GPU
             if (this.gpus) {
                 for (const gpu of this.gpus) {
                     if (gpu.cryptocurrency) {
                         if (coins[gpu.cryptocurrency]) {
-                            coins[gpu.cryptocurrency].gpus.push(gpu.uuid)
-                            coins[gpu.cryptocurrency].algorithm = gpu.algorithm
+                            coins[gpu.cryptocurrency].gpus.push(gpu.uuid);
+                            coins[gpu.cryptocurrency].algorithm = gpu.algorithm;
                         } else {
-                            coins[gpu.cryptocurrency] = {gpus: []}
-                            coins[gpu.cryptocurrency].gpus.push(gpu.uuid)
-                            coins[gpu.cryptocurrency].algorithm = gpu.algorithm
+                            coins[gpu.cryptocurrency] = { gpus: [] };
+                            coins[gpu.cryptocurrency].gpus.push(gpu.uuid);
+                            coins[gpu.cryptocurrency].algorithm = gpu.algorithm;
                         }
                     }
                 }
             }
+
+            // Перебираем CPU
+            if (this.cpu && this.cpu.cryptocurrency) {
+                if (coins[this.cpu.cryptocurrency]) {
+                    coins[this.cpu.cryptocurrency].cpu = true;
+                } else {
+                    coins[this.cpu.cryptocurrency] = { gpus: [], cpu: true };
+                }
+            }
+
+            // Формируем результаты
             const coinsResult = [];
             for (const coin in coins) {
                 let totalHashrate = 0;
+
+                // Суммируем хэшрейт для GPU
                 coins[coin].gpus.forEach(gpuCoin => {
                     this.gpus.forEach(gpuData => {
                         if (gpuCoin == gpuData.uuid) {
-                            totalHashrate += gpuData.hashrate.value
+                            totalHashrate += gpuData.hashrate.value;
                         }
-                    })
-                })
+                    });
+                });
+
+                // Добавляем хэшрейт для CPU, если он есть
+                if (coins[coin].cpu && this.cpu && this.cpu.hashrate) {
+                    totalHashrate += this.cpu.hashrate.value;
+                }
+
                 coinsResult.push({
                     coin: coin,
                     algorithm: coins[coin].algorithm,
                     value: totalHashrate
-                })
+                });
             }
+
             return coinsResult;
         }
         return {
