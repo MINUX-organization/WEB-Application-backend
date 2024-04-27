@@ -294,7 +294,7 @@ class WebSocketServer {
                                                     "setGpusSettings")))
                                             }
                                             for (const cpuSetup of cpuSetups) {
-                                                const flightSheet = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findOne({ where: { id: cpuSetup.dataValues.flight_sheet_id } });
+                                                const flightSheetWithCPU = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findOne({ where: { id: cpuSetup.dataValues.flight_sheet_id } });
 
                                                 const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheetWithCPU.cryptocurrency_id } });
                                                 const algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
@@ -308,7 +308,7 @@ class WebSocketServer {
                                                             overclock: {
                                                                 clockType: "custom",
                                                                 autofan: false,
-                                                                hugePages: flightSheet.huge_pages
+                                                                hugePages: flightSheetWithCPU.huge_pages
                                                             },
                                                             crypto: {
                                                                 coin: cryptocurrency ? cryptocurrency.name : "",
@@ -316,8 +316,8 @@ class WebSocketServer {
                                                                 wallet: wallet ? wallet.address : "",
                                                                 pool: pool ? `${pool.host}:${pool.port}` : "",
                                                                 miner: miner ? miner.name : "",
-                                                                additionalString: flightSheet ? flightSheet.additional_string : "",
-                                                                configFile: flightSheet ? flightSheet.config_file : ""
+                                                                additionalString: flightSheetWithCPU ? flightSheetWithCPU.additional_string : "",
+                                                                configFile: flightSheetWithCPU ? flightSheetWithCPU.config_file : ""
                                                             }
                                                         },
                                                     },
