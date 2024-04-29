@@ -237,6 +237,49 @@ class WebSocketServer {
                                         const gpuSetupWithCustomMiner = gpuSetups.find(gpuSetup => gpuSetup.isCustomMiner === true);
 
                                         if (gpuSetupWithCustomMiner) {
+                                            const gpuSetupsDB = [];
+                                            for (const gpuSetup of gpuSetups) {
+                                                let cryptocurrency, miner, wallet, pool, algorithm;
+
+                                                const flightSheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: { id: gpuSetup.dataValues.flight_sheet_id } });
+                                                if (flightSheet) {
+                                                    cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheet.cryptocurrency_id } });
+                                                    miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheet.miner_id } });
+                                                    wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheet.wallet_id } });
+                                                    pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheet.pool_id } });
+                                                    if (cryptocurrency) {
+                                                        algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
+                                                    }
+                                                }
+                                                gpuSetupsDB.push({
+                                                    uuid: gpuSetup.dataValues.gpu_uuid,
+                                                    overclock: {
+                                                        clockType: "custom",
+                                                        autofan: false,
+                                                        coreClockOffset: gpuSetup.dataValues.core_clock_offset,
+                                                        memoryClockOffset: gpuSetup.dataValues.memory_clock_offset,
+                                                        fanSpeed: gpuSetup.dataValues.fan_speed,
+                                                        powerLimit: gpuSetup.dataValues.power_limit,
+                                                        criticalTemp: gpuSetup.dataValues.crit_temp,
+                                                    },
+                                                    crypto: {
+                                                        cryptoType: "custom",
+                                                        coin: "",
+                                                        algorithm: "",
+                                                        wallet: "",
+                                                        pool: "",
+                                                        miner: "",
+                                                        additionalString: ""
+                                                    },
+                                                })
+                                            }
+
+                                            clientsData.app.send(JSON.stringify(new commandInterface('static',
+                                                {
+                                                    gpus: gpuSetupsDB,
+                                                },
+                                                "setGpusSettings")))
+
                                             flightSheetIdWithCustomMiner = gpuSetupWithCustomMiner.flight_sheet_id_with_custom_miner;
                                             const flightSheetWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findByPk(flightSheetIdWithCustomMiner);
                                             clientsData.app.send(JSON.stringify(new commandInterface('static',
