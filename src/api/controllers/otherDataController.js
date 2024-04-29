@@ -184,7 +184,7 @@ class OtherDataController {
                 const reformatedFlightSheet = {
                     id: flightSheet.id,
                     name: flightSheet.name,
-                    type: "SIMPLE",
+                    type: "GPU-SINGLE",
                     cryptocurrencyId: flightSheet.cryptocurrency_id,
                     minerId: flightSheet.miner_id,
                     walletId: flightSheet.wallet_id,
@@ -442,7 +442,7 @@ class OtherDataController {
                 reformatedFlightSheets.push({
                     id: flightSheet.id,
                     name: flightSheet.name,
-                    type: "SIMPLE",
+                    type: "GPU-SINGLE",
                     cryptocurrency: cryptocurrency ? {
                         id: cryptocurrency.id,
                         name: cryptocurrency.name,
