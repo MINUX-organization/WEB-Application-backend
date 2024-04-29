@@ -201,6 +201,7 @@ class CreateController {
                 algorithm: req.body.algorithm,
                 pool_template: req.body.poolTemplate,
                 wallet_and_worker_template: req.body.walletAndWorkerTemplate,
+                password: req.body.password,
                 extra_config_arguments: req.body.extraConfigArguments
             });
             res.status(201).json();

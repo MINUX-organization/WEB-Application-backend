@@ -207,6 +207,7 @@ class OtherDataController {
                     algorithm: flightSheetWithCustomMiner.algorithm,
                     poolTemplate: flightSheetWithCustomMiner.pool_template,
                     walletAndWorkerTemplate: flightSheetWithCustomMiner.wallet_and_worker_template,
+                    password: flightSheetWithCustomMiner.password,
                     extraConfigArguments: flightSheetWithCustomMiner.extra_config_arguments
                 }
                 reformatedFlightSheetsWithCustomMiner.push(reformatedFlightSheetWithCustomMiner)
@@ -486,6 +487,7 @@ class OtherDataController {
                     algorithm: flightSheetWithCustomMiner.algorithm,
                     poolTemplate: flightSheetWithCustomMiner.pool_template,
                     walletAndWorkerTemplate: flightSheetWithCustomMiner.wallet_and_worker_template,
+                    password: flightSheetWithCustomMiner.password,
                     extraConfigArguments: flightSheetWithCustomMiner.extra_config_arguments
                 }
                 reformatedFlightSheets.push(reformatedFlightSheetWithCustomMiner)
@@ -689,6 +691,7 @@ class OtherDataController {
                 algorithm: flightSheetWithCustomMiner.algorithm,
                 poolTemplate: flightSheetWithCustomMiner.pool_template,
                 workerTemplate: flightSheetWithCustomMiner.wallet_and_worker_template,
+                password: flightSheetWithCustomMiner.password,
                 additionalArguments: flightSheetWithCustomMiner.extra_config_arguments
             }, "setupCustomMiner");
 

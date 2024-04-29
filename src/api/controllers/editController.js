@@ -387,7 +387,8 @@ class EditController {
         const { error } = editFlightSheetWithCustomMinerSchema.validate(req.body);
         const { id, newName, newInstallationURL, newWallet,
             newPoolURL, newCoin, newAlgorithm, newPoolTemplate,
-            newWalletAndWorkerTemplate, newExtraConfigArguments } = req.body;
+            newWalletAndWorkerTemplate, newExtraConfigArguments,
+            newPassword } = req.body;
 
         if (error) {
             return next(ApiError.badRequest(error.details[0].message));
@@ -423,6 +424,9 @@ class EditController {
             }
             if (newWalletAndWorkerTemplate) {
                 flightSheetWithCustomMiner.wallet_and_worker_template = newWalletAndWorkerTemplate;
+            }
+            if (newPassword) {
+                flightSheetWithCustomMiner.password = newPassword;
             }
             if (newExtraConfigArguments) {
                 flightSheetWithCustomMiner.extra_config_arguments = newExtraConfigArguments;

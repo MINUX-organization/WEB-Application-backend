@@ -47,6 +47,7 @@ const createFlightSheetWithCustomMinerSchema = Joi.object({
     algorithm: Joi.string().required().allow(""),
     poolTemplate: Joi.string().required(),
     walletAndWorkerTemplate: Joi.string().required(),
+    password: Joi.string().required().allow(""),
     extraConfigArguments: Joi.string().required()
 })
 

@@ -63,7 +63,8 @@ const editFlightSheetWithCustomMinerSchema = Joi.object({
     newAlgorithm: Joi.string().optional(),
     newPoolTemplate: Joi.string().optional(),
     newWalletAndWorkerTemplate: Joi.string().optional(),
-    newExtraConfigArguments: Joi.string().optional().allow()
+    newPassword: Joi.string().optional().allow(""),
+    newExtraConfigArguments: Joi.string().optional().allow(""),
 });
 
 const editFlightSheetWithCPUSchema = Joi.object({
