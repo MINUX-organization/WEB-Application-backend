@@ -432,6 +432,7 @@ class OtherDataController {
             const flightSheets = await mainDatabase.models.FLIGHT_SHEETs.findAll();
             const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findAll();
             const flightSheetsWithCPU = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findAll();
+            const flightSheetsMultiple = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE.findAll();
 
             const reformatedFlightSheets = []
             for (const flightSheet of flightSheets) {
@@ -538,6 +539,59 @@ class OtherDataController {
                 }
                 reformatedFlightSheets.push(reformatedFlightSheetWithCPU)
             }
+            for (const flightSheetMultiple of flightSheetsMultiple) {
+                const miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheetMultiple.miner_id } });
+                const configs = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
+                    where: {
+                        flight_sheet_multiple_id: flightSheetMultiple.id
+                    }
+                });
+                const reformatedConfigs = [];
+                for (const config of configs) {
+                    const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: config.cryptocurrency_id } })
+                    const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: config.wallet_id } });
+                    const pool = await mainDatabase.models.POOLs.findOne({ where: { id: config.pool_id } });
+                    const algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
+                    reformatedConfigs.push({
+                        cryptocurrency: cryptocurrency ? {
+                            id: cryptocurrency.id,
+                            name: cryptocurrency.name,
+                            fullName: cryptocurrency.full_name,
+                            algorithmId: cryptocurrency.algorithm_id,
+                        } : null,
+                        wallet: wallet ? {
+                            id: wallet.id,
+                            name: wallet.name,
+                            source: wallet.source,
+                            address: wallet.address,
+                            cryptocurrencyId: wallet.cryptocurrency_id
+                        } : null,
+                        pool: pool ? {
+                            id: pool.id,
+                            host: pool.host,
+                            port: pool.port,
+                            cryptocurrencyId: pool.cryptocurrency_id
+                        } : null,
+                        algorithm: algorithm ? {
+                            id: algorithm.id,
+                            name: algorithm.name,
+                        } : null, 
+                    });
+                }
+                reformatedFlightSheets.push({
+                    id: flightSheetMultiple.id,
+                    name: flightSheetMultiple.name,
+                    type: "GPU-MULTIPLE",
+                    miner: miner ? {
+                        id: miner.id,
+                        name: miner.name,
+                        fullName: miner.full_name,
+                    } : null,
+                    additionalString: flightSheetMultiple.additional_string,
+                    configs: reformatedConfigs
+                });
+            }
+
             res.status(200).json({ "flightSheets": reformatedFlightSheets })
         } catch (err) {
             return next(err)
