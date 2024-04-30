@@ -90,7 +90,7 @@ const editFlightSheetMultipleSchema = Joi.object({
             walletId: Joi.number().integer().required(),
             poolId: Joi.number().integer().required()
         }).required()
-    ).required()
+    ).optional()
 });
 
 export {

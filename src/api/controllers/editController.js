@@ -8,7 +8,8 @@ import {
     editFlightSheetSchema,
     editFlightSheetWithCustomMinerSchema,
     editFlightSheetWithCPUSchema,
-    editGPUSetupSchema
+    editGPUSetupSchema,
+    editFlightSheetMultipleSchema
 } from '../../validation/endpoints/edit.js'
 
 import { mainDatabase } from '../../database/mainDatabase.js'
@@ -499,7 +500,64 @@ class EditController {
         }
     }
     static async FlightSheetMultiple(req, res, next) {
-        
+        const { error } = editFlightSheetMultipleSchema.validate(req.body);
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message));
+        }
+        const { id, newName, newAdditionalString, newMinerId, newConfigs} = req.body;
+        try {
+            const existingFlightSheetMultiple = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE.findByPk(id);
+            if (!existingFlightSheetMultiple) {
+                return next(ApiError.badRequest(`Unable to find flight sheet with id ${id}`));
+            }
+            const existingsLinks = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
+                where: {
+                    flight_sheet_multiple_id: existingFlightSheetMultiple.id
+                }
+            });
+            // Editing main table
+            if ( newName ) {
+                existingFlightSheetMultiple.name = newName;
+            }
+            if (newAdditionalString) {
+                existingFlightSheetMultiple.additional_string = newAdditionalString;
+            }
+            if (newMinerId) {
+                existingFlightSheetMultiple.miner_id = newMinerId;
+            }
+            // Editing FK
+            if (newConfigs) {
+                for (const existingLink of existingsLinks) {
+                    await existingLink.destroy();
+                }
+                for (const config of newConfigs) {
+                    const { cryptocurrencyId, walletId, poolId } = config;
+    
+                    const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findByPk(cryptocurrencyId);
+                    if (!cryptocurrency) {
+                        return next(ApiError.noneData(`Unable to find cryptocurrency with id ${cryptocurrencyId}`));
+                    }
+                    const wallet = await mainDatabase.models.WALLETs.findByPk(walletId);
+                    if (!wallet) {
+                        return next(ApiError.noneData(`Unable to find wallet with id ${walletId}`));
+                    }
+                    const pool = await mainDatabase.models.POOLs.findByPk(poolId);
+                    if (!pool) {
+                        return next(ApiError.noneData(`Unable to find pool with id ${poolId}`));
+                    }
+    
+                    await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.create({
+                        flight_sheet_multiple_id: flightSheetMultiple.id,
+                        cryptocurrency_id: cryptocurrency.id,
+                        wallet_id: wallet.id,
+                        pool_id: pool.id
+                    })
+                }
+            }
+        } catch (err) {
+            return next(err);
+        }
+        res.status(200).json();
     }
 }
 
