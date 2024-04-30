@@ -554,6 +554,7 @@ class EditController {
                     })
                 }
             }
+            await existingFlightSheetMultiple.save().then(() => res.status(200).json());
         } catch (err) {
             return next(err);
         }
