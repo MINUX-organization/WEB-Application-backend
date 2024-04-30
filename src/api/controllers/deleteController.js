@@ -319,13 +319,13 @@ class DeleteController {
                 return next(ApiError.badRequest(`Cannot find flight sheet with id ${id}`));
             }
             // Deleting FK
-            const existingsLinks = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
+            const exsistingConfigs = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
                 where: {
                     flight_sheet_multiple_id: existingFlightSheetMultiple.id
                 }
             });
-            for (const existingLink of existingsLinks) {
-                await existingLink.destroy();
+            for (const existingConfig of exsistingConfigs) {
+                await existingConfig.destroy();
             }
             // Deleting main table
             await existingFlightSheetMultiple.destroy();

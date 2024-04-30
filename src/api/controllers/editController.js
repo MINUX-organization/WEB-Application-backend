@@ -510,7 +510,7 @@ class EditController {
             if (!existingFlightSheetMultiple) {
                 return next(ApiError.badRequest(`Unable to find flight sheet with id ${id}`));
             }
-            const existingsLinks = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
+            const existingsConfigs = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
                 where: {
                     flight_sheet_multiple_id: existingFlightSheetMultiple.id
                 }
@@ -527,8 +527,8 @@ class EditController {
             }
             // Editing FK
             if (newConfigs) {
-                for (const existingLink of existingsLinks) {
-                    await existingLink.destroy();
+                for (const existingConfig of existingsConfigs) {
+                    await existingConfig.destroy();
                 }
                 for (const config of newConfigs) {
                     const { cryptocurrencyId, walletId, poolId } = config;
