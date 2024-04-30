@@ -773,6 +773,9 @@ class OtherDataController {
         }
         res.status(200).json();
     }
+    static async editGpusForFlightSheetsMupltiple(req, res, next) {
+        res.status(200).json();
+    }
     static async getSettingsGpus(req, res, next) {
         try {
             const gpus = await mainDatabase.models.GPUs.findAll()

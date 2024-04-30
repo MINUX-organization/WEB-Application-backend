@@ -8,6 +8,7 @@ import {
     deleteFlightSheetSchema,
     deleteFlightSheetWithCustomMinerSchema,
     deleteFlightSheetWithCPUSchema,
+    deleteFlightSheetMultipleSchema
 } from "../../validation/endpoints/delete.js";
 
 import { mainDatabase } from '../../database/mainDatabase.js'
@@ -304,6 +305,33 @@ class DeleteController {
         }
         catch (error) {
             return next(error);
+        }
+    }
+    static async FlightSheetMupltiple(req, res, next) {
+        const { error } = deleteFlightSheetMultipleSchema.validate(req.body);
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message));
+        }
+        const { id } = req.body;
+        try {
+            const existingFlightSheetMultiple = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE.findByPk(id);
+            if (!existingFlightSheetMultiple) {
+                return next(ApiError.badRequest(`Cannot find flight sheet with id ${id}`));
+            }
+            // Deleting FK
+            const existingsLinks = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
+                where: {
+                    flight_sheet_multiple_id: existingFlightSheetMultiple.id
+                }
+            });
+            for (const existingLink of existingsLinks) {
+                await existingLink.destroy();
+            }
+            // Deleting main table
+            await existingFlightSheetMultiple.destroy();
+            res.status(200).json();
+        } catch (err) {
+            return next(err);
         }
     }
 }

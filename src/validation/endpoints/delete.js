@@ -24,6 +24,10 @@ const deleteFlightSheetWithCustomMinerSchema = Joi.object({
 const deleteFlightSheetWithCPUSchema = Joi.object({
     id: Joi.number().required()
 });
+const deleteFlightSheetMultipleSchema = Joi.object({
+    id: Joi.number().required()
+});
+
 
 export {
     deleteCryptocurrencySchema,
@@ -33,5 +37,6 @@ export {
     deleteGPUPresetSchema,
     deleteFlightSheetSchema,
     deleteFlightSheetWithCustomMinerSchema,
-    deleteFlightSheetWithCPUSchema
+    deleteFlightSheetWithCPUSchema,
+    deleteFlightSheetMultipleSchema
 };

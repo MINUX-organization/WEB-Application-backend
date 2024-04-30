@@ -21,5 +21,6 @@ editRouter.post("/flight-sheet", EditController.FlightSheet);
 editRouter.post("/flight-sheet-with-custom-miner", EditController.FlightSheetWithCustomMiner);
 // http://localhost:8200/api/edit/flight-sheet-with-cpu
 editRouter.post("/flight-sheet-with-cpu", EditController.FlightSheetWithCpu);
-
+//
+editRouter.post("/flight-sheet-multiple", EditController.FlightSheetMultiple)
 export { editRouter }

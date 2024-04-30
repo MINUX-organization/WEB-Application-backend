@@ -62,6 +62,19 @@ const createFlightSheetWithCPUSchema = Joi.object({
     configFile: Joi.string().required().allow("")
 });
 
+const createFlightSheetMultipleSchema = Joi.object({
+    name: Joi.string().pattern(new RegExp("^[a-zA-Z0-9_-]{3,128}$")).required(),
+    additionalString: Joi.string().required().allow(""),
+    minerId: Joi.number().integer().required(),
+    configs: Joi.array().min(1).max(3).items(
+        Joi.object({
+            cryptocurrencyId: Joi.number().integer().required(),
+            walletId: Joi.number().integer().required(),
+            poolId: Joi.number().integer().required()
+        }).required()
+    ).required()
+})
+
 export {
     createCryptocurrencySchema,
     createWalletSchema,
@@ -70,5 +83,6 @@ export {
     createGPUPresetSchema,
     createFlightSheetSchema,
     createFlightSheetWithCustomMinerSchema,
-    createFlightSheetWithCPUSchema
+    createFlightSheetWithCPUSchema,
+    createFlightSheetMultipleSchema
 };

@@ -20,5 +20,7 @@ createRouter.post("/flight-sheet", CreateController.FlightSheet);
 createRouter.post("/flight-sheet-with-custom-miner", CreateController.FlightSheetWithCustomMiner)
 // http://localhost:8200/api/create/flight-sheet-with-cpu
 createRouter.post("/flight-sheet-with-cpu", CreateController.FlightSheetWithCPU)
+//
+createRouter.post("/flight-sheet-multiple", CreateController.FlightSheetMupltiple)
 export { createRouter }
 

@@ -498,6 +498,9 @@ class EditController {
             return next(err);
         }
     }
+    static async FlightSheetMultiple(req, res, next) {
+        
+    }
 }
 
 export { EditController }

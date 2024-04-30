@@ -24,11 +24,16 @@ const editGpusForFlightSheetsWithCPUSchema = Joi.object({
     flightSheetWithCPUId: Joi.number().required()
 });
 
+const editGpusForFlightSheetMultipleSchema = Joi.object({
+    flightSheetMupltipleId: Joi.number().required()
+});
+
 export { 
     getGPUSetupSchema, 
     getGPUPresetsSchema, 
     getCPUSetupSchema,
     editGpusForFlightSheetsSchema,
     editGpusForFlightSheetsWithCustomMinerSchema,
-    editGpusForFlightSheetsWithCPUSchema
+    editGpusForFlightSheetsWithCPUSchema,
+    editGpusForFlightSheetMultipleSchema
 };
