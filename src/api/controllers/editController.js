@@ -547,7 +547,7 @@ class EditController {
                     }
     
                     await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.create({
-                        flight_sheet_multiple_id: flightSheetMultiple.id,
+                        flight_sheet_multiple_id: existingFlightSheetMultiple.id,
                         cryptocurrency_id: cryptocurrency.id,
                         wallet_id: wallet.id,
                         pool_id: pool.id
