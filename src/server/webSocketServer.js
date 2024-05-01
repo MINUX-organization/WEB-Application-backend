@@ -363,13 +363,16 @@ class WebSocketServer {
                                                     "setGpusSettings")))
                                             }
                                             for (const cpuSetup of cpuSetups) {
-                                                const flightSheetWithCPU = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findOne({ where: { id: cpuSetup.dataValues.flight_sheet_id } });
+                                                let cryptocurrency, miner, wallet, pool, algorithm;
 
-                                                const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheetWithCPU.cryptocurrency_id } });
-                                                const algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
-                                                const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheetWithCPU.wallet_id } });
-                                                const pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheetWithCPU.pool_id } });
-                                                const miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheetWithCPU.miner_id } });
+                                                const flightSheetWithCPU = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findOne({ where: { id: cpuSetup.dataValues.flight_sheet_id } });
+                                                if (flightSheetWithCPU) {
+                                                    cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: flightSheetWithCPU.cryptocurrency_id } });
+                                                    algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
+                                                    wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: flightSheetWithCPU.wallet_id } });
+                                                    pool = await mainDatabase.models.POOLs.findOne({ where: { id: flightSheetWithCPU.pool_id } });
+                                                    miner = await mainDatabase.models.MINERs.findOne({ where: { id: flightSheetWithCPU.miner_id } });
+                                                }
                                                 clientsData.app.send(JSON.stringify(new commandInterface('static',
                                                     {
                                                         cpus: {
@@ -377,7 +380,7 @@ class WebSocketServer {
                                                             overclock: {
                                                                 clockType: "custom",
                                                                 autofan: false,
-                                                                hugePages: flightSheetWithCPU.huge_pages
+                                                                hugepages: flightSheetWithCPU.huge_pages
                                                             },
                                                             crypto: {
                                                                 coin: cryptocurrency ? cryptocurrency.name : "",
