@@ -914,10 +914,15 @@ class OtherDataController {
                     }
                 });
                 for (let i = 0; i <= 2; i++) {
-                    const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: configs[i].cryptocurrency_id } });
-                    const algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
-                    const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: configs[i].wallet_id } });
-                    const pool = await mainDatabase.models.POOLs.findOne({ where: { id: configs[i].pool_id } });
+                    let cryptocurrency, algorithm, wallet, pool
+                    if (configs[i]) {
+                        cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: configs[i].cryptocurrency_id } });
+                        if (cryptocurrency) {
+                            algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
+                        }
+                        wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: configs[i].wallet_id } });
+                        pool = await mainDatabase.models.POOLs.findOne({ where: { id: configs[i].pool_id } });
+                    }
                     reformatedGPU.crypto[i + 1] =
                     {
                         cryptocurrency: cryptocurrency.name ?? "",
