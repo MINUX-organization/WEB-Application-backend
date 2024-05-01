@@ -26,21 +26,53 @@ const dynamicData = {
     },
     get calculations() {
         const calculateTotalSharesAccepted = () => {
-            let total = 0;
-            total += (this.gpus || []).reduce((acc, gpu) => acc + ((gpu.shares && gpu.shares.accepted) ?? 0), 0);
-            total += (this.cpus && this.cpus.shares && this.cpus.shares.accepted) ?? 0;
-            return total;
+            let totalAcceptedShares = 0;
+            const totalAcceptedSharesFromGpus = this.gpus.reduce((total, gpu) => {
+                if (gpu && gpu.crypto) {
+                    Object.values(gpu.crypto).forEach(crypto => {
+                        if (crypto && crypto.shares) {
+                            total += crypto.shares.accepted || 0;
+                        }
+                    });
+                }
+                return total;
+            }, 0);
+            totalAcceptedShares += totalAcceptedSharesFromGpus;
+            totalAcceptedShares += (this.cpus?.shares?.accepted) ?? 0;
+            return totalAcceptedShares;
         }
         const calculateTotalSharesRejected = () => {
-            let total = 0;
-            total += (this.gpus || []).reduce((acc, gpu) => acc + ((gpu.shares && gpu.shares.rejected) ?? 0), 0);
-            total += (this.cpus && this.cpus.shares && this.cpus.shares.rejected) ?? 0;
-            return total;
+            let totalRejectedShares = 0;
+
+            const totalRejectedSharesFromGpus = this.gpus.reduce((total, gpu) => {
+                if (gpu && gpu.crypto) {
+                    Object.values(gpu.crypto).forEach(crypto => {
+                        if (crypto && crypto.shares && crypto.shares.rejected) {
+                            total += crypto.shares.rejected;
+                        }
+                    });
+                }
+                return total;
+            }, 0);
+
+            totalRejectedShares += totalRejectedSharesFromGpus;
+            totalRejectedShares += (this.cpus?.shares?.rejected) ?? 0;
+
+            return totalRejectedShares;
         }
         const calculateWorkingAlgorithms = () => {
             const algorithms = new Set();
 
-            this.gpus?.forEach(gpu => gpu.algorithm && algorithms.add(gpu.algorithm));
+
+            this.gpus.forEach(gpu => {
+                if (gpu && gpu.crypto) {
+                    Object.values(gpu.crypto).forEach(crypto => {
+                        if (crypto && crypto.algorithm) {
+                            algorithms.add(crypto.algorithm);
+                        }
+                    });
+                }
+            });
             this.cpu?.algorithm && algorithms.add(this.cpu.algorithm);
 
             return algorithms.size;
@@ -72,54 +104,40 @@ const dynamicData = {
             }
             return total;
         }
-        const calculateCoinsValue = () => {
+        const calculateCoinHashrate = () => {
             const coins = {};
-            if (this.gpus) {
-                for (const gpu of this.gpus) {
-                    if (gpu.cryptocurrency) {
-                        if (coins[gpu.cryptocurrency]) {
-                            coins[gpu.cryptocurrency].gpus.push(gpu.uuid);
-                            coins[gpu.cryptocurrency].algorithm = gpu.algorithm;
-                        } else {
-                            coins[gpu.cryptocurrency] = { gpus: [] };
-                            coins[gpu.cryptocurrency].gpus.push(gpu.uuid);
-                            coins[gpu.cryptocurrency].algorithm = gpu.algorithm;
-                        }
-                    }
-                }
-            }
-            if (this.cpu && this.cpu.cryptocurrency) {
-                if (coins[this.cpu.cryptocurrency]) {
-                    coins[this.cpu.cryptocurrency].cpu = true;
-                    coins[this.cpu.cryptocurrency].algorithm = this.cpu.algorithm;
-                } else {
-                    coins[this.cpu.cryptocurrency] = { gpus: [], cpu: true, algorithm: this.cpu.algorithm };
-                }
-            }
-            const coinsResult = [];
-            for (const coin in coins) {
-                let totalHashrate = 0;
-                coins[coin].gpus.forEach(gpuCoin => {
-                    this.gpus.forEach(gpuData => {
-                        if (gpuCoin == gpuData.uuid) {
-                            totalHashrate += gpuData.hashrate.value;
-                        }
-                    });
-                });
-                if (coins[coin].cpu && this.cpu && this.cpu.hashrate) {
-                    totalHashrate += this.cpu.hashrate.value;
-                }
-                coinsResult.push({
-                    coin: coin,
-                    algorithm: coins[coin].algorithm,
-                    value: totalHashrate
-                });
+
+            if (this.cpu && this.cpu.cryptocurrency && this.cpu.hashrate && this.cpu.hashrate.value) {
+                coins[this.cpu.cryptocurrency] = {
+                    coin: this.cpu.cryptocurrency,
+                    algorithm: this.cpu.algorithm || null,
+                    value: this.cpu.hashrate.value
+                };
             }
 
-            return coinsResult;
-        }
+            this.gpus.forEach(gpu => {
+                if (gpu && gpu.crypto) {
+                    Object.values(gpu.crypto).forEach(crypto => {
+                        if (crypto && crypto.cryptocurrency && crypto.hashrate && crypto.hashrate.value) {
+                            if (coins[crypto.cryptocurrency]) {
+                                coins[crypto.cryptocurrency].value += crypto.hashrate.value;
+                            } else {
+                                coins[crypto.cryptocurrency] = {
+                                    coin: crypto.cryptocurrency,
+                                    algorithm: crypto.algorithm || null,
+                                    value: crypto.hashrate.value
+                                };
+                            }
+                        }
+                    });
+                }
+            });
+
+            const coinsArray = Object.values(coins);
+            return coinsArray;
+        };
         return {
-            coinsValue: calculateCoinsValue(),
+            coinsValue: calculateCoinHashrate(),
             totalSharesAccepted: calculateTotalSharesAccepted(),
             totalSharesRejected: calculateTotalSharesRejected(),
             workingAlgorithms: calculateWorkingAlgorithms(),

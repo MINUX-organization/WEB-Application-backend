@@ -250,28 +250,28 @@ class Database {
         for (let key in dynamicData) {
             switch (key) {
                 case 'gpus':
-                    try {
-                        dynamicData.gpus.forEach(async gpu => {
-                            // Check if gpu exists
-                            const checkGpu = await this.db.models.GPUs.findOne({ where: { uuid: gpu.uuid } })
-                            if (checkGpu) {
-                                await this.db.models.GPU_GRAPHs.create({
-                                    hashrate: gpu.hashrate.value,
-                                    power: gpu.powerUsage,
-                                    temp: gpu.temperature,
-                                    algorithm: gpu.algorithm,
-                                    cryptocurrency: gpu.cryptocurrency,
-                                    gpu_uuid: gpu.uuid
-                                }).then(() => {
-                                    loggerConsole.data(`Received GPU dynamic data from ${gpu.uuid}`)
-                                })
-                            } else {
-                                loggerConsole.data(`Received unknown GPU in dynamic data: ${gpu.uuid}`)
-                            }
-                        })
-                    } catch (e) {
-                        loggerConsole.error(`Catched error in creating gpus dynamic data!: ${e.message}`)
-                    }
+                    // try {
+                    //     dynamicData.gpus.forEach(async gpu => {
+                    //         // Check if gpu exists
+                    //         const checkGpu = await this.db.models.GPUs.findOne({ where: { uuid: gpu.uuid } })
+                    //         if (checkGpu) {
+                    //             await this.db.models.GPU_GRAPHs.create({
+                    //                 hashrate: gpu.hashrate.value,
+                    //                 power: gpu.powerUsage,
+                    //                 temp: gpu.temperature,
+                    //                 algorithm: gpu.algorithm,
+                    //                 cryptocurrency: gpu.cryptocurrency,
+                    //                 gpu_uuid: gpu.uuid
+                    //             }).then(() => {
+                    //                 loggerConsole.data(`Received GPU dynamic data from ${gpu.uuid}`)
+                    //             })
+                    //         } else {
+                    //             loggerConsole.data(`Received unknown GPU in dynamic data: ${gpu.uuid}`)
+                    //         }
+                    //     })
+                    // } catch (e) {
+                    //     loggerConsole.error(`Catched error in creating gpus dynamic data!: ${e.message}`)
+                    // }
                     break
                 case 'cpu':
                     // try {
