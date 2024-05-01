@@ -20,5 +20,5 @@ deleteRouter.delete("/flight-sheet-with-custom-miner", DeleteController.FlightSh
 // http://localhost:8200/api/delete/flight-sheet-with-cpu
 deleteRouter.delete("/flight-sheet-with-cpu", DeleteController.FlightSheetWithCPU);
 //
-deleteRouter.delete("/flight-sheet-multiple", DeleteController.FlightSheetMupltiple);
+deleteRouter.delete("/flight-sheet-multiple", DeleteController.FlightSheetMultiple);
 export { deleteRouter }

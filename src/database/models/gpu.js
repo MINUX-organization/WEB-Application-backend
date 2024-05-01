@@ -13,7 +13,7 @@ class FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs extends Model { }
 
 export default function initGPUModels(db) {
 
-        GPUs.init({
+    GPUs.init({
         id: {
             type: DataTypes.SMALLINT,
             primaryKey: true,
@@ -94,7 +94,7 @@ export default function initGPUModels(db) {
     }, {
         sequelize: db,
         modelName: 'GPUs'
-        }),
+    }),
         GPU_PRESETs.init({
             id: {
                 type: DataTypes.SMALLINT,
@@ -234,7 +234,18 @@ export default function initGPUModels(db) {
                 },
                 allowNull: true
             },
+            flight_sheet_id_multiple: {
+                type: DataTypes.SMALLINT,
+                references: {
+                    model: 'FLIGHT_SHEETs_MULTIPLE',
+                    key: 'id'
+                }
+            },
             isCustomMiner: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
+            },
+            isMultiple: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false
             }
@@ -287,7 +298,7 @@ export default function initGPUModels(db) {
             sequelize: db,
             modelName: 'FLIGHT_SHEETs'
         })
-        FLIGHT_SHEETs_WITH_CUSTOM_MINER.init({
+    FLIGHT_SHEETs_WITH_CUSTOM_MINER.init({
         id: {
             type: DataTypes.SMALLINT,
             primaryKey: true,
@@ -327,70 +338,70 @@ export default function initGPUModels(db) {
         sequelize: db,
         modelName: 'FLIGHT_SHEETs_WITH_CUSTOM_MINER',
         freezeTableName: true
-        })
-        FLIGHT_SHEETs_MULTIPLE.init({
-            id: {
-                type: DataTypes.SMALLINT,
-                primaryKey: true,
-                autoIncrement: true,
-            },
-            name: {
-                type: DataTypes.TEXT
-            },
-            additional_string: {
-                type: DataTypes.TEXT
-            },
-            miner_id: {
-                type: DataTypes.SMALLINT,
-                references: {
-                    model: 'MINERs',
-                    key: 'id'
-                }
-            },
-        }, {
-            sequelize: db,
-            modelName: 'FLIGHT_SHEETs_MULTIPLE',
-            freezeTableName: true
-        })
-        FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.init({
-            id: {
-                type: DataTypes.SMALLINT,
-                primaryKey: true,
-                autoIncrement: true,
-            },
-            flight_sheet_multiple_id: {
-                type: DataTypes.SMALLINT,
-                references: {
-                    model: 'FLIGHT_SHEETs_MULTIPLE',
-                    key: 'id'
-                }
-            },
-            cryptocurrency_id: {
-                type: DataTypes.SMALLINT,
-                references: {
-                    model: 'CRYPTOCURRENCIEs',
-                    key: 'id'
-                }
-            },
-            wallet_id: {
-                type: DataTypes.SMALLINT,
-                references: {
-                    model: 'WALLETs',
-                    key: 'id'
-                }
-            },
-            pool_id: {
-                type: DataTypes.SMALLINT,
-                references: {
-                    model: 'POOLs',
-                    key: 'id'
-                }
+    })
+    FLIGHT_SHEETs_MULTIPLE.init({
+        id: {
+            type: DataTypes.SMALLINT,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        name: {
+            type: DataTypes.TEXT
+        },
+        additional_string: {
+            type: DataTypes.TEXT
+        },
+        miner_id: {
+            type: DataTypes.SMALLINT,
+            references: {
+                model: 'MINERs',
+                key: 'id'
             }
-        }, {
-            sequelize: db,
-            modelName: 'FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs',
-            freezeTableName: true
-        })
+        },
+    }, {
+        sequelize: db,
+        modelName: 'FLIGHT_SHEETs_MULTIPLE',
+        freezeTableName: true
+    })
+    FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.init({
+        id: {
+            type: DataTypes.SMALLINT,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        flight_sheet_multiple_id: {
+            type: DataTypes.SMALLINT,
+            references: {
+                model: 'FLIGHT_SHEETs_MULTIPLE',
+                key: 'id'
+            }
+        },
+        cryptocurrency_id: {
+            type: DataTypes.SMALLINT,
+            references: {
+                model: 'CRYPTOCURRENCIEs',
+                key: 'id'
+            }
+        },
+        wallet_id: {
+            type: DataTypes.SMALLINT,
+            references: {
+                model: 'WALLETs',
+                key: 'id'
+            }
+        },
+        pool_id: {
+            type: DataTypes.SMALLINT,
+            references: {
+                model: 'POOLs',
+                key: 'id'
+            }
+        }
+    }, {
+        sequelize: db,
+        modelName: 'FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs',
+        freezeTableName: true
+    })
 
     return {
         FLIGHT_SHEETs,

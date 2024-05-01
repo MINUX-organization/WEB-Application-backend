@@ -300,13 +300,26 @@ class EditController {
                             criticalTemp: gpuSetup.crit_temp,
                         },
                         crypto: {
-                            cryptoType: "custom",
-                            coin: cryptocurrency ? cryptocurrency.name : "",
-                            algorithm: algorithm ? algorithm.name : "",
-                            wallet: wallet ? wallet.address : "",
-                            pool: pool ? `${pool.host}:${pool.port}` : "",
                             miner: miner ? miner.name : "",
-                            additionalString: additionalString ?? ""
+                            additionalString: additionalString ?? "",
+                            1: {
+                                cryptocurrency: cryptocurrency ? cryptocurrency.name : "",
+                                algorithm: algorithm ? algorithm.name : "",
+                                wallet: wallet ? wallet.address : "",
+                                pool: pool ? `${pool.host}:${pool.port}` : "",
+                            },
+                            2: {
+                                cryptocurrency: "",
+                                algorithm: "",
+                                wallet: "",
+                                pool: ""
+                            },
+                            3: {
+                                cryptocurrency: "",
+                                algorithm: "",
+                                wallet: "",
+                                pool: ""
+                            }
                         }
                     }]
                 }, "setGpusSettings")))
@@ -504,7 +517,7 @@ class EditController {
         if (error) {
             return next(ApiError.badRequest(error.details[0].message));
         }
-        const { id, newName, newAdditionalString, newMinerId, newConfigs} = req.body;
+        const { id, newName, newAdditionalString, newMinerId, newConfigs } = req.body;
         try {
             const existingFlightSheetMultiple = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE.findByPk(id);
             if (!existingFlightSheetMultiple) {
@@ -516,7 +529,7 @@ class EditController {
                 }
             });
             // Editing main table
-            if ( newName ) {
+            if (newName) {
                 existingFlightSheetMultiple.name = newName;
             }
             if (newAdditionalString) {
@@ -532,7 +545,7 @@ class EditController {
                 }
                 for (const config of newConfigs) {
                     const { cryptocurrencyId, walletId, poolId } = config;
-    
+
                     const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findByPk(cryptocurrencyId);
                     if (!cryptocurrency) {
                         return next(ApiError.noneData(`Unable to find cryptocurrency with id ${cryptocurrencyId}`));
@@ -545,7 +558,7 @@ class EditController {
                     if (!pool) {
                         return next(ApiError.noneData(`Unable to find pool with id ${poolId}`));
                     }
-    
+
                     await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.create({
                         flight_sheet_multiple_id: existingFlightSheetMultiple.id,
                         cryptocurrency_id: cryptocurrency.id,

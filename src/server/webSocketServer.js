@@ -263,13 +263,26 @@ class WebSocketServer {
                                                         criticalTemp: gpuSetup.dataValues.crit_temp,
                                                     },
                                                     crypto: {
-                                                        cryptoType: "custom",
-                                                        coin: "",
-                                                        algorithm: "",
-                                                        wallet: "",
-                                                        pool: "",
                                                         miner: "",
-                                                        additionalString: ""
+                                                        additionalString: "",
+                                                        1: {
+                                                            cryptocurrency: "",
+                                                            algorithm: "",
+                                                            wallet: "",
+                                                            pool: "",
+                                                        },
+                                                        2: {
+                                                            cryptocurrency: "",
+                                                            algorithm: "",
+                                                            wallet: "",
+                                                            pool: ""
+                                                        },
+                                                        3: {
+                                                            cryptocurrency: "",
+                                                            algorithm: "",
+                                                            wallet: "",
+                                                            pool: ""
+                                                        }
                                                     },
                                                 })
                                             }
@@ -319,13 +332,26 @@ class WebSocketServer {
                                                         criticalTemp: gpuSetup.dataValues.crit_temp,
                                                     },
                                                     crypto: {
-                                                        cryptoType: "custom",
-                                                        coin: cryptocurrency ? cryptocurrency.name : "",
-                                                        algorithm: algorithm ? algorithm.name : "",
-                                                        wallet: wallet ? wallet.address : "",
-                                                        pool: pool ? `${pool.host}:${pool.port}` : "",
                                                         miner: miner ? miner.name : "",
-                                                        additionalString: flightSheet ? flightSheet.additional_string : ""
+                                                        additionalString: flightSheet ? flightSheet.additional_string : "",
+                                                        1: {
+                                                            coin: cryptocurrency ? cryptocurrency.name : "",
+                                                            algorithm: algorithm ? algorithm.name : "",
+                                                            wallet: wallet ? wallet.address : "",
+                                                            pool: pool ? `${pool.host}:${pool.port}` : ""
+                                                        },
+                                                        2: {
+                                                            cryptocurrency: "",
+                                                            algorithm: "",
+                                                            wallet: "",
+                                                            pool: ""
+                                                        },
+                                                        3: {
+                                                            cryptocurrency: "",
+                                                            algorithm: "",
+                                                            wallet: "",
+                                                            pool: ""
+                                                        }
                                                     },
                                                 })
                                             }

@@ -261,13 +261,26 @@ class DeleteController {
                             criticalTemp: GPUSetup.crit_temp,
                         },
                         crypto: {
-                            cryptoType: "custom",
-                            coin: "",
-                            algorithm: "",
-                            wallet: "",
-                            pool: "",
                             miner: "",
-                            additionalString: ""
+                            additionalString: "",
+                            1: {
+                                cryptocurrency: "",
+                                algorithm: "",
+                                wallet: "",
+                                pool: ""
+                            },
+                            2: {
+                                cryptocurrency: "",
+                                algorithm: "",
+                                wallet: "",
+                                pool: ""
+                            },
+                            3: {
+                                cryptocurrency: "",
+                                algorithm: "",
+                                wallet: "",
+                                pool: ""
+                            }
                         }
                     }]
                 }, "setGpusSettings")))
@@ -307,7 +320,7 @@ class DeleteController {
             return next(error);
         }
     }
-    static async FlightSheetMupltiple(req, res, next) {
+    static async FlightSheetMultiple(req, res, next) {
         const { error } = deleteFlightSheetMultipleSchema.validate(req.body);
         if (error) {
             return next(ApiError.badRequest(error.details[0].message));
@@ -319,12 +332,12 @@ class DeleteController {
                 return next(ApiError.badRequest(`Cannot find flight sheet with id ${id}`));
             }
             // Deleting FK
-            const exsistingConfigs = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
+            const existingConfigs = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
                 where: {
                     flight_sheet_multiple_id: existingFlightSheetMultiple.id
                 }
             });
-            for (const existingConfig of exsistingConfigs) {
+            for (const existingConfig of existingConfigs) {
                 await existingConfig.destroy();
             }
             // Deleting main table

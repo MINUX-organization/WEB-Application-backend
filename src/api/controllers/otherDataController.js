@@ -7,18 +7,16 @@ import {
     getGPUSetupSchema,
     editGpusForFlightSheetsSchema,
     editGpusForFlightSheetsWithCustomMinerSchema,
-    editGpusForFlightSheetsWithCPUSchema
+    editGpusForFlightSheetsWithCPUSchema,
+    editGpusForFlightSheetMultipleSchema
 } from "../../validation/endpoints/otherData.js";
 import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
 import { staticData } from "../../temp/static.js";
-import { dynamicData } from '../../temp/dynamic.js';
 import { clientsData } from "../../temp/clients.js";
 import { commandsData } from "../../temp/commands.js"
 import { loggerConsole } from "../../utils/logger.js";
 import { commandInterface } from "../../classes/commands.js"
-import { Op } from 'sequelize';
-import { cli } from 'winston/lib/winston/config/index.js';
 
 class OtherDataController {
     static async waitForResponse(command) {
@@ -575,7 +573,7 @@ class OtherDataController {
                         algorithm: algorithm ? {
                             id: algorithm.id,
                             name: algorithm.name,
-                        } : null, 
+                        } : null,
                     });
                 }
                 reformatedFlightSheets.push({
@@ -663,6 +661,10 @@ class OtherDataController {
                 if (gpu) {
                     const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { gpu_uuid: gpu.uuid } })
                     gpuSetup.flight_sheet_id = gpuForFlightSheet.flightSheetId;
+                    if (gpuSetup.isMultiple) {
+                        gpuSetup.flight_sheet_id_multiple = null;
+                        gpuSetup.isMultiple = false;
+                    }
                     await gpuSetup.save();
                     if (clientsData.app) {
                         let cryptocurrency, miner, wallet, pool, algorithm;
@@ -690,13 +692,26 @@ class OtherDataController {
                                     criticalTemp: gpuSetup.crit_temp,
                                 },
                                 crypto: {
-                                    cryptoType: "custom",
-                                    coin: cryptocurrency ? cryptocurrency.name : null,
-                                    algorithm: algorithm ? algorithm.name : null,
-                                    wallet: wallet ? wallet.address : null,
-                                    pool: pool ? `${pool.host}:${pool.port}` : null,
-                                    miner: miner ? miner.name : null,
-                                    additionalString: flightSheet ? flightSheet.additional_string : ""
+                                    miner: miner ? miner.name : "",
+                                    additionalString: flightSheet ? flightSheet.additional_string : "",
+                                    1: {
+                                        cryptocurrency: cryptocurrency ? cryptocurrency.name : "",
+                                        algorithm: algorithm ? algorithm.name : "",
+                                        wallet: wallet ? wallet.address : "",
+                                        pool: pool ? `${pool.host}:${pool.port}` : "",
+                                    },
+                                    2: {
+                                        cryptocurrency: "",
+                                        algorithm: "",
+                                        wallet: "",
+                                        pool: ""
+                                    },
+                                    3: {
+                                        cryptocurrency: "",
+                                        algorithm: "",
+                                        wallet: "",
+                                        pool: ""
+                                    }
                                 }
                             }]
                         }, "setGpusSettings")))
@@ -767,7 +782,10 @@ class OtherDataController {
         for (const GPUSetup of GPUSetups) {
             GPUSetup.isCustomMiner = true;
             GPUSetup.flight_sheet_id_with_custom_miner = flightSheetWithCustomMiner.id;
+
             GPUSetup.flight_sheet_id = null;
+            GPUSetup.isMultiple = false;
+            GPUSetup.flight_sheet_id_multiple = null;
             await GPUSetup.save()
         }
 
@@ -827,7 +845,98 @@ class OtherDataController {
         }
         res.status(200).json();
     }
-    static async editGpusForFlightSheetsMupltiple(req, res, next) {
+    static async editGpusForFlightSheetsMultiple(req, res, next) {
+        const { error } = editGpusForFlightSheetMultipleSchema.validate(req.body);
+        if (error) {
+            return next(ApiError.badRequest(error.details[0].message));
+        }
+        const { gpusForFlightSheetsMultiple } = req.body;
+        try {
+            const checkGpuSetupForCustomMiner = await mainDatabase.models.GPU_SETUPs.findAll({
+                where: {
+                    isCustomMiner: true,
+                }
+            });
+
+            if (checkGpuSetupForCustomMiner.length > 0) {
+                for (const gpuSetup of checkGpuSetupForCustomMiner) {
+                    gpuSetup.flight_sheet_id_with_custom_miner = null;
+                    gpuSetup.isCustomMiner = false;
+                    await gpuSetup.save();
+                }
+            }
+        } catch (err) {
+            return next(err);
+        }
+        const reformatedGPUs = [];
+        try {
+            for (const receivedGpu of gpusForFlightSheetsMultiple) {
+                const gpu = await mainDatabase.models.GPUs.findByPk(receivedGpu.id);
+                if (!gpu) {
+                    return next(ApiError.badRequest(`Couldn't find GPU with id ${receivedGpu.id}`));
+                }
+                const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { gpu_uuid: gpu.uuid } });
+                if (!gpuSetup) {
+                    return next(ApiError.badRequest(`Couldn't find GPU SETUP for GPU with uuid ${gpu.uuid}`));
+                }
+                const flightSheetMultiple = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE.findByPk(receivedGpu.flightSheetMultipleId);
+                if (!flightSheetMultiple) {
+                    return next(ApiError.badRequest(`Couldn't find flight sheet with id ${receivedGpu.flightSheetMultipleId}`))
+                }
+                const miner = await mainDatabase.models.MINERs.findByPk(flightSheetMultiple.miner_id);
+                if (!miner) {
+                    return next(ApiError.noneData(`Couldn't find miner with id ${flightSheetMultiple.miner_id}`));
+                }
+                gpuSetup.flight_sheet_id = (gpuSetup.flight_sheet_id != null) ? null : gpuSetup.flight_sheet_id;
+                gpuSetup.flight_sheet_id_multiple = receivedGpu.flightSheetMultipleId;
+                await gpuSetup.save();
+
+                const reformatedGPU = {
+                    uuid: gpuSetup.dataValues.gpu_uuid,
+                    overclock: {
+                        clockType: "custom",
+                        autofan: false,
+                        coreClockOffset: gpuSetup.core_clock_offset,
+                        memoryClockOffset: gpuSetup.memory_clock_offset,
+                        fanSpeed: gpuSetup.fan_speed,
+                        powerLimit: gpuSetup.power_limit,
+                        criticalTemp: gpuSetup.crit_temp,
+                    },
+                    crypto: {
+                        miner: miner ? miner.name : "",
+                        additionalString: flightSheetMultiple ? flightSheetMultiple.additional_string : "",
+                    }
+                };
+
+                const configs = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
+                    where: {
+                        flight_sheet_multiple_id: flightSheetMultiple.id
+                    }
+                });
+                for (let i = 0; i <= 2; i++) {
+                    const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findOne({ where: { id: configs[i].cryptocurrency_id } });
+                    const algorithm = await mainDatabase.models.ALGORITHMs.findOne({ where: { id: cryptocurrency.algorithm_id } });
+                    const wallet = await mainDatabase.models.WALLETs.findOne({ where: { id: configs[i].wallet_id } });
+                    const pool = await mainDatabase.models.POOLs.findOne({ where: { id: configs[i].pool_id } });
+                    reformatedGPU.crypto[i + 1] =
+                    {
+                        cryptocurrency: cryptocurrency.name ?? "",
+                        algorithm: algorithm.name ?? "",
+                        wallet: wallet.address ?? "",
+                        pool: pool ? `${pool.host}:${pool.port}` : ""
+                    };
+                }
+                reformatedGPUs.push(reformatedGPU);
+            }
+        } catch (err) {
+            return next(err);
+        }
+        if (!clientsData.app) {
+            return next(ApiError.noneData("Unable to connect to app!"));
+        }
+        const command = new commandInterface("static", { gpus: reformatedGPUs }, "setGpusSettings")
+        clientsData.app.send(JSON.stringify(command));
+
         res.status(200).json();
     }
     static async getSettingsGpus(req, res, next) {
@@ -896,13 +1005,26 @@ class OtherDataController {
                     criticalTemp: gpuSetup.dataValues.crit_temp,
                 },
                 crypto: {
-                    cryptoType: "custom",
-                    coin: "",
-                    algorithm: "",
-                    wallet: "",
-                    pool: "",
                     miner: "",
-                    additionalString: ""
+                    additionalString: "",
+                    1: {
+                        cryptocurrency: "",
+                        algorithm: "",
+                        wallet: "",
+                        pool: ""
+                    },
+                    2: {
+                        cryptocurrency: "",
+                        algorithm: "",
+                        wallet: "",
+                        pool: ""
+                    },
+                    3: {
+                        cryptocurrency: "",
+                        algorithm: "",
+                        wallet: "",
+                        pool: ""
+                    }
                 },
             })
         }
