@@ -925,9 +925,9 @@ class OtherDataController {
                     }
                     reformatedGPU.crypto[i + 1] =
                     {
-                        cryptocurrency: cryptocurrency.name ?? "",
-                        algorithm: algorithm.name ?? "",
-                        wallet: wallet.address ?? "",
+                        cryptocurrency: cryptocurrency ? cryptocurrency.name : "",
+                        algorithm: algorithm ? algorithm.name : "",
+                        wallet: wallet ? wallet.address : "",
                         pool: pool ? `${pool.host}:${pool.port}` : ""
                     };
                 }
