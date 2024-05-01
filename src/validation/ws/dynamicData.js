@@ -25,21 +25,44 @@ const dynamicDataCM = Joi.object({
                 uuid: Joi.string().allow(null).alphanum().min(64).max(64).required(),
                 fullName: Joi.string().allow(null).required(),
             }).required(),
-            crypto: Joi.array().min(1).max(3).items(
-                Joi.object({
-                    algorithm: Joi.string().allow(null).required(),
-                    cryptocurrency: Joi.string().allow(null).required(),
-                    shares: Joi.object({
-                        accepted: Joi.number().required(),
-                        rejected: Joi.number().required(),
+            crypto: Joi.object({
+                "1": Joi.object({
+                        algorithm: Joi.string().allow(null).required(),
+                        cryptocurrency: Joi.string().allow(null).required(),
+                        shares: Joi.object({
+                            accepted: Joi.number().required(),
+                            rejected: Joi.number().required(),
+                        }).required(),
+                        hashrate: Joi.object({
+                            value: Joi.number().required(),
+                            measurement: Joi.string().required()
+                        }).required(),
                     }).required(),
-                    hashrate: Joi.object({
-                        value: Joi.number().required(),
-                        measurement: Joi.string().required()
+                "2": Joi.object({
+                        algorithm: Joi.string().allow(null).required(),
+                        cryptocurrency: Joi.string().allow(null).required(),
+                        shares: Joi.object({
+                            accepted: Joi.number().required(),
+                            rejected: Joi.number().required(),
+                        }).required(),
+                        hashrate: Joi.object({
+                            value: Joi.number().required(),
+                            measurement: Joi.string().required()
+                        }).required(),
                     }).required(),
-                }).required()
-            ).required()
-
+                "3": Joi.object({
+                        algorithm: Joi.string().allow(null).required(),
+                        cryptocurrency: Joi.string().allow(null).required(),
+                        shares: Joi.object({
+                            accepted: Joi.number().required(),
+                            rejected: Joi.number().required(),
+                        }).required(),
+                        hashrate: Joi.object({
+                            value: Joi.number().required(),
+                            measurement: Joi.string().required()
+                        }).required(),
+                    }).required()
+            }).required()
         }).required(),
     ).required(),
     cpu: Joi.object({
