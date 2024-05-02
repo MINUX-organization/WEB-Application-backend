@@ -27,7 +27,7 @@ const editGpusForFlightSheetsWithCPUSchema = Joi.object({
 const editGpusForFlightSheetMultipleSchema = Joi.object({
     gpusForFlightSheetsMultiple: Joi.array().items(Joi.object({
         id: Joi.number().required(),
-        flightSheetMultipleId: Joi.number().required()
+        flightSheetMultipleId: Joi.number().allow(null).required()
     })).required()
 });
 

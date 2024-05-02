@@ -657,6 +657,9 @@ class OtherDataController {
                 }
             }
             for (const gpuForFlightSheet of req.body.gpusForFlightSheets) {
+                if (gpuForFlightSheet.flightSheetId == null) {
+                    continue;
+                };
                 const gpu = await mainDatabase.models.GPUs.findOne({ where: { id: gpuForFlightSheet.id } })
                 if (gpu) {
                     const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { gpu_uuid: gpu.uuid } })
@@ -871,6 +874,9 @@ class OtherDataController {
         const reformatedGPUs = [];
         try {
             for (const receivedGpu of gpusForFlightSheetsMultiple) {
+                if (receivedGpu.flightSheetMultipleId) {
+                    continue;
+                }
                 const gpu = await mainDatabase.models.GPUs.findByPk(receivedGpu.id);
                 if (!gpu) {
                     return next(ApiError.badRequest(`Couldn't find GPU with id ${receivedGpu.id}`));
