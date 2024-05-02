@@ -874,9 +874,7 @@ class OtherDataController {
         const reformatedGPUs = [];
         try {
             for (const receivedGpu of gpusForFlightSheetsMultiple) {
-                if (receivedGpu.flightSheetMultipleId) {
-                    continue;
-                }
+                if (receivedGpu.flightSheetMultipleId == null) continue;
                 const gpu = await mainDatabase.models.GPUs.findByPk(receivedGpu.id);
                 if (!gpu) {
                     return next(ApiError.badRequest(`Couldn't find GPU with id ${receivedGpu.id}`));
