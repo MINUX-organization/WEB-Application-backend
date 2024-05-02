@@ -389,7 +389,7 @@ class WebSocketServer {
                                                 throw new Error(`Flight sheet with id ${gpuSetup.flight_sheet_id_multiple} not found for GPU setup with id ${gpuSetup.id}`);
                                             }
 
-                                            const miner = await mainDatabase.models.MINERs.findByPk(flightSheetMultiple.miner_id);
+                                            const miner = await mainDatabase.models.MINERs.findByPk(flightSheet.miner_id);
                                             if (!miner) {
                                                 throw new Error(`Miner with id ${flightSheet.miner_id} not found for GPU setup with id ${gpuSetup.id}!`);
                                             }
