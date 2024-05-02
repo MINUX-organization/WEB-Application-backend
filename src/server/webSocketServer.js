@@ -313,7 +313,7 @@ class WebSocketServer {
                                                         overclock: {
                                                             clockType: "custom",
                                                             autofan: false,
-                                                            hugepages: flightSheet ? flightSheet : 1000
+                                                            hugepages: flightSheet ? flightSheet.huge_pages : 1000
                                                         },
                                                         crypto: {
                                                             coin: cryptocurrency ? cryptocurrency.name : "",
