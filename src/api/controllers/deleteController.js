@@ -197,30 +197,102 @@ class DeleteController {
         if (error) {
             return next(ApiError.badRequest(error.details[0].message))
         }
-        // Delete flight sheet
+        const { id } = req.body;
         try {
-            // Check if flight sheet exists
-            const flightSheet = await mainDatabase.models.FLIGHT_SHEETs.findOne({ where: { id: req.body.id } });
-            if (flightSheet) {
-                // Delete FK
-                const gpuSetupsWithFlightSheet = await mainDatabase.models.GPU_SETUPs.findAll({ where: { flight_sheet_id: flightSheet.id } })
-                if (gpuSetupsWithFlightSheet) {
-                    for (const gpuSetupWithFlightSheet of gpuSetupsWithFlightSheet) {
-                        await gpuSetupWithFlightSheet.update({ flight_sheet_id: null })
-                    }
-                }
-                // Delete flight sheet
-                const deletedFlightSheet = await mainDatabase.models.FLIGHT_SHEETs.destroy({ where: { id: req.body.id } });
-                if (deletedFlightSheet === 1) {
-                    res.status(200).json();
-                } else {
-                    throw new Error('Could not delete flight sheet');
-                }
-            } else {
-                return next(ApiError.noneData('Flight sheet not found'));
+            const existingFlightSheet = await mainDatabase.models.FLIGHT_SHEETs.findByPk(id);
+            if (!existingFlightSheet) {
+                return next(ApiError.badRequest(`Cannot find flight sheet with id ${id}`));
             }
-        } catch (error) {
-            return next(error);
+            const gpuSetups = await mainDatabase.models.GPU_SETUPs.findAll({ where: { flight_sheet_id: existingFlightSheet.id } });
+            // Sending command
+            if (!clientsData.app) {
+                return next(ApiError.noneData(`App is not connected!`));
+            }
+            const reformatedGpuSetups = [];
+            const gpuUuids = [];
+            for (const gpuSetup of gpuSetups) {
+                gpuUuids.push(gpuSetup.gpu_uuid);
+                reformatedGpuSetups.push({
+                    uuid: gpuSetup.dataValues.gpu_uuid,
+                    overclock: {
+                        clockType: "custom",
+                        autofan: false,
+                        coreClockOffset: gpuSetup.core_clock_offset,
+                        memoryClockOffset: gpuSetup.memory_clock_offset,
+                        fanSpeed: gpuSetup.fan_speed,
+                        powerLimit: gpuSetup.power_limit,
+                        criticalTemp: gpuSetup.crit_temp,
+                    },
+                    crypto: {
+                        miner: "",
+                        additionalString: "",
+                        1: {
+                            cryptocurrency: "",
+                            algorithm: "",
+                            wallet: "",
+                            pool: ""
+                        },
+                        2: {
+                            cryptocurrency: "",
+                            algorithm: "",
+                            wallet: "",
+                            pool: ""
+                        },
+                        3: {
+                            cryptocurrency: "",
+                            algorithm: "",
+                            wallet: "",
+                            pool: ""
+                        }
+                    },
+                })
+            }
+            let continueMining = false;
+            if (dynamicData || dynamicData.gpus) {
+                const gpuUuidsDynamic = dynamicData.gpus
+                    .filter(gpu => gpu.isMining == true)
+                    .map(gpu => gpu.uuid);
+                const gpuUuidsIntersection = gpuUuids.filter(uuid => gpuUuidsDynamic.includes(uuid));
+                if (gpuUuidsIntersection.length > 0) {
+                    const command = new commandInterface("static", {}, "stopMining");
+                    clientsData.app.send(JSON.stringify(command));
+                    const farmState = await mainDatabase.models.FARM_STATE.findOne();
+                    if (farmState) {
+                        farmState.mining = false;
+                        await farmState.save();
+                    }
+                    continueMining = true;
+                }
+                if (reformatedGpuSetups.length > 0) {
+                    clientsData.app.send(JSON.stringify(new commandInterface('static',
+                        {
+                            gpus: reformatedGpuSetups,
+                        },
+                        "setGpusSettings")))
+                }
+            }
+            else {
+                return next(ApiError.noneData("Dynamic data wasn't received from app!"));
+            }
+            // Deleting FK
+            for (const gpuSetup of gpuSetups) {
+                await gpuSetup.update({
+                    flight_sheet_id: null,
+                });
+            }
+            await existingFlightSheet.destroy();
+            //
+            if (continueMining) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static', {}, 'startMining')));
+                const farmState = await mainDatabase.models.FARM_STATE.findOne();
+                if (farmState) {
+                    farmState.mining = true;
+                    await farmState.save();
+                }
+            }
+            res.status(200).json();
+        } catch (err) {
+            return next(err);
         }
     }
     static async FlightSheetWithCustomMiner(req, res, next) {
@@ -303,17 +375,66 @@ class DeleteController {
         if (error) {
             return next(ApiError.badRequest(error.details[0].message))
         };
-
+        const { id } = req.body;
         try {
-            const existingFlightSheetWithCPU = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findByPk(req.body.id);
+            const existingFlightSheetWithCPU = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findByPk(id);
             if (!existingFlightSheetWithCPU) {
                 return next(ApiError.noneData($`Couldn't find flight sheet with id ${req.body.id}`))
             }
+            // Reformat cpu setups and sending command
             const cpuSetups = await mainDatabase.models.CPU_SETUPs.findAll({ where: { flight_sheet_id: existingFlightSheetWithCPU.id } })
+            if (!clientsData.app) {
+                return next(ApiError.noneData(`App is not connected!`));
+            }
+            for (const cpuSetup of cpuSetups) {
+                clientsData.app.send(JSON.stringify(new commandInterface("static", {
+                    cpus: {
+                        uuid: cpuSetup.cpu_uuid,
+                        overclock: {
+                            clockType: "manual",
+                            autofan: false,
+                            hugepages: 1000
+                        },
+                        crypto: {
+                            coin: "",
+                            algorithm: "",
+                            wallet: "",
+                            pool: "",
+                            miner: "",
+                            additionalString: "",
+                            configFile: ""
+                        }
+                    }
+                }, "setCpusSettings")));
+            }
+            // Stop mining
+            if (!dynamicData || !dynamicData.cpu) {
+                return next(ApiError.noneData("Dynamic data wasn't received from app!"));
+            }
+            let continueMining = false;
+            if (dynamicData.cpu.isMining == true) {
+                continueMining = true;
+                clientsData.app.send(JSON.stringify(new commandInterface("static", {}, "stopMining")));
+                const farmState = await mainDatabase.models.FARM_STATE.findOne();
+                if (farmState) {
+                    farmState.mining = false;
+                    await farmState.save();
+                }
+            }
+            // Deleting FK
             for (const cpuSetup of cpuSetups) {
                 await cpuSetup.update({ flight_sheet_id: null })
             }
-
+            // Sending command to continue mining
+            if (continueMining) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static', {}, 'startMining')));
+                const farmState = await mainDatabase.models.FARM_STATE.findOne();
+                if (farmState) {
+                    farmState.mining = true;
+                    await farmState.save();
+                }
+            }
+            // Deleting main table
             await existingFlightSheetWithCPU.destroy().then(() => {
                 res.status(200).json();
             });
@@ -377,15 +498,12 @@ class DeleteController {
                     },
                 })
             }
+            let continueMining = false;
             if (dynamicData || dynamicData.gpus) {
                 const gpuUuidsDynamic = dynamicData.gpus
                     .filter(gpu => gpu.isMining == true)
                     .map(gpu => gpu.uuid);
-                console.log(dynamicData.gpus);
-                console.log(gpuUuidsDynamic);
-                console.log(gpuUuids);
                 const gpuUuidsIntersection = gpuUuids.filter(uuid => gpuUuidsDynamic.includes(uuid));
-                console.log(gpuUuidsIntersection);
                 if (gpuUuidsIntersection.length > 0) {
                     const command = new commandInterface("static", {}, "stopMining");
                     clientsData.app.send(JSON.stringify(command));
@@ -394,6 +512,7 @@ class DeleteController {
                         farmState.mining = false;
                         await farmState.save();
                     }
+                    continueMining = true;
                 }
                 if (reformatedGpuSetups.length > 0) {
                     clientsData.app.send(JSON.stringify(new commandInterface('static',
@@ -423,6 +542,15 @@ class DeleteController {
                 });
             }
             await existingFlightSheetMultiple.destroy();
+            //
+            if (continueMining) {
+                clientsData.app.send(JSON.stringify(new commandInterface('static', {}, 'startMining')));
+                const farmState = await mainDatabase.models.FARM_STATE.findOne();
+                if (farmState) {
+                    farmState.mining = true;
+                    await farmState.save();
+                }
+            }
             res.status(200).json();
         } catch (err) {
             return next(err);
