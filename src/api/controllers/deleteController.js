@@ -417,7 +417,10 @@ class DeleteController {
             }
             // Deleting FK
             for (const gpuSetup of gpuSetups) {
-                await gpuSetup.update({ flight_sheet_id_multiple: null })
+                await gpuSetup.update({
+                    flight_sheet_id_multiple: null,
+                    isMultiple: false
+                });
             }
             await existingFlightSheetMultiple.destroy();
             res.status(200).json();

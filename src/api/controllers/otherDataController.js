@@ -875,24 +875,30 @@ class OtherDataController {
         try {
             for (const receivedGpu of gpusForFlightSheetsMultiple) {
                 if (receivedGpu.flightSheetMultipleId == null) continue;
+
                 const gpu = await mainDatabase.models.GPUs.findByPk(receivedGpu.id);
                 if (!gpu) {
                     return next(ApiError.badRequest(`Couldn't find GPU with id ${receivedGpu.id}`));
                 }
+
                 const gpuSetup = await mainDatabase.models.GPU_SETUPs.findOne({ where: { gpu_uuid: gpu.uuid } });
                 if (!gpuSetup) {
                     return next(ApiError.badRequest(`Couldn't find GPU SETUP for GPU with uuid ${gpu.uuid}`));
                 }
+
                 const flightSheetMultiple = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE.findByPk(receivedGpu.flightSheetMultipleId);
                 if (!flightSheetMultiple) {
                     return next(ApiError.badRequest(`Couldn't find flight sheet with id ${receivedGpu.flightSheetMultipleId}`))
                 }
+
                 const miner = await mainDatabase.models.MINERs.findByPk(flightSheetMultiple.miner_id);
                 if (!miner) {
                     return next(ApiError.noneData(`Couldn't find miner with id ${flightSheetMultiple.miner_id}`));
                 }
+
                 gpuSetup.flight_sheet_id = (gpuSetup.flight_sheet_id != null) ? null : gpuSetup.flight_sheet_id;
                 gpuSetup.flight_sheet_id_multiple = receivedGpu.flightSheetMultipleId;
+                gpuSetup.isMultiple = true;
                 await gpuSetup.save();
 
                 const reformatedGPU = {
