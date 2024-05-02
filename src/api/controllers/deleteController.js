@@ -378,7 +378,9 @@ class DeleteController {
                 })
             }
             if (dynamicData || dynamicData.gpus) {
-                const gpuUuidsDynamic = dynamicData.gpus.map(gpu => gpu.uuid);
+                const gpuUuidsDynamic = dynamicData.gpus
+                    .filter(gpu => gpu.isMining == true)
+                    .map(gpu => gpu.uuid);
                 console.log(dynamicData.gpus);
                 console.log(gpuUuidsDynamic);
                 console.log(gpuUuids);
