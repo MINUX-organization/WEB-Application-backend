@@ -379,7 +379,11 @@ class DeleteController {
             }
             if (dynamicData || dynamicData.gpus) {
                 const gpuUuidsDynamic = dynamicData.gpus.map(gpu => gpu.uuid);
+                console.log(dynamicData.gpus);
+                console.log(gpuUuidsDynamic);
+                console.log(gpuUuids);
                 const gpuUuidsIntersection = gpuUuids.filter(uuid => gpuUuidsDynamic.includes(uuid));
+                console.log(gpuUuidsIntersection);
                 if (gpuUuidsIntersection.length > 0) {
                     const command = new commandInterface("static", {}, "stopMining");
                     clientsData.app.send(JSON.stringify(command));
@@ -392,7 +396,7 @@ class DeleteController {
                 if (reformatedGpuSetups.length > 0) {
                     clientsData.app.send(JSON.stringify(new commandInterface('static',
                         {
-                            gpus: gpuSetupsReformated,
+                            gpus: reformatedGpuSetups,
                         },
                         "setGpusSettings")))
                 }
