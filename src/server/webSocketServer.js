@@ -243,6 +243,97 @@ class WebSocketServer {
 
                                     const reformatedGpuSetups = [];
 
+                                    for (const cpuSetup of cpuSetups) {
+                                        try {
+                                            if (cpuSetup.flight_sheet_id == null) {
+                                                const command = new commandInterface(
+                                                    'static',
+                                                    {
+                                                        cpus: {
+                                                            uuid: cpuSetup.cpu_uuid,
+                                                            overclock: {
+                                                                clockType: "custom",
+                                                                autofan: false,
+                                                                hugepages: 1000
+                                                            },
+                                                            crypto: {
+                                                                coin: "",
+                                                                algorithm: "",
+                                                                wallet: "",
+                                                                pool: "",
+                                                                miner: "",
+                                                                additionalString: "",
+                                                                configFile: ""
+                                                            }
+                                                        },
+                                                    },
+                                                    "setCpusSettings");
+                                                clientsData.app.send(JSON.stringify(command));
+                                                continue;
+                                            }
+                                            const flightSheet = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findByPk(cpuSetup.flight_sheet_id);
+                                            if (!flightSheet) {
+                                                throw new Error(`Flight sheet with id ${cpuSetup.flight_sheet_id} not found for CPU setup with id ${cpuSetup.id}`);
+                                            }
+
+                                            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findByPk(flightSheet.cryptocurrency_id);
+                                            if (!cryptocurrency) {
+                                                throw new Error(`Cryptocurrency with id ${flightSheet.cryptocurrency_id} not found for CPU setup with id ${cpuSetup.id}`);
+                                            }
+
+                                            const algorithm = await mainDatabase.models.ALGORITHMs.findByPk(cryptocurrency.algorithm_id);
+                                            if (!algorithm) {
+                                                throw new Error(`Algorithm with id ${cryptocurrency.algorithm_id} not found for CRYPTOCURRENCY with id ${cryptocurrency.id}!`);
+                                            }
+
+                                            const wallet = await mainDatabase.models.WALLETs.findByPk(flightSheet.wallet_id);
+                                            if (!wallet) {
+                                                throw new Error(`Wallet with id ${flightSheet.wallet_id} not found for CPU setup with id ${cpuSetup.id}!`);
+                                            }
+
+                                            const pool = await mainDatabase.models.POOLs.findByPk(flightSheet.pool_id);
+                                            if (!pool) {
+                                                throw new Error(`Pool with id ${flightSheet.pool_id} not found for CPU setup with id ${cpuSetup.id}!`);
+                                            }
+
+                                            const miner = await mainDatabase.models.MINERs.findByPk(flightSheet.miner_id);
+                                            if (!miner) {
+                                                throw new Error(`Miner with id ${flightSheet.miner_id} not found for CPU setup with id ${cpuSetup.id}!`);
+                                            }
+
+                                            if (!clientsData.app) {
+                                                throw new Error("App is not available!");
+                                            }
+
+                                            const command = new commandInterface(
+                                                'static',
+                                                {
+                                                    cpus: {
+                                                        uuid: cpuSetup.dataValues.cpu_uuid,
+                                                        overclock: {
+                                                            clockType: "custom",
+                                                            autofan: false,
+                                                            hugepages: flightSheet ? flightSheet : 1000
+                                                        },
+                                                        crypto: {
+                                                            coin: cryptocurrency ? cryptocurrency.name : "",
+                                                            algorithm: algorithm ? algorithm.name : "",
+                                                            wallet: wallet ? wallet.address : "",
+                                                            pool: pool ? `${pool.host}:${pool.port}` : "",
+                                                            miner: miner ? miner.name : "",
+                                                            additionalString: flightSheet ? flightSheet.additional_string : "",
+                                                            configFile: flightSheet ? flightSheet.config_file : ""
+                                                        }
+                                                    },
+                                                },
+                                                "setCpusSettings");
+                                            clientsData.app.send(JSON.stringify(command));
+                                        } catch (err) {
+                                            webSocket.send(JSON.stringify(`Received error while sending CPU SETUP init data. Message: ${err}`));
+                                            loggerConsole.error(`Received error while sending CPU SETUP init data. Message: ${err}`)
+                                        }
+                                    }
+
                                     if (flightSheetIdWithCustomMiner) {
                                         try {
                                             for (const gpuSetup of gpuSetups) {
@@ -502,96 +593,7 @@ class WebSocketServer {
                                             loggerConsole.error(`Received error while sending GPU SETUP WITH NON FLIGHT SHEET init data. Message: ${err}`)
                                         }
                                     }
-                                    for (const cpuSetup of cpuSetups) {
-                                        try {
-                                            if (cpuSetup.flight_sheet_id == null) {
-                                                const command = new commandInterface(
-                                                    'static',
-                                                    {
-                                                        cpus: {
-                                                            uuid: cpuSetup.cpu_uuid,
-                                                            overclock: {
-                                                                clockType: "custom",
-                                                                autofan: false,
-                                                                hugepages: 1000
-                                                            },
-                                                            crypto: {
-                                                                coin: "",
-                                                                algorithm: "",
-                                                                wallet: "",
-                                                                pool: "",
-                                                                miner: "",
-                                                                additionalString: "",
-                                                                configFile: ""
-                                                            }
-                                                        },
-                                                    },
-                                                    "setCpusSettings");
-                                                clientsData.app.send(JSON.stringify(command));
-                                                continue;
-                                            }
-                                            const flightSheet = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findByPk(cpuSetup.flight_sheet_id);
-                                            if (!flightSheet) {
-                                                throw new Error(`Flight sheet with id ${cpuSetup.flight_sheet_id} not found for CPU setup with id ${cpuSetup.id}`);
-                                            }
 
-                                            const cryptocurrency = await mainDatabase.models.CRYPTOCURRENCIEs.findByPk(flightSheet.cryptocurrency_id);
-                                            if (!cryptocurrency) {
-                                                throw new Error(`Cryptocurrency with id ${flightSheet.cryptocurrency_id} not found for CPU setup with id ${cpuSetup.id}`);
-                                            }
-
-                                            const algorithm = await mainDatabase.models.ALGORITHMs.findByPk(cryptocurrency.algorithm_id);
-                                            if (!algorithm) {
-                                                throw new Error(`Algorithm with id ${cryptocurrency.algorithm_id} not found for CRYPTOCURRENCY with id ${cryptocurrency.id}!`);
-                                            }
-
-                                            const wallet = await mainDatabase.models.WALLETs.findByPk(flightSheet.wallet_id);
-                                            if (!wallet) {
-                                                throw new Error(`Wallet with id ${flightSheet.wallet_id} not found for CPU setup with id ${cpuSetup.id}!`);
-                                            }
-
-                                            const pool = await mainDatabase.models.POOLs.findByPk(flightSheet.pool_id);
-                                            if (!pool) {
-                                                throw new Error(`Pool with id ${flightSheet.pool_id} not found for CPU setup with id ${cpuSetup.id}!`);
-                                            }
-
-                                            const miner = await mainDatabase.models.MINERs.findByPk(flightSheet.miner_id);
-                                            if (!miner) {
-                                                throw new Error(`Miner with id ${flightSheet.miner_id} not found for CPU setup with id ${cpuSetup.id}!`);
-                                            }
-
-                                            if (!clientsData.app) {
-                                                throw new Error("App is not available!");
-                                            }
-
-                                            const command = new commandInterface(
-                                                'static',
-                                                {
-                                                    cpus: {
-                                                        uuid: cpuSetup.dataValues.cpu_uuid,
-                                                        overclock: {
-                                                            clockType: "custom",
-                                                            autofan: false,
-                                                            hugepages: flightSheet ? flightSheet : 1000
-                                                        },
-                                                        crypto: {
-                                                            coin: cryptocurrency ? cryptocurrency.name : "",
-                                                            algorithm: algorithm ? algorithm.name : "",
-                                                            wallet: wallet ? wallet.address : "",
-                                                            pool: pool ? `${pool.host}:${pool.port}` : "",
-                                                            miner: miner ? miner.name : "",
-                                                            additionalString: flightSheet ? flightSheet.additional_string : "",
-                                                            configFile: flightSheet ? flightSheet.config_file : ""
-                                                        }
-                                                    },
-                                                },
-                                                "setCpusSettings");
-                                            clientsData.app.send(JSON.stringify(command));
-                                        } catch (err) {
-                                            webSocket.send(JSON.stringify(`Received error while sending CPU SETUP init data. Message: ${err}`));
-                                            loggerConsole.error(`Received error while sending CPU SETUP init data. Message: ${err}`)
-                                        }
-                                    }
 
                                     const command = new commandInterface('static', { gpus: reformatedGpuSetups }, 'setGpusSettings');
                                     clientsData.app.send(JSON.stringify(command));
