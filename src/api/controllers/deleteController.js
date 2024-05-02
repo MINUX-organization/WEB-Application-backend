@@ -381,6 +381,20 @@ class DeleteController {
             if (!existingFlightSheetWithCPU) {
                 return next(ApiError.noneData($`Couldn't find flight sheet with id ${req.body.id}`))
             }
+            // Stop mining
+            if (!dynamicData || !dynamicData.cpu) {
+                return next(ApiError.noneData("Dynamic data wasn't received from app!"));
+            }
+            let continueMining = false;
+            if (dynamicData.cpu.isMining == true) {
+                continueMining = true;
+                clientsData.app.send(JSON.stringify(new commandInterface("static", {}, "stopMining")));
+                const farmState = await mainDatabase.models.FARM_STATE.findOne();
+                if (farmState) {
+                    farmState.mining = false;
+                    await farmState.save();
+                }
+            }
             // Reformat cpu setups and sending command
             const cpuSetups = await mainDatabase.models.CPU_SETUPs.findAll({ where: { flight_sheet_id: existingFlightSheetWithCPU.id } })
             if (!clientsData.app) {
@@ -407,20 +421,7 @@ class DeleteController {
                     }
                 }, "setCpusSettings")));
             }
-            // Stop mining
-            if (!dynamicData || !dynamicData.cpu) {
-                return next(ApiError.noneData("Dynamic data wasn't received from app!"));
-            }
-            let continueMining = false;
-            if (dynamicData.cpu.isMining == true) {
-                continueMining = true;
-                clientsData.app.send(JSON.stringify(new commandInterface("static", {}, "stopMining")));
-                const farmState = await mainDatabase.models.FARM_STATE.findOne();
-                if (farmState) {
-                    farmState.mining = false;
-                    await farmState.save();
-                }
-            }
+
             // Deleting FK
             for (const cpuSetup of cpuSetups) {
                 await cpuSetup.update({ flight_sheet_id: null })
