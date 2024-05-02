@@ -335,7 +335,7 @@ class DeleteController {
             }
             const gpuSetups = await mainDatabase.models.GPU_SETUPs.findAll({ where: { flight_sheet_id_multiple: existingFlightSheetMultiple.id } });
             // Sending command
-            if (!commandsData.app) {
+            if (!clientsData.app) {
                 return next(ApiError.noneData(`App is not connected!`));
             }
             const reformatedGpuSetups = [];
