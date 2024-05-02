@@ -392,7 +392,8 @@ class WebSocketServer {
                                                     algorithm: flightSheetWithCustomMiner.algorithm,
                                                     poolTemplate: flightSheetWithCustomMiner.pool_template,
                                                     workerTemplate: flightSheetWithCustomMiner.wallet_and_worker_template,
-                                                    additionalArguments: flightSheetWithCustomMiner.extra_config_arguments
+                                                    additionalArguments: flightSheetWithCustomMiner.extra_config_arguments,
+                                                    password: flightSheetWithCustomMiner.password
                                                 },
                                                 "setupCustomMiner")));
                                         } catch (err) {
