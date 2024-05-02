@@ -15,6 +15,8 @@ import { mainDatabase } from '../../database/mainDatabase.js'
 import { ApiError } from "../../error/ApiError.js";
 import { clientsData } from "../../temp/clients.js";
 import { commandInterface } from "../../classes/commands.js";
+import { commandsData } from "../../temp/commands.js";
+import { dynamicData } from "../../temp/dynamic.js";
 
 class DeleteController {
     static async Cryptocurrency(req, res, next) { // Reformated + worked
@@ -331,6 +333,73 @@ class DeleteController {
             if (!existingFlightSheetMultiple) {
                 return next(ApiError.badRequest(`Cannot find flight sheet with id ${id}`));
             }
+            const gpuSetups = await mainDatabase.models.GPU_SETUPs.findAll({ where: { flight_sheet_id_multiple: existingFlightSheetMultiple.id } });
+            // Sending command
+            if (!commandsData.app) {
+                return next(ApiError.noneData(`App is not connected!`));
+            }
+            const reformatedGpuSetups = [];
+            const gpuUuids = [];
+            for (const gpuSetup of gpuSetups) {
+                gpuUuids.push(gpuSetup.gpu_uuid);
+                reformatedGpuSetups.push({
+                    uuid: gpuSetup.dataValues.gpu_uuid,
+                    overclock: {
+                        clockType: "custom",
+                        autofan: false,
+                        coreClockOffset: gpuSetup.core_clock_offset,
+                        memoryClockOffset: gpuSetup.memory_clock_offset,
+                        fanSpeed: gpuSetup.fan_speed,
+                        powerLimit: gpuSetup.power_limit,
+                        criticalTemp: gpuSetup.crit_temp,
+                    },
+                    crypto: {
+                        miner: "",
+                        additionalString: "",
+                        1: {
+                            cryptocurrency: "",
+                            algorithm: "",
+                            wallet: "",
+                            pool: ""
+                        },
+                        2: {
+                            cryptocurrency: "",
+                            algorithm: "",
+                            wallet: "",
+                            pool: ""
+                        },
+                        3: {
+                            cryptocurrency: "",
+                            algorithm: "",
+                            wallet: "",
+                            pool: ""
+                        }
+                    },
+                })
+            }
+            if (dynamicData || dynamicData.gpus) {
+                const gpuUuidsDynamic = dynamicData.gpus.map(gpu => gpu.uuid);
+                const gpuUuidsIntersection = gpuUuids.filter(uuid => gpuUuidsDynamic.includes(uuid));
+                if (gpuUuidsIntersection.length > 0) {
+                    const command = new commandInterface("static", {}, "stopMining");
+                    clientsData.app.send(JSON.stringify(command));
+                    const farmState = await mainDatabase.models.FARM_STATE.findOne();
+                    if (farmState) {
+                        farmState.mining = false;
+                        await farmState.save();
+                    }
+                }
+                if (reformatedGpuSetups.length > 0) {
+                    clientsData.app.send(JSON.stringify(new commandInterface('static',
+                        {
+                            gpus: gpuSetupsReformated,
+                        },
+                        "setGpusSettings")))
+                }
+            }
+            else {
+                return next(ApiError.noneData("Dynamic data wasn't received from app!"));
+            }
             // Deleting FK
             const existingConfigs = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
                 where: {
@@ -340,7 +409,10 @@ class DeleteController {
             for (const existingConfig of existingConfigs) {
                 await existingConfig.destroy();
             }
-            // Deleting main table
+            // Deleting FK
+            for (const gpuSetup of gpuSetups) {
+                await gpuSetup.update({ flight_sheet_id_multiple: null })
+            }
             await existingFlightSheetMultiple.destroy();
             res.status(200).json();
         } catch (err) {
