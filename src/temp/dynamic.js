@@ -106,26 +106,24 @@ const dynamicData = {
         }
         const calculateCoinHashrate = () => {
             const coins = {};
-
-            if (this.cpu && this.cpu.cryptocurrency && this.cpu.hashrate && this.cpu.hashrate.value) {
+            if (this.cpu && this.cpu.cryptocurrency) {
                 coins[this.cpu.cryptocurrency] = {
                     coin: this.cpu.cryptocurrency,
                     algorithm: this.cpu.algorithm || null,
-                    value: this.cpu.hashrate.value
+                    value: this.cpu.hashrate ? this.cpu.hashrate.value : 0
                 };
             }
-
             this.gpus.forEach(gpu => {
                 if (gpu && gpu.crypto) {
                     Object.values(gpu.crypto).forEach(crypto => {
-                        if (crypto && crypto.cryptocurrency && crypto.hashrate && crypto.hashrate.value) {
+                        if (crypto && crypto.cryptocurrency) {
                             if (coins[crypto.cryptocurrency]) {
-                                coins[crypto.cryptocurrency].value += crypto.hashrate.value;
+                                coins[crypto.cryptocurrency].value += crypto.hashrate ? crypto.hashrate.value : 0;
                             } else {
                                 coins[crypto.cryptocurrency] = {
                                     coin: crypto.cryptocurrency,
                                     algorithm: crypto.algorithm || null,
-                                    value: crypto.hashrate.value
+                                    value: crypto.hashrate ? crypto.hashrate.value : 0
                                 };
                             }
                         }
