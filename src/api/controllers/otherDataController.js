@@ -171,8 +171,9 @@ class OtherDataController {
             const flightSheets = await mainDatabase.models.FLIGHT_SHEETs.findAll();
             const flightSheetsWithCustomMiner = await mainDatabase.models.FLIGHT_SHEETs_WITH_CUSTOM_MINER.findAll();
             const flightSheetsWithCPU = await mainDatabase.models.FLIGHT_SHEETs_WITH_CPU.findAll();
+            const flightSheetsMultiple = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE.findAll();
 
-            if (flightSheets.length == 0 && flightSheetsWithCustomMiner.length == 0 && flightSheetsWithCPU.length == 0) {
+            if (flightSheets.length == 0 && flightSheetsWithCustomMiner.length == 0 && flightSheetsWithCPU.length == 0 && flightSheetsMultiple.length == 0) {
                 return res.status(200).json({ "flightSheets": [] });
             }
             // Reformat response
@@ -182,7 +183,7 @@ class OtherDataController {
                 const reformatedFlightSheet = {
                     id: flightSheet.id,
                     name: flightSheet.name,
-                    type: "SIMPLE",
+                    type: "GPU-SINGLE",
                     cryptocurrencyId: flightSheet.cryptocurrency_id,
                     minerId: flightSheet.miner_id,
                     walletId: flightSheet.wallet_id,
@@ -228,7 +229,34 @@ class OtherDataController {
                 };
                 reformatedFlightSheetsWithCPU.push(reformatedFlightSheetWithCPU);
             });
-            const result = [...reformatedFlightSheets, ...reformatedFlightSheetsWithCustomMiner, ...reformatedFlightSheetsWithCPU]
+
+            const reformatedFlightSheetsMultiple = [];
+
+            for (const flightSheet of flightSheetsMultiple) {
+                const configs = await mainDatabase.models.FLIGHT_SHEETs_MULTIPLE_CRYPTOCURRENCIEs.findAll({
+                    where: {
+                        flight_sheet_multiple_id: flightSheet.id
+                    }
+                });
+                const reformatedConfigs = [];
+                for (const config of configs) {
+                    reformatedConfigs.push({
+                        cryptocurrencyId: config.cryptocurrency_id,
+                        walletId: config.wallet_id,
+                        poolId: config.pool_id,
+                    });
+                }
+                const reformatedFlightSheet = {
+                    id: flightSheet.id,
+                    name: flightSheet.name,
+                    type: "GPU-MULTIPLE",
+                    additionalString: flightSheet.additional_string,
+                    minerId: flightSheet.miner_id,
+                    configs: reformatedConfigs
+                };
+                reformatedFlightSheetsMultiple.push(reformatedFlightSheet);
+            }
+            const result = [...reformatedFlightSheets, ...reformatedFlightSheetsWithCustomMiner, ...reformatedFlightSheetsWithCPU, ...reformatedFlightSheetsMultiple]
 
             // Return
             res.status(200).json({ "flightSheets": result });
