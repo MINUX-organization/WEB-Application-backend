@@ -297,7 +297,8 @@ const dynamicData = {
                 coins[this.cpu.cryptocurrency] = {
                     coin: this.cpu.cryptocurrency,
                     algorithm: this.cpu.algorithm || null,
-                    value: this.cpu.hashrate ? this.cpu.hashrate.value : 0
+                    value: this.cpu.hashrate ? this.cpu.hashrate.value : 0,
+                    measurement: this.cpu.hashrate ? this.cpu.hashrate.measurement : null
                 };
             }
             this.gpus.forEach(gpu => {
@@ -310,14 +311,15 @@ const dynamicData = {
                                 coins[crypto.cryptocurrency] = {
                                     coin: crypto.cryptocurrency,
                                     algorithm: crypto.algorithm || null,
-                                    value: crypto.hashrate.value
+                                    value: crypto.hashrate.value,
+                                    measurement: crypto.hashrate ? crypto.hashrate.measurement : null
                                 };
                             }
                         }
                     });
                 }
             });
-            console.log(coins);
+
             const coinsArray = Object.values(coins);
             return coinsArray;
         };
