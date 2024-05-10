@@ -449,7 +449,7 @@ class WebSocketServer {
                                                     miner: miner ? miner.name : "",
                                                     additionalString: flightSheet ? flightSheet.additional_string : "",
                                                     1: {
-                                                        coin: cryptocurrency ? cryptocurrency.name : "",
+                                                        cryptocurrency: cryptocurrency ? cryptocurrency.name : "",
                                                         algorithm: algorithm ? algorithm.name : "",
                                                         wallet: wallet ? wallet.address : "",
                                                         pool: pool ? `${pool.host}:${pool.port}` : ""
