@@ -149,7 +149,7 @@ class CommandController {
                     else {
                         return next(ApiError.noneData("Unavailable to update farm state!"))
                     }
-                    res.status(200).json(true)
+                    res.status(200).json(response)
                 })
                 .catch(err => {
                     return next(err)
@@ -167,29 +167,16 @@ class CommandController {
             // Sending the command
             const command = new commandInterface("static", {}, "stopMining");
             clientsData.app.send(JSON.stringify(command));
-            // Wait response
-            const response = await CommandController.waitForResponse(command.command)
-                .then(async response => {
-                    // Checking response
-                    if (typeof (responseFromCommand) != "boolean") {
-                        return next(ApiError.noneData("Cannot sent command!"));
-                    }
-                    // Update farm state
-                    commandsData[command] = null
-                    const farmState = await mainDatabase.models.FARM_STATE.findOne()
-                    if (!farmState) {
-                        return next(ApiError.noneData("Unavailable to update farm state!"))
-                    }
-                    farmState.mining = false
-                    await farmState.save()
+            // Update farm state
+            commandsData[command] = null
+            const farmState = await mainDatabase.models.FARM_STATE.findOne()
+            if (!farmState) {
+                return next(ApiError.noneData("Unavailable to update farm state!"))
+            }
+            farmState.mining = false
+            await farmState.save()
 
-                    return response;
-                })
-                .catch(err => {
-                    return next(err)
-                })
-            console.log(response);
-            res.status(200).json(true);
+            res.status(200).json({ status: true });
         } catch (err) {
             return next(err)
         }
