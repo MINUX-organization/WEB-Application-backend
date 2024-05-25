@@ -135,25 +135,16 @@ class CommandController {
             // Sending the command
             const command = new commandInterface("static", {}, "startMining")
             clientsData.app.send(JSON.stringify(command))
-            // Wait response
-            CommandController.waitForResponse(command.command)
-                .then(async response => {
-                    console.log(response)
-                    commandsData[command] = null
-                    const farmState = await mainDatabase.models.FARM_STATE.findOne()
-                    // Update farmstate
-                    if (farmState) {
-                        farmState.mining = true
-                        await farmState.save()
-                    }
-                    else {
-                        return next(ApiError.noneData("Unavailable to update farm state!"))
-                    }
-                    res.status(200).json(response)
-                })
-                .catch(err => {
-                    return next(err)
-                })
+            // Update farmstate
+            const farmState = await mainDatabase.models.FARM_STATE.findOne()
+            if (!farmState) {
+                return next(ApiError.noneData("Unavailable to update farm state!"))
+
+            }
+            farmState.mining = true
+            await farmState.save()
+
+            res.status(200).json({ status: true })
         } catch (err) {
             return next(err)
         }
