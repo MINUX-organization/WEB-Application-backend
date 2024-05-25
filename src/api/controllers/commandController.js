@@ -158,33 +158,38 @@ class CommandController {
             return next(err)
         }
     }
-    static stopMining(req, res, next) { // Reformated + not tested yet
+    static async stopMining(req, res, next) { // Reformated + not tested yet 
         // Check if app is running
         if (!clientsData.app) {
             return next(ApiError.noneData("App is not connected!"))
         }
         try {
             // Sending the command
-            const command = new commandInterface("static", {}, "stopMining")
-            clientsData.app.send(JSON.stringify(command))
+            const command = new commandInterface("static", {}, "stopMining");
+            clientsData.app.send(JSON.stringify(command));
             // Wait response
-            CommandController.waitForResponse(command.command)
+            const response = await CommandController.waitForResponse(command.command)
                 .then(async response => {
+                    // Checking response
+                    if (typeof (responseFromCommand) != "boolean") {
+                        return next(ApiError.noneData("Cannot sent command!"));
+                    }
+                    // Update farm state
                     commandsData[command] = null
                     const farmState = await mainDatabase.models.FARM_STATE.findOne()
-                    // Update farmstate
-                    if (farmState) {
-                        farmState.mining = false
-                        await farmState.save()
-                    }
-                    else {
+                    if (!farmState) {
                         return next(ApiError.noneData("Unavailable to update farm state!"))
                     }
-                    res.status(200).json(response)
+                    farmState.mining = false
+                    await farmState.save()
+
+                    return response;
                 })
                 .catch(err => {
                     return next(err)
                 })
+            console.log(response);
+            res.status(200).json(response);
         } catch (err) {
             return next(err)
         }
