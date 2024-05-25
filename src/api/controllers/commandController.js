@@ -149,7 +149,7 @@ class CommandController {
                     else {
                         return next(ApiError.noneData("Unavailable to update farm state!"))
                     }
-                    res.status(200).json(response)
+                    res.status(200).json(true)
                 })
                 .catch(err => {
                     return next(err)
@@ -189,7 +189,7 @@ class CommandController {
                     return next(err)
                 })
             console.log(response);
-            res.status(200).json(response);
+            res.status(200).json(true);
         } catch (err) {
             return next(err)
         }
